@@ -1,51 +1,80 @@
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/1PRCQTBovAxVh9NmdNILL8QQbkErZ_TP-uFUVkkd6lRk/exec";
+// URL de despliegue de tu Web App de Google Apps Script
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwDNzq42FPP83uuNxNGCCCqzT9iLp199zvBoH9N5FKpCeYJ1-66A6LAFagXd_Eibk6P/exec";
 
-// Funciones auxiliares para simplificar y sanitizar las peticiones HTTP
+/**
+ * Realiza peticiones de consulta (GET) compatibles con Google Apps Script.
+ */
 function getRequest(paramsObj, onSuccess, onFailure) {
   const params = new URLSearchParams(paramsObj);
   fetch(`${APPS_SCRIPT_URL}?${params.toString()}`)
     .then(response => {
       if (!response.ok) {
-        throw new Error("HTTP error " + response.status);
+        throw new Error("Error HTTP de red: " + response.status);
       }
-      return response.json();
+      return response.text(); // Leemos como texto primero para diagnosticar respuestas HTML
     })
-    .then(data => {
-      if (data.success) {
-        onSuccess(data.data);
-      } else {
-        onFailure(data.error || "Error en el servidor");
+    .then(text => {
+      try {
+        const data = JSON.parse(text);
+        if (data.success) {
+          onSuccess(data.data);
+        } else {
+          onFailure(data.error || "Error reportado por el servidor");
+        }
+      } catch (err) {
+        if (text.includes("<!DOCTYPE html>") || text.includes("<html")) {
+          onFailure(
+            "Configuración Incorrecta de Apps Script:\n" +
+            "El servidor devolvió una página HTML de Google en lugar de datos JSON.\n\n" +
+            "Asegúrate de haber configurado en Google Apps Script al implementar:\n" +
+            "1. Ejecutar como: 'Yo' (Tu cuenta de Google)\n" +
+            "2. Quién tiene acceso: 'Cualquiera' (Anyone)"
+          );
+        } else {
+          onFailure("Error interpretando respuesta del servidor: " + err.message);
+        }
       }
     })
     .catch(error => {
-      console.error("API GET Error:", error);
-      onFailure(error);
+      console.error("GET Fetch Error:", error);
+      onFailure("No se pudo conectar con el servidor. Verifica tu conexión de red o la URL de la Web App.");
     });
 }
 
+/**
+ * Realiza peticiones de escritura (POST) enviando los datos como texto plano.
+ * Esto evita el pre-flight OPTIONS de CORS, el cual no está soportado por Apps Script.
+ */
 function postRequest(payload, onSuccess, onFailure) {
-  // Se envía sin cabecera Content-Type de tipo application/json
-  // para evitar la solicitud de pre-vuelo CORS OPTIONS no soportada por Apps Script
   fetch(APPS_SCRIPT_URL, {
     method: "POST",
     body: JSON.stringify(payload)
   })
     .then(response => {
       if (!response.ok) {
-        throw new Error("HTTP error " + response.status);
+        throw new Error("Error HTTP de red: " + response.status);
       }
-      return response.json();
+      return response.text();
     })
-    .then(data => {
-      if (data.success) {
-        onSuccess(data.data);
-      } else {
-        onFailure(data.error || "Error en el servidor");
+    .then(text => {
+      try {
+        const data = JSON.parse(text);
+        if (data.success) {
+          onSuccess(data.data);
+        } else {
+          onFailure(data.error || "Error de servidor al guardar");
+        }
+      } catch (err) {
+        if (text.includes("<!DOCTYPE html>") || text.includes("<html")) {
+          onFailure("Error de permisos en Apps Script: Asegúrate de haber desplegado con acceso a 'Cualquiera'.");
+        } else {
+          onFailure("Error procesando confirmación de escritura: " + err.message);
+        }
       }
     })
     .catch(error => {
-      console.error("API POST Error:", error);
-      onFailure(error);
+      console.error("POST Fetch Error:", error);
+      onFailure("Error de conexión de red al intentar guardar datos.");
     });
 }
 

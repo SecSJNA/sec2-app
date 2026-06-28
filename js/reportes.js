@@ -1,16 +1,14 @@
 function cargarReporteDia() {
   profileMode = false;
-  // Dependencia de inicialización o interfaz: prepararDataScreen
   prepararDataScreen("Reporte del día", "Incidencias activas para la fecha seleccionada", "report", "blue-light");
 
-  google.script.run
-    .withSuccessHandler(renderReporteDia)
-    .withFailureHandler(renderError) // Dependencia de interfaz: renderError
-    .obtenerReporteDia(currentModule, TEST_USERS[currentModule]);
+  API.obtenerReporteDia(
+    renderReporteDia,
+    renderError
+  );
 }
 
 function renderReporteDia(respuesta) {
-  // Dependencia de interfaz: formatearFecha
   document.getElementById("dataSubtitle").textContent = `Fecha consultada: ${formatearFecha(respuesta.fecha)}`;
   document.getElementById("dataStats").innerHTML = crearStatsHTML(respuesta.presentes, respuesta.ausentes);
 
@@ -23,17 +21,15 @@ function renderReporteDia(respuesta) {
 
 function cargarReporteSemanal() {
   profileMode = false;
-  // Dependencia de inicialización o interfaz: prepararDataScreen
   prepararDataScreen("Reporte semanal", "Fechas cercanas al periodo consultado.", "calendar", "blue");
 
-  google.script.run
-    .withSuccessHandler(renderReporteSemanal)
-    .withFailureHandler(renderError) // Dependencia de interfaz: renderError
-    .obtenerReporteSemanal(currentModule, TEST_USERS[currentModule]);
+  API.obtenerReporteSemanal(
+    renderReporteSemanal,
+    renderError
+  );
 }
 
 function renderReporteSemanal(respuesta) {
-  // Dependencia de interfaz: formatearFecha
   document.getElementById("dataSubtitle").textContent = `${formatearFecha(respuesta.fechaInicio)} a ${formatearFecha(respuesta.fechaFin)}`;
   document.getElementById("dataStats").innerHTML = crearStatsHTML(respuesta.presentes, respuesta.ausentes);
 
@@ -44,18 +40,14 @@ function renderReporteSemanal(respuesta) {
         <p class="section-subtitle">Fechas cercanas al periodo consultado.</p>
       `;
   if (!respuesta.incidencias || respuesta.incidencias.length === 0) {
-    // Dependencia de interfaz: crearTarjetaSimple
     lista.innerHTML += crearTarjetaSimple("Sin registros", "No hay incidencias activas en esta semana.");
-    // Dependencia de interfaz: inicializarIconos
     inicializarIconos();
     return;
   }
 
   respuesta.incidencias.forEach(incidencia => {
-    // Dependencia de incidencias: crearCardIncidencia
     lista.appendChild(crearCardIncidencia(incidencia, true));
   });
-  // Dependencia de interfaz: inicializarIconos
   inicializarIconos();
 }
 
@@ -66,7 +58,6 @@ function abrirConsultaFechas() {
   document.getElementById("rangeStats").innerHTML = "";
   document.getElementById("rangeResults").innerHTML = "";
   document.getElementById("rangeStatus").className = "status-box";
-  // Dependencia de interfaz: showScreen
   showScreen("rangeScreen");
 }
 
@@ -77,14 +68,14 @@ function ejecutarConsultaFechas() {
   status.className = "status-box show";
   status.textContent = "Consultando fechas...";
 
-  google.script.run
-    .withSuccessHandler(renderConsultaFechas)
-    .withFailureHandler(error => {
+  API.consultarFechas(
+    { FechaInicio: fechaInicio, FechaFin: fechaFin },
+    renderConsultaFechas,
+    error => {
       status.className = "status-box show error";
-      // Dependencia de interfaz: obtenerMensajeError
       status.textContent = obtenerMensajeError(error);
-    })
-    .consultarFechas({ FechaInicio: fechaInicio, FechaFin: fechaFin }, currentModule, TEST_USERS[currentModule]);
+    }
+  );
 }
 
 function renderConsultaFechas(respuesta) {
@@ -92,10 +83,8 @@ function renderConsultaFechas(respuesta) {
   const results = document.getElementById("rangeResults");
   const total = respuesta.incidencias ? respuesta.incidencias.length : 0;
 
-  // Dependencia de interfaz: formatearFecha
   status.className = "status-box show ok";
-  status.textContent = `Consulta realizada: ${formatearFecha(respuesta.fechaInicio)} a ${formatearFecha(respuesta.fechaFin)}.
-Registros encontrados: ${total}.`;
+  status.textContent = `Consulta realizada: ${formatearFecha(respuesta.fechaInicio)} a ${formatearFecha(respuesta.fechaFin)}. Registros encontrados: ${total}.`;
 
   document.getElementById("rangeStats").innerHTML = crearStatsHTML(respuesta.presentes, respuesta.ausentes);
 
@@ -104,16 +93,13 @@ Registros encontrados: ${total}.`;
         <p class="section-subtitle">Fechas cercanas al periodo consultado.</p>
       `;
   if (total === 0) {
-    // Dependencia de interfaz: crearTarjetaSimple
     results.innerHTML += crearTarjetaSimple("Sin resultados", "No se encontraron permisos en esas fechas.");
     return;
   }
 
   respuesta.incidencias.forEach(incidencia => {
-    // Dependencia de incidencias: crearCardIncidencia
     results.appendChild(crearCardIncidencia(incidencia, true));
   });
-  // Dependencia de interfaz: inicializarIconos
   inicializarIconos();
 }
 
@@ -124,7 +110,6 @@ function abrirEstadisticaMensual() {
   document.getElementById("statMonthStatus").className = "status-box";
   document.getElementById("statMonthStatus").textContent = "";
   document.getElementById("statMonthResults").innerHTML = "";
-  // Dependencia de interfaz: showScreen
   showScreen("statMonthScreen");
 }
 
@@ -142,14 +127,16 @@ function consultarEstadisticaMensual() {
   status.className = "status-box show";
   status.textContent = "Consultando estadística mensual...";
 
-  google.script.run
-    .withSuccessHandler(renderEstadisticaMensual)
-    .withFailureHandler(error => {
+  API.obtenerEstadisticaMensual(
+    selectedPersonID,
+    mes,
+    anio,
+    renderEstadisticaMensual,
+    error => {
       status.className = "status-box show error";
-      // Dependencia de interfaz: obtenerMensajeError
       status.textContent = obtenerMensajeError(error);
-    })
-    .obtenerEstadisticaMensual(selectedPersonID, currentModule, TEST_USERS[currentModule], mes, anio);
+    }
+  );
 }
 
 function renderEstadisticaMensual(respuesta) {
@@ -158,7 +145,6 @@ function renderEstadisticaMensual(respuesta) {
   status.className = "status-box show ok";
   status.textContent = `Consulta realizada: ${respuesta.mes}/${respuesta.anio}`;
   if (!respuesta.total || respuesta.total === 0) {
-    // Dependencia de interfaz: crearTarjetaSimple
     container.innerHTML = crearTarjetaSimple("Mes sin incidencias", "No se encontraron incidencias para el mes seleccionado.");
     return;
   }
@@ -167,7 +153,6 @@ function renderEstadisticaMensual(respuesta) {
 
   let bars = "";
   respuesta.datos.forEach(item => {
-    // Dependencia de interfaz: iconMeta, escapeHTML
     const meta = iconMeta(item.tipo);
     const altura = item.cantidad === 0 ? 3 : Math.max(8, Math.round((item.cantidad / maximo) * 160));
     bars += `
@@ -178,7 +163,6 @@ function renderEstadisticaMensual(respuesta) {
            </div>
         `;
   });
-  // Dependencia de interfaz: escapeHTML
   container.innerHTML = `
         <article class="data-card">
           <h2 class="data-card-title">Resumen mensual</h2>
@@ -200,7 +184,6 @@ function renderEstadisticaMensual(respuesta) {
           <div class="chart-axis-label">Tipo de incidencia</div>
         </section>
       `;
-  // Dependencia de interfaz: inicializarIconos
   inicializarIconos();
 }
 
@@ -220,29 +203,23 @@ function prepararDataScreen(titulo, subtitulo, icono, color) {
   document.getElementById("dataSubtitle").textContent = subtitulo;
   document.getElementById("dataAccessName").textContent = currentModule;
   document.getElementById("dataStats").innerHTML = "";
-  // Dependencia de interfaz: crearTarjetaSimple
   document.getElementById("dataList").innerHTML = crearTarjetaSimple("Cargando información...", "Consultando Google Sheets.");
   document.getElementById("dataBrandIcon").className = `brand-icon solid-${color || "blue"}`;
   document.getElementById("dataBrandIcon").setAttribute("data-icon", icono);
-  // Dependencia de interfaz: showScreen
   showScreen("dataScreen");
 }
 
 function renderListaIncidenciasEn(idContenedor, incidencias, mensajeVacio) {
   const lista = document.getElementById(idContenedor);
   if (!incidencias || incidencias.length === 0) {
-    // Dependencia de interfaz: crearTarjetaSimple
     lista.innerHTML += crearTarjetaSimple("Sin registros", mensajeVacio);
-    // Dependencia de interfaz: inicializarIconos
     inicializarIconos();
     return;
   }
 
   incidencias.forEach(incidencia => {
-    // Dependencia de incidencias: crearCardIncidencia
     lista.appendChild(crearCardIncidencia(incidencia, true));
   });
-  // Dependencia de interfaz: inicializarIconos
   inicializarIconos();
 }
 

@@ -1,4 +1,4 @@
-// URL de despliegue de tu Web App de Google Apps Script
+// URL de producción oficial de tu Web App de Google Apps Script
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwDNzq42FPP83uuNxNGCCCqzT9iLp199zvBoH9N5FKpCeYJ1-66A6LAFagXd_Eibk6P/exec";
 
 /**
@@ -11,7 +11,7 @@ function getRequest(paramsObj, onSuccess, onFailure) {
       if (!response.ok) {
         throw new Error("Error HTTP de red: " + response.status);
       }
-      return response.text(); // Leemos como texto primero para diagnosticar respuestas HTML
+      return response.text(); // Leemos como texto primero para diagnosticar respuestas HTML de Google si las hubiera
     })
     .then(text => {
       try {
@@ -66,7 +66,7 @@ function postRequest(payload, onSuccess, onFailure) {
         }
       } catch (err) {
         if (text.includes("<!DOCTYPE html>") || text.includes("<html")) {
-          onFailure("Error de permisos en Apps Script: Asegúrate de haber desplegado con acceso a 'Cualquiera'.");
+          onFailure("Error de permisos en Apps Script: Asegúrate de haber desplegado con acceso a 'Cualquiera' (Anyone).");
         } else {
           onFailure("Error procesando confirmación de escritura: " + err.message);
         }

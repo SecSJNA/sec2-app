@@ -9,8 +9,8 @@ function abrirSelectorHistorial() {
   const select = document.getElementById("historyPersonSelect");
   select.innerHTML = `<option value="">Cargando docentes...</option>`;
 
-  google.script.run
-    .withSuccessHandler(usuarios => {
+  API.obtenerUsuariosParaFormulario(
+    usuarios => {
       select.innerHTML = `<option value="">Seleccionar docente</option>`;
       usuarios.forEach(usuario => {
         const option = document.createElement("option");
@@ -18,13 +18,12 @@ function abrirSelectorHistorial() {
         option.textContent = `${usuario.Apellidos} ${usuario.Nombre}`;
         select.appendChild(option);
       });
-    })
-    .withFailureHandler(error => {
+    },
+    error => {
       select.innerHTML = `<option value="">Error al cargar docentes</option>`;
       alert(obtenerMensajeError(error));
-    })
-    .obtenerUsuariosParaFormulario();
-  // Dependencia de interfaz: showScreen
+    }
+  );
   showScreen("historySelectScreen");
 }
 
@@ -41,37 +40,32 @@ function continuarHistorialPersona() {
 
 function cargarResumenPersona(idPersona) {
   selectedPersonID = idPersona;
-  // Dependencia de interfaz: crearTarjetaSimple
   document.getElementById("personSummaryContent").innerHTML = crearTarjetaSimple("Cargando resumen...", "Consultando Google Sheets.");
-  // Dependencia de interfaz: showScreen
   showScreen("personSummaryScreen");
 
-  google.script.run
-    .withSuccessHandler(renderResumenPersona)
-    .withFailureHandler(error => {
-      // Dependencia de interfaz: crearTarjetaSimple, obtenerMensajeError
+  API.obtenerResumenPersona(
+    idPersona,
+    renderResumenPersona,
+    error => {
       document.getElementById("personSummaryContent").innerHTML = crearTarjetaSimple("Error", obtenerMensajeError(error));
-    })
-    .obtenerResumenPersona(idPersona, currentModule, TEST_USERS[currentModule]);
+    }
+  );
 }
 
 function renderResumenPersona(respuesta) {
   const p = respuesta.persona;
   const e = respuesta.estadisticas;
-  // Dependencia de interfaz: formatearFecha
   const ultima = respuesta.ultimaIncidencia ? formatearFecha(respuesta.ultimaIncidencia.FechaInicio) : "Sin registros";
 
   const tituloOpciones = profileMode ? "Mi historial" : "Opciones de consulta";
   const descripcionHistorial = profileMode ? "Ver mi historial personal completo." : "Ver todas las incidencias registradas.";
-  // Dependencia de interfaz: escapeHTML
   const html = `
         <article class="data-card">
           <div class="summary-header">
             <div class="big-avatar" data-icon="user"></div>
             <div>
               <h2 class="data-card-title">${escapeHTML(p.Nombre)} ${escapeHTML(p.Apellidos)}</h2>
-              <p class="data-card-text"><strong>Turno:</strong> ${TURNOS_TEXTO[p.Turno] ||
-p.Turno}</p>
+              <p class="data-card-text"><strong>Turno:</strong> ${TURNOS_TEXTO[p.Turno] || p.Turno}</p>
               <p class="data-card-text"><strong>ID:</strong> ${escapeHTML(p.ID)}</p>
               <p class="data-card-text"><strong>Última incidencia:</strong> ${ultima}</p>
             </div>
@@ -81,7 +75,7 @@ p.Turno}</p>
 
           <section class="stat-grid">
             ${statMini(e.total, "Total<br>incidencias", "blue", "humanitario-sindical")}
-             ${statMini(e.permisosOficiales, "Permisos<br>oficiales", "purple", "permiso-oficial")}
+            ${statMini(e.permisosOficiales, "Permisos<br>oficiales", "purple", "permiso-oficial")}
             ${statMini(e.incapacidades, "Incapacidades", "blue", "incapacidad")}
             ${statMini(e.comisiones, "Comisiones", "blue-soft", "comision-oficial")}
             ${statMini(e.otras, "Otras", "gold", "especial")}
@@ -98,8 +92,7 @@ p.Turno}</p>
           <div class="info-icon">i</div>
           <div>
             <h3 class="info-title">Información</h3>
-            <p class="info-text">${profileMode ?
-"Este apartado es personal y solo de consulta." : "Seleccione una opción para consultar información detallada."}</p>
+            <p class="info-text">${profileMode ? "Este apartado es personal y solo de consulta." : "Seleccione una opción para consultar información detallada."}</p>
           </div>
         </section>
 
@@ -107,14 +100,12 @@ p.Turno}</p>
           <div class="access-icon" data-icon="shield"></div>
           <div>
             <h2 class="access-title">Acceso: ${currentModule}</h2>
-            <p class="access-text">${profileMode ?
-"Consulta personal sin edición." : "Consulta de historial e incidencias del docente."}</p>
+            <p class="access-text">${profileMode ? "Consulta personal sin edición." : "Consulta de historial e incidencias del docente."}</p>
           </div>
           <button class="logout-fake" onclick="goMain()">Cerrar<br>sesión</button>
         </section>
       `;
   document.getElementById("personSummaryContent").innerHTML = html;
-  // Dependencia de interfaz: inicializarIconos
   inicializarIconos();
 }
 
@@ -142,32 +133,30 @@ function optionCard(title, desc, color, icon, action) {
 }
 
 function cargarHistorialPersona(filtro) {
-  document.getElementById("dataTitle").textContent = filtro === "proximas" ?
-"Próximas incidencias" : "Historial completo";
+  document.getElementById("dataTitle").textContent = filtro === "proximas" ? "Próximas incidencias" : "Historial completo";
   document.getElementById("dataSubtitle").textContent = "Consulta de incidencias registradas.";
   document.getElementById("dataStats").innerHTML = "";
-  // Dependencia de interfaz: crearTarjetaSimple
   document.getElementById("dataList").innerHTML = crearTarjetaSimple("Cargando historial...", "Consultando Google Sheets.");
   document.getElementById("dataAccessName").textContent = currentModule;
   document.getElementById("dataBrandIcon").className = "brand-icon solid-green";
   document.getElementById("dataBrandIcon").setAttribute("data-icon", "history");
-  // Dependencia de interfaz: showScreen
   showScreen("dataScreen");
 
-  google.script.run
-    .withSuccessHandler(respuesta => {
+  API.obtenerHistorialPersona(
+    selectedPersonID,
+    filtro,
+    respuesta => {
       document.getElementById("dataSubtitle").textContent = `${respuesta.persona.Nombre} ${respuesta.persona.Apellidos}`;
       renderHistorialConDetalles(respuesta.incidencias);
-    })
-    .withFailureHandler(renderError) // Dependencia de interfaz: renderError
-    .obtenerHistorialPersona(selectedPersonID, currentModule, TEST_USERS[currentModule], filtro);
+    },
+    renderError
+  );
 }
 
 function renderHistorialConDetalles(incidencias) {
   const container = document.getElementById("dataList");
   container.innerHTML = "";
   if (!incidencias || incidencias.length === 0) {
-    // Dependencia de interfaz: crearTarjetaSimple
     container.innerHTML = crearTarjetaSimple("Sin registros", "No hay incidencias para mostrar.");
     return;
   }
@@ -180,36 +169,31 @@ function renderHistorialConDetalles(incidencias) {
     container.appendChild(crearCardIncidencia(incidencia, true));
   });
 
-  // Dependencia de interfaz: inicializarIconos
   inicializarIconos();
 }
 
 function abrirDetalleIncidencia(idIncidencia) {
   selectedIncidentID = idIncidencia;
-  // Dependencia de interfaz: crearTarjetaSimple
   document.getElementById("detailContent").innerHTML = crearTarjetaSimple("Cargando detalle...", "Consultando Google Sheets.");
-  // Dependencia de interfaz: showScreen
   showScreen("detailScreen");
 
-  google.script.run
-    .withSuccessHandler(renderDetalleIncidencia)
-    .withFailureHandler(error => {
-      // Dependencia de interfaz: crearTarjetaSimple, obtenerMensajeError
+  API.obtenerDetalleIncidencia(
+    idIncidencia,
+    renderDetalleIncidencia,
+    error => {
       document.getElementById("detailContent").innerHTML = crearTarjetaSimple("Error", obtenerMensajeError(error));
-    })
-    .obtenerDetalleIncidencia(idIncidencia, currentModule, TEST_USERS[currentModule]);
+    }
+  );
 }
 
 function renderDetalleIncidencia(respuesta) {
   const i = respuesta.incidencia;
-  // Dependencia de interfaz: iconMeta
   const meta = iconMeta(i.TipoIncidencia);
   const puedeEditarEnEstaVista = respuesta.puedeEditar && !profileMode;
   const puedeEliminarEnEstaVista = respuesta.puedeEliminar && !profileMode;
 
   document.getElementById("detailBrandIcon").className = `brand-icon solid-${meta.color}`;
   document.getElementById("detailBrandIcon").setAttribute("data-icon", meta.icono);
-  // Dependencia de interfaz: escapeHTML, cssVar
   let html = `
         <article class="data-card">
           <div style="display:grid;grid-template-columns:60px 1fr;gap:12px;align-items:center;">
@@ -226,19 +210,16 @@ function renderDetalleIncidencia(respuesta) {
           <h2 class="section-title">Docente</h2>
           <p class="data-card-text"><strong>${escapeHTML(i.Nombre)} ${escapeHTML(i.Apellidos)}</strong></p>
           <p class="data-card-text"><strong>ID:</strong> ${escapeHTML(i.IDUsuario)}</p>
-          <p class="data-card-text"><strong>Turno:</strong> ${TURNOS_TEXTO[i.Turno] ||
-i.Turno}</p>
+          <p class="data-card-text"><strong>Turno:</strong> ${TURNOS_TEXTO[i.Turno] || i.Turno}</p>
         </article>
       `;
 
-  // Dependencia de interfaz: esPermisoOficialTexto
   if (esPermisoOficialTexto(i.TipoIncidencia)) {
     html += renderDetallePermisoOficial(i);
   } else {
-    // Dependencia de interfaz: formatearFecha
     html += `
           <article class="data-card">
-            <h2 class="section-title">Periodo authorized</h2>
+            <h2 class="section-title">Periodo autorizado</h2>
             <p class="data-card-text"><strong>Fecha inicio:</strong> ${formatearFecha(i.FechaInicio)}</p>
             <p class="data-card-text"><strong>Fecha fin:</strong> ${formatearFecha(i.FechaFin)}</p>
           </article>
@@ -254,7 +235,6 @@ i.Turno}</p>
         `;
   }
 
-  // Dependencia de interfaz: formatearFecha
   html += `
         <article class="data-card">
           <h2 class="section-title">Observaciones</h2>
@@ -268,7 +248,6 @@ i.Turno}</p>
         </article>
       `;
 
-  // Dependencia de interfaz: esPermisoOficialTexto
   if (puedeEditarEnEstaVista && i.TipoIncidencia && esPermisoOficialTexto(i.TipoIncidencia)) {
     html += `<button class="primary-button" onclick="abrirEdicionUsoPermiso()">Editar incidencia</button>`;
   }
@@ -282,14 +261,12 @@ i.Turno}</p>
           <div class="access-icon" data-icon="shield"></div>
           <div>
             <h2 class="access-title">Acceso: ${currentModule}</h2>
-            <p class="access-text">${profileMode ?
-"Consulta personal sin edición." : "Consulta y monitoreo de incidencias."}</p>
+            <p class="access-text">${profileMode ? "Consulta personal sin edición." : "Consulta y monitoreo de incidencias."}</p>
           </div>
           <button class="logout-fake" onclick="goMain()">Cerrar<br>sesión</button>
         </section>
       `;
   document.getElementById("detailContent").innerHTML = html;
-  // Dependencia de interfaz: inicializarIconos
   inicializarIconos();
 }
 
@@ -312,13 +289,11 @@ function renderDetallePermisoOficial(i) {
 }
 
 function detalleFecha(label, fecha, estado) {
-  // Dependencia de interfaz: escapeHTML, formatearFecha, cssVar
   return `
         <div class="official-row" style="border:1px solid var(--border);border-radius:12px;padding:9px;margin-bottom:7px;">
           <div class="official-label">${escapeHTML(label)}</div>
           <div>
-            <strong>${fecha === "Pendiente" ?
-"Pendiente" : formatearFecha(fecha)}</strong>
+            <strong>${fecha === "Pendiente" ? "Pendiente" : formatearFecha(fecha)}</strong>
             <span class="tag" style="background:${estado === "Utilizada" ? cssVar("green") : cssVar("orange")};margin-left:6px;">${escapeHTML(estado)}</span>
           </div>
         </div>
@@ -326,18 +301,16 @@ function detalleFecha(label, fecha, estado) {
 }
 
 function abrirEdicionUsoPermiso() {
-  // Dependencia de interfaz: crearTarjetaSimple
   document.getElementById("editUseContent").innerHTML = crearTarjetaSimple("Cargando edición...", "Consultando permiso oficial.");
-  // Dependencia de interfaz: showScreen
   showScreen("editUseScreen");
 
-  google.script.run
-    .withSuccessHandler(respuesta => renderEditarUso(respuesta.incidencia))
-    .withFailureHandler(error => {
-      // Dependencia de interfaz: crearTarjetaSimple, obtenerMensajeError
+  API.obtenerDetalleIncidencia(
+    selectedIncidentID,
+    respuesta => renderEditarUso(respuesta.incidencia),
+    error => {
       document.getElementById("editUseContent").innerHTML = crearTarjetaSimple("Error", obtenerMensajeError(error));
-    })
-    .obtenerDetalleIncidencia(selectedIncidentID, currentModule, TEST_USERS[currentModule]);
+    }
+  );
 }
 
 function renderEditarUso(i) {
@@ -379,12 +352,10 @@ function renderEditarUso(i) {
         </section>
       `;
   document.getElementById("editUseContent").innerHTML = html;
-  // Dependencia de interfaz: inicializarIconos
   inicializarIconos();
 }
 
 function readonlyFecha(label, fecha) {
-  // Dependencia de interfaz: formatearFecha
   return `
         <div class="official-row">
           <div class="official-label">${label}</div>
@@ -395,12 +366,10 @@ function readonlyFecha(label, fecha) {
 
 function editUsoRow(num, fecha, estado) {
   const utilizada = String(estado || "").toLowerCase() === "utilizada" && fecha;
-  // Dependencia de interfaz: formatearFecha
   return `
         <div class="official-row">
           <div class="official-label color-purple">Uso ${num}</div>
-          <input id="editUso${num}" type="${utilizada ? "text" : "date"}" value="${utilizada ? formatearFecha(fecha) : ""}" ${utilizada ?
-"disabled" : ""}>
+          <input id="editUso${num}" type="${utilizada ? "text" : "date"}" value="${utilizada ? formatearFecha(fecha) : ""}" ${utilizada ? "disabled" : ""}>
         </div>
       `;
 }
@@ -420,18 +389,19 @@ function guardarEdicionUso() {
     Uso3Fecha: valorInput("editUso3")
   };
 
-  google.script.run
-    .withSuccessHandler(() => {
+  API.guardarUsosPermisoOficial(
+    selectedIncidentID,
+    datos,
+    () => {
       status.className = "status-box show ok";
       status.textContent = "Cambios guardados correctamente.";
       setTimeout(() => abrirDetalleIncidencia(selectedIncidentID), 800);
-    })
-    .withFailureHandler(error => {
+    },
+    error => {
       status.className = "status-box show error";
-      // Dependencia de interfaz: obtenerMensajeError
       status.textContent = obtenerMensajeError(error);
-    })
-    .guardarUsosPermisoOficial(selectedIncidentID, datos, currentModule, TEST_USERS[currentModule]);
+    }
+  );
 }
 
 function valorInput(id) {
@@ -444,13 +414,14 @@ function eliminarIncidenciaActual() {
     return;
   }
 
-  google.script.run
-    .withSuccessHandler(() => {
+  API.eliminarIncidencia(
+    selectedIncidentID,
+    () => {
       alert("Incidencia eliminada correctamente.");
       cargarResumenPersona(selectedPersonID || TEST_USERS[currentModule]);
-    })
-    .withFailureHandler(error => alert(obtenerMensajeError(error))) // Dependencia de interfaz: obtenerMensajeError
-    .eliminarIncidencia(selectedIncidentID, currentModule, TEST_USERS[currentModule]);
+    },
+    error => alert(obtenerMensajeError(error))
+  );
 }
 
 function openTipoIncidencia() {
@@ -473,13 +444,11 @@ function openTipoIncidencia() {
         `;
     list.appendChild(card);
   });
-  // Dependencia de interfaz: showScreen
   showScreen("typeScreen");
 }
 
 function buscarTipo(nombre) {
-  return PERMISSION_TYPES.find(tipo => tipo.nombre === nombre) ||
-PERMISSION_TYPES[0];
+  return PERMISSION_TYPES.find(tipo => tipo.nombre === nombre) || PERMISSION_TYPES[0];
 }
 
 function abrirFormularioTipo(nombreTipo) {
@@ -497,7 +466,6 @@ function abrirFormularioTipo(nombreTipo) {
   cargarUsuariosFormulario();
   actualizarFormularioPorTipo();
 
-  // Dependencia de interfaz: showScreen
   showScreen("formScreen");
 }
 
@@ -520,8 +488,8 @@ function limpiarFormulario() {
 }
 
 function cargarUsuariosFormulario() {
-  google.script.run
-    .withSuccessHandler(usuarios => {
+  API.obtenerUsuariosParaFormulario(
+    usuarios => {
       const select = document.getElementById("formUsuario");
       select.innerHTML = `<option value="">Seleccionar docente</option>`;
 
@@ -531,30 +499,25 @@ function cargarUsuariosFormulario() {
         option.textContent = `${usuario.Apellidos} ${usuario.Nombre}`;
         select.appendChild(option);
       });
-    })
-    .withFailureHandler(error => {
+    },
+    error => {
       document.getElementById("formUsuario").innerHTML = `<option value="">Error al cargar docentes</option>`;
-      // Dependencia de interfaz: mostrarEstadoFormulario, obtenerMensajeError
       mostrarEstadoFormulario(obtenerMensajeError(error), true);
-    })
-    .obtenerUsuariosParaFormulario();
+    }
+  );
 }
 
 function actualizarFormularioPorTipo() {
-  document.getElementById("formNormalDates").style.display = selectedType && selectedType.oficial ?
-"none" : "block";
+  document.getElementById("formNormalDates").style.display = selectedType && selectedType.oficial ? "none" : "block";
   document.getElementById("formPermisoOficial").style.display = selectedType && selectedType.oficial ? "block" : "none";
-  document.getElementById("grupoLicenciaMedica").style.display = selectedType && selectedType.medico ?
-"grid" : "none";
-  document.getElementById("formInfoText").textContent = selectedType && selectedType.oficial ? "Un permiso oficial puede contener hasta tres fechas autorizadas."
-: "La fecha de inicio y fin pueden ser el mismo día.";
+  document.getElementById("grupoLicenciaMedica").style.display = selectedType && selectedType.medico ? "grid" : "none";
+  document.getElementById("formInfoText").textContent = selectedType && selectedType.oficial ? "Un permiso oficial puede contener hasta tres fechas autorizadas." : "La fecha de inicio y fin pueden ser el mismo día.";
 }
 
 function guardarFormulario() {
   const datos = {
     IDUsuario: document.getElementById("formUsuario").value,
-    TipoIncidencia: selectedType ?
-selectedType.nombre : "",
+    TipoIncidencia: selectedType ? selectedType.nombre : "",
     FechaInicio: document.getElementById("formFechaInicio").value,
     FechaFin: document.getElementById("formFechaFin").value,
     LicenciaMedica: document.getElementById("formLicencia").value,
@@ -567,7 +530,6 @@ selectedType.nombre : "",
     Uso3Fecha: document.getElementById("uso3Fecha").value
   };
 
-  // Dependencia de interfaz: mostrarEstadoFormulario
   if (!datos.IDUsuario) {
     mostrarEstadoFormulario("Selecciona un docente.", true);
     return;
@@ -590,24 +552,22 @@ selectedType.nombre : "",
 
   mostrarEstadoFormulario("Guardando incidencia...", false);
 
-  google.script.run
-    .withSuccessHandler(incidencia => {
+  API.guardarIncidencia(
+    datos,
+    incidencia => {
       mostrarEstadoFormulario(`Incidencia guardada correctamente: ${incidencia.IDIncidencia}`, false, true);
       selectedIncidentID = incidencia.IDIncidencia;
       selectedPersonID = incidencia.IDUsuario;
       setTimeout(() => abrirDetalleIncidencia(incidencia.IDIncidencia), 900);
-    })
-    .withFailureHandler(error => {
-      // Dependencia de interfaz: mostrarEstadoFormulario, obtenerMensajeError
+    },
+    error => {
       mostrarEstadoFormulario(obtenerMensajeError(error), true);
-    })
-    .guardarIncidencia(datos, currentModule, TEST_USERS[currentModule]);
+    }
+  );
 }
 
 function crearCardIncidencia(incidencia, conDetalle) {
-  const nombreCompleto = `${incidencia.Nombre ||
-""} ${incidencia.Apellidos || ""}`.trim();
-  // Dependencia de interfaz: formatearFecha, iconMeta, escapeHTML, cssVar
+  const nombreCompleto = `${incidencia.Nombre || ""} ${incidencia.Apellidos || ""}`.trim();
   const fechaInicio = formatearFecha(incidencia.FechaInicio);
   const fechaFin = formatearFecha(incidencia.FechaFin);
   const meta = iconMeta(incidencia.TipoIncidencia);

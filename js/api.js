@@ -6,13 +6,13 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwDNzq42FPP83uu
  */
 function getRequest(paramsObj, onSuccess, onFailure) {
   const params = new URLSearchParams(paramsObj);
-  // CORREGIDO: Uso estricto de comillas invertidas ` para permitir interpolación de variables
+  
   fetch(`${APPS_SCRIPT_URL}?${params.toString()}`)
     .then(response => {
       if (!response.ok) {
         throw new Error("Error HTTP de red: " + response.status);
       }
-      return response.text(); // Leemos como texto primero para diagnosticar respuestas HTML de Google si las hubiera
+      return response.text();
     })
     .then(text => {
       try {

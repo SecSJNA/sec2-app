@@ -1,31 +1,764 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Prueba Sec 2</title>
+Sec 2
 
-<link rel="icon" type="image/png"
-href="https://raw.githubusercontent.com/SecSJNA/sec2-app/d810700d427ea454662ff6e4836c4d6431cb8115/logoPng.png">
+    <main class="phone-shell">
 
-<link rel="apple-touch-icon"
-href="https://raw.githubusercontent.com/SecSJNA/sec2-app/d810700d427ea454662ff6e4836c4d6431cb8115/logoPng.png">
+      <section id="splash" class="screen screen-fixed active">
+        <div class="splash-center">
+          <h1 class="splash-title">
+            Sistema de<br>
+            permisos e incidencias
+          </h1>
 
-<meta name="theme-color" content="#ffffff">
+          <div class="splash-logo">
+            <img class="logo-real" src="https://raw.githubusercontent.com/SecSJNA/sec2-app/d810700d427ea454662ff6e4836c4d6431cb8115/logoPng.png" alt="Orgullosamente Sec2">
+          </div>
+        </div>
 
-</head>
+        <footer class="splash-footer">
+          © 2026 Sec2.<br>
+          Todos los derechos reservados.<br>
+          Sistema seguro y confidencial.
+        </footer>
+      </section>
 
-<body style="font-family:Arial;text-align:center;padding-top:60px">
+      <section id="main" class="screen screen-scroll">
+        <div class="content main-fixed-layout">
 
-<h1>Prueba del icono Sec 2</h1>
+          <header class="main-header">
+            <div class="main-logo">
+              <img class="logo-real" src="https://raw.githubusercontent.com/SecSJNA/sec2-app/d810700d427ea454662ff6e4836c4d6431cb8115/logoPng.png" alt="Orgullosamente Sec2">
+            </div>
 
-<p>
-Si al agregar esta página al escritorio aparece el logo de la escuela,
-el problema está en Google Apps Script y no en GitHub.
-</p>
+            <h1 class="main-title">
+              Sistema<br>
+              de permisos e incidencias
+            </h1>
 
-<!-- prueba 1 -->
+            <p class="main-subtitle">
+              Selecciona tu módulo para continuar
+            </p>
+          </header>
 
-</body>
-</html>
+          <section class="module-list">
+
+            <button class="module-card" onclick="openModule('Dirección')">
+              <div class="module-icon bg-blue color-blue" data-icon="director"></div>
+              <div>
+                <h2 class="module-title color-blue">Dirección</h2>
+                <p class="module-description">Administración completa<br>del sistema</p>
+              </div>
+              <div class="chevron color-blue">›</div>
+            </button>
+
+            <button class="module-card" onclick="openModule('Correspondencia')">
+              <div class="module-icon bg-green color-green" data-icon="edit"></div>
+              <div>
+                <h2 class="module-title color-green">Correspondencia</h2>
+                <p class="module-description">Captura de información<br>y consultas</p>
+              </div>
+              <div class="chevron color-green">›</div>
+            </button>
+
+            <button class="module-card" onclick="openModule('Prefectura')">
+              <div class="module-icon bg-orange color-orange" data-icon="group"></div>
+              <div>
+                <h2 class="module-title color-orange">Prefectura</h2>
+                <p class="module-description">Consultas operativas<br>por turno</p>
+              </div>
+              <div class="chevron color-orange">›</div>
+            </button>
+
+            <button class="module-card" onclick="openModule('Docente')">
+              <div class="module-icon bg-purple color-purple" data-icon="book"></div>
+              <div>
+                <h2 class="module-title color-purple">Docente</h2>
+                <p class="module-description">Consulta de información<br>personal</p>
+              </div>
+              <div class="chevron color-purple">›</div>
+            </button>
+
+          </section>
+
+          <section class="info-card">
+            <div class="info-icon">i</div>
+            <div>
+              <h3 class="info-title">Importante</h3>
+              <p class="info-text">Accede al módulo correspondiente según tu rol.</p>
+            </div>
+          </section>
+
+          <footer class="secure-footer">
+            <div class="secure-content">
+              <span>▣</span>
+              <span>Sistema seguro y confidencial</span>
+            </div>
+          </footer>
+
+        </div>
+      </section>
+
+      <section id="moduleMenu" class="screen screen-scroll">
+        <div class="module-menu-wrap">
+
+          <button class="top-back" onclick="goBack()">←</button>
+
+          <header class="module-hero">
+            <div id="moduleAvatar" class="module-avatar"></div>
+            <h1 id="moduleTitle" class="module-hero-title">Módulo Dirección</h1>
+            <p id="moduleSubtitle" class="module-hero-subtitle">Administración General</p>
+          </header>
+
+          <section id="moduleButtons" class="professional-list"></section>
+
+          <section class="module-important">
+            <div class="module-important-icon">i</div>
+            <div>
+              <h2 class="module-important-title">Información importante</h2>
+              <p id="moduleImportantText" class="module-important-text">Información del módulo.</p>
+            </div>
+          </section>
+
+          <section class="access-card">
+            <div class="access-icon" data-icon="shield"></div>
+            <div>
+              <h2 id="accessTitle" class="access-title">Acceso</h2>
+              <p id="accessText" class="access-text">Permisos según el rol asignado.</p>
+            </div>
+            <button class="logout-fake" onclick="goMain()">Cerrar<br>sesión</button>
+          </section>
+
+          <footer class="secure-footer">
+            <div class="secure-content">
+              <span>▣</span>
+              <span>Sistema seguro y confidencial</span>
+            </div>
+          </footer>
+
+        </div>
+      </section>
+
+      <section id="dataScreen" class="screen screen-scroll">
+        <div class="page-top">
+          <button class="top-back" onclick="goBack()">←</button>
+
+          <div class="brand-row">
+            <div id="dataBrandIcon" class="brand-icon solid-blue" data-icon="report"></div>
+            <div class="brand-logo">
+              <img class="logo-real" src="https://raw.githubusercontent.com/SecSJNA/sec2-app/d810700d427ea454662ff6e4836c4d6431cb8115/logoPng.png" alt="Sec2">
+            </div>
+          </div>
+
+          <h1 id="dataTitle" class="page-title">Reporte</h1>
+          <p id="dataSubtitle" class="page-subtitle">Consultando información.</p>
+
+          <div id="dataStats"></div>
+          <div id="dataList"></div>
+
+          <section class="access-card">
+            <div class="access-icon" data-icon="shield"></div>
+            <div>
+              <h2 class="access-title">Acceso: <span id="dataAccessName">Dirección</span></h2>
+              <p class="access-text">Consulta y monitoreo de incidencias del personal docente.</p>
+            </div>
+            <button class="logout-fake" onclick="goMain()">Cerrar<br>sesión</button>
+          </section>
+
+          <footer class="secure-footer">
+            <div class="secure-content">
+              <span>▣</span>
+              <span>Sistema seguro y confidencial</span>
+            </div>
+          </footer>
+        </div>
+      </section>
+
+      <section id="historySelectScreen" class="screen screen-scroll">
+        <div class="page-top">
+          <button class="top-back" onclick="goBack()">←</button>
+
+          <div class="brand-row">
+            <div class="brand-icon solid-green" data-icon="history"></div>
+            <div class="brand-logo">
+              <img class="logo-real" src="https://raw.githubusercontent.com/SecSJNA/sec2-app/d810700d427ea454662ff6e4836c4d6431cb8115/logoPng.png" alt="Sec2">
+            </div>
+          </div>
+
+          <h1 class="page-title">Historial de incidencias</h1>
+          <p class="page-subtitle">Consulta histórica por docente</p>
+
+          <section class="data-card">
+            <h2 class="section-title">Docente</h2>
+            <p class="section-subtitle">Seleccione al docente cuyo historial desea consultar.</p>
+
+            <select id="historyPersonSelect">
+              <option value="">Cargando docentes...</option>
+            </select>
+          </section>
+
+          <button class="primary-button" onclick="continuarHistorialPersona()">Continuar</button>
+
+          <section class="info-card">
+            <div class="info-icon">i</div>
+            <div>
+              <h3 class="info-title">Información</h3>
+              <p class="info-text">Seleccione un docente para consultar su resumen e historial.</p>
+            </div>
+          </section>
+
+          <footer class="secure-footer">
+            <div class="secure-content">
+              <span>▣</span>
+              <span>Sistema seguro y confidencial</span>
+            </div>
+          </footer>
+        </div>
+      </section>
+
+      <section id="personSummaryScreen" class="screen screen-scroll">
+        <div class="page-top">
+          <button class="top-back" onclick="goBack()">←</button>
+
+          <div class="brand-row">
+            <div class="brand-icon solid-gold" data-icon="user"></div>
+            <div class="brand-logo">
+              <img class="logo-real" src="https://raw.githubusercontent.com/SecSJNA/sec2-app/d810700d427ea454662ff6e4836c4d6431cb8115/logoPng.png" alt="Sec2">
+            </div>
+          </div>
+
+          <h1 class="page-title color-gold">Mi perfil</h1>
+          <p class="page-subtitle">Información personal e historial propio</p>
+
+          <div id="personSummaryContent"></div>
+
+          <footer class="secure-footer">
+            <div class="secure-content">
+              <span>▣</span>
+              <span>Sistema seguro y confidencial</span>
+            </div>
+          </footer>
+        </div>
+      </section>
+
+      <section id="detailScreen" class="screen screen-scroll">
+        <div class="page-top">
+          <button class="top-back" onclick="goBack()">←</button>
+
+          <div class="brand-row">
+            <div id="detailBrandIcon" class="brand-icon solid-blue" data-icon="report"></div>
+            <div class="brand-logo">
+              <img class="logo-real" src="https://raw.githubusercontent.com/SecSJNA/sec2-app/d810700d427ea454662ff6e4836c4d6431cb8115/logoPng.png" alt="Sec2">
+            </div>
+          </div>
+
+          <h1 class="page-title">Detalle de incidencia</h1>
+          <div id="detailContent"></div>
+
+          <footer class="secure-footer">
+            <div class="secure-content">
+              <span>▣</span>
+              <span>Sistema seguro y confidencial</span>
+            </div>
+          </footer>
+        </div>
+      </section>
+
+      <section id="editUseScreen" class="screen screen-scroll">
+        <div class="page-top">
+          <button class="top-back" onclick="goBack()">←</button>
+
+          <div class="brand-row">
+            <div class="brand-icon solid-purple" data-icon="permiso-oficial"></div>
+            <div class="brand-logo">
+              <img class="logo-real" src="https://raw.githubusercontent.com/SecSJNA/sec2-app/d810700d427ea454662ff6e4836c4d6431cb8115/logoPng.png" alt="Sec2">
+            </div>
+          </div>
+
+          <h1 class="page-title color-purple">Permiso oficial</h1>
+          <p class="page-subtitle">Editar fechas de uso pendientes</p>
+
+          <div id="editUseContent"></div>
+
+          <footer class="secure-footer">
+            <div class="secure-content">
+              <span>▣</span>
+              <span>Sistema seguro y confidencial</span>
+            </div>
+          </footer>
+        </div>
+      </section>
+
+      <section id="rangeScreen" class="screen screen-scroll">
+        <div class="page-top">
+          <button class="top-back" onclick="goBack()">←</button>
+
+          <div class="brand-row">
+            <div class="brand-icon solid-orange" data-icon="calendar"></div>
+            <div class="brand-logo">
+              <img class="logo-real" src="https://raw.githubusercontent.com/SecSJNA/sec2-app/d810700d427ea454662ff6e4836c4d6431cb8115/logoPng.png" alt="Sec2">
+            </div>
+          </div>
+
+          <h1 class="page-title">Consulta de fechas</h1>
+          <p class="page-subtitle">Consulta incidencias en un rango de fechas</p>
+
+          <section class="range-card">
+            <h2 class="section-title">Rango de fecha</h2>
+            <p class="section-subtitle">Selecciona el rango de fechas que deseas consultar.</p>
+
+            <div class="form-row">
+              <div class="form-icon" data-icon="calendar"></div>
+              <div>
+                <label for="rangeFechaInicio">Día inicial</label>
+                <input id="rangeFechaInicio" type="date">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-icon" data-icon="calendar"></div>
+              <div>
+                <label for="rangeFechaFin">Día final</label>
+                <input id="rangeFechaFin" type="date">
+              </div>
+            </div>
+
+            <button class="primary-button" onclick="ejecutarConsultaFechas()">Consultar</button>
+            <div id="rangeStatus" class="status-box"></div>
+          </section>
+
+          <div id="rangeStats"></div>
+          <div id="rangeResults"></div>
+
+          <footer class="secure-footer">
+            <div class="secure-content">
+              <span>▣</span>
+              <span>Sistema seguro y confidencial</span>
+            </div>
+          </footer>
+        </div>
+      </section>
+
+      <section id="typeScreen" class="screen screen-scroll">
+        <div class="page-top">
+          <button class="top-back" onclick="goBack()">←</button>
+
+          <div class="brand-row">
+            <div class="brand-icon solid-purple" data-icon="file-plus"></div>
+            <div class="brand-logo">
+              <img class="logo-real" src="https://raw.githubusercontent.com/SecSJNA/sec2-app/d810700d427ea454662ff6e4836c4d6431cb8115/logoPng.png" alt="Sec2">
+            </div>
+          </div>
+
+          <h1 class="page-title color-purple">Seleccionar tipo de incidencia</h1>
+          <p class="page-subtitle">Seleccione el tipo de incidencia que desea registrar.</p>
+
+          <section id="typeList" class="type-list"></section>
+
+          <section class="info-card">
+            <div class="info-icon">i</div>
+            <div>
+              <h3 class="info-title">Información importante</h3>
+              <p class="info-text">Permiso oficial usa formato especial. Las demás incidencias usan fecha inicial y final.</p>
+            </div>
+          </section>
+
+          <section class="access-card">
+            <div class="access-icon" data-icon="shield"></div>
+            <div>
+              <h2 class="access-title">Acceso: <span id="typeAccessName">Dirección</span></h2>
+              <p class="access-text">Registro de nuevas incidencias para el personal.</p>
+            </div>
+            <button class="logout-fake" onclick="goMain()">Cerrar<br>sesión</button>
+          </section>
+
+          <footer class="secure-footer">
+            <div class="secure-content">
+              <span>▣</span>
+              <span>Sistema seguro y confidencial</span>
+            </div>
+          </footer>
+        </div>
+      </section>
+
+      <section id="formScreen" class="screen screen-scroll">
+        <div class="page-top">
+          <button class="top-back" onclick="goBack()">←</button>
+
+          <div class="brand-row">
+            <div id="formBrandIcon" class="brand-icon"></div>
+            <div class="brand-logo">
+              <img class="logo-real" src="https://raw.githubusercontent.com/SecSJNA/sec2-app/d810700d427ea454662ff6e4836c4d6431cb8115/logoPng.png" alt="Sec2">
+            </div>
+          </div>
+
+          <h1 id="formTitle" class="page-title">Incidencia</h1>
+          <p id="formSubtitle" class="page-subtitle">Captura la información requerida.</p>
+
+          <section class="form-card">
+            <div class="form-row">
+              <div class="form-icon" data-icon="user"></div>
+              <div>
+                <label for="formUsuario">Docente</label>
+                <select id="formUsuario">
+                  <option value="">Cargando docentes...</option>
+                </select>
+              </div>
+            </div>
+
+            <div id="formNormalDates">
+              <div class="form-row">
+                <div class="form-icon" data-icon="calendar"></div>
+                <div>
+                  <label for="formFechaInicio">Fecha inicio</label>
+                  <input id="formFechaInicio" type="date">
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-icon" data-icon="calendar"></div>
+                <div>
+                  <label for="formFechaFin">Fecha fin</label>
+                  <input id="formFechaFin" type="date">
+                </div>
+              </div>
+            </div>
+
+            <div id="formPermisoOficial" style="display:none;">
+              <section class="sub-card">
+                <h2 class="section-title">Fechas oficiales autorizadas</h2>
+                <p class="section-subtitle">Fechas que Dirección autoriza para este permiso.</p>
+
+                <div class="official-row">
+                  <div class="official-label">Fecha oficial 1</div>
+                  <input id="fechaOficial1" type="date">
+                </div>
+
+                <div class="official-row">
+                  <div class="official-label">Fecha oficial 2</div>
+                  <input id="fechaOficial2" type="date">
+                </div>
+
+                <div class="official-row">
+                  <div class="official-label">Fecha oficial 3</div>
+                  <input id="fechaOficial3" type="date">
+                </div>
+              </section>
+
+              <section class="sub-card purple">
+                <h2 class="section-title color-purple">Fechas de uso</h2>
+                <p class="section-subtitle">Puede dejarlas pendientes y asignarlas después.</p>
+
+                <div class="official-row">
+                  <div class="official-label color-purple">Uso 1</div>
+                  <input id="uso1Fecha" type="date">
+                </div>
+
+                <div class="official-row">
+                  <div class="official-label color-purple">Uso 2</div>
+                  <input id="uso2Fecha" type="date">
+                </div>
+
+                <div class="official-row">
+                  <div class="official-label color-purple">Uso 3</div>
+                  <input id="uso3Fecha" type="date">
+                </div>
+              </section>
+            </div>
+
+            <div id="grupoLicenciaMedica" class="form-row" style="display:none;">
+              <div class="form-icon" data-icon="incapacidad"></div>
+              <div>
+                <label for="formLicencia">Licencia médica</label>
+                <input id="formLicencia" type="text" placeholder="Número o clave de licencia médica">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-icon" data-icon="message"></div>
+              <div>
+                <label for="formObservaciones">Observaciones</label>
+                <textarea id="formObservaciones" placeholder="Escriba observaciones de la incidencia (opcional)"></textarea>
+              </div>
+            </div>
+
+            <section class="info-card">
+              <div class="info-icon">i</div>
+              <div>
+                <h3 class="info-title">Información importante</h3>
+                <p class="info-text" id="formInfoText">La fecha de inicio y fin pueden ser el mismo día.</p>
+              </div>
+            </section>
+
+            <button class="primary-button" onclick="guardarFormulario()">Guardar incidencia</button>
+            <div id="formStatus" class="status-box"></div>
+          </section>
+
+          <section class="access-card">
+            <div class="access-icon" data-icon="shield"></div>
+            <div>
+              <h2 class="access-title">Acceso: <span id="formAccessName">Dirección</span></h2>
+              <p class="access-text">Registro de incidencias exclusivo de Dirección.</p>
+            </div>
+            <button class="logout-fake" onclick="goMain()">Cerrar<br>sesión</button>
+          </section>
+
+          <footer class="secure-footer">
+            <div class="secure-content">
+              <span>▣</span>
+              <span>Sistema seguro y confidencial</span>
+            </div>
+          </footer>
+        </div>
+      </section>
+
+      <section id="notifyMenuScreen" class="screen screen-scroll">
+        <div class="page-top">
+          <button class="top-back" onclick="goBack()">←</button>
+
+          <div class="brand-row">
+            <div class="brand-icon solid-cyan" data-icon="bell"></div>
+            <div class="brand-logo">
+              <img class="logo-real" src="https://raw.githubusercontent.com/SecSJNA/sec2-app/d810700d427ea454662ff6e4836c4d6431cb8115/logoPng.png" alt="Sec2">
+            </div>
+          </div>
+
+          <h1 class="page-title color-cyan">Notificaciones</h1>
+          <p class="page-subtitle">Centro de mensajes de Dirección</p>
+
+          <section class="professional-list">
+            <button class="professional-card" onclick="abrirLeerNotificaciones()">
+              <div class="professional-icon solid-cyan" data-icon="bell"></div>
+              <div>
+                <h2 class="professional-title color-cyan">Mis notificaciones</h2>
+                <p class="professional-desc">Ver mensajes recibidos.</p>
+              </div>
+              <div class="professional-arrow color-cyan">›</div>
+            </button>
+
+            <button class="professional-card" onclick="abrirEnviarNotificacion()">
+              <div class="professional-icon solid-blue" data-icon="message"></div>
+              <div>
+                <h2 class="professional-title color-blue">Enviar notificación</h2>
+                <p class="professional-desc">Seleccionar persona y escribir mensaje.</p>
+              </div>
+              <div class="professional-arrow color-blue">›</div>
+            </button>
+
+            <button class="professional-card" onclick="abrirNotificacionesEnviadas()">
+              <div class="professional-icon solid-green" data-icon="report"></div>
+              <div>
+                <h2 class="professional-title color-green">Notificaciones enviadas</h2>
+                <p class="professional-desc">Ver lectura de mensajes enviados.</p>
+              </div>
+              <div class="professional-arrow color-green">›</div>
+            </button>
+          </section>
+
+          <section class="info-card">
+            <div class="info-icon">i</div>
+            <div>
+              <h3 class="info-title">Información</h3>
+              <p class="info-text">Solo se muestran los mensajes enviados por el directivo actual.</p>
+            </div>
+          </section>
+
+          <footer class="secure-footer">
+            <div class="secure-content">
+              <span>▣</span>
+              <span>Sistema seguro y confidencial</span>
+            </div>
+          </footer>
+        </div>
+      </section>
+
+      <section id="notifySendScreen" class="screen screen-scroll">
+        <div class="page-top">
+          <button class="top-back" onclick="goBack()">←</button>
+
+          <div class="brand-row">
+            <div class="brand-icon solid-cyan" data-icon="bell"></div>
+            <div class="brand-logo">
+              <img class="logo-real" src="https://raw.githubusercontent.com/SecSJNA/sec2-app/d810700d427ea454662ff6e4836c4d6431cb8115/logoPng.png" alt="Sec2">
+            </div>
+          </div>
+
+          <h1 class="page-title color-cyan">Enviar notificación</h1>
+          <p class="page-subtitle">Enviar mensaje a una persona</p>
+
+          <section class="form-card">
+            <div class="form-row">
+              <div class="form-icon" data-icon="user"></div>
+              <div>
+                <label for="notifyUserSelect">Persona</label>
+                <select id="notifyUserSelect">
+                  <option value="">Cargando personas...</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-icon" data-icon="message"></div>
+              <div>
+                <label for="notifyMessage">Mensaje</label>
+                <textarea id="notifyMessage" placeholder="Escriba la notificación que recibirá la persona seleccionada."></textarea>
+              </div>
+            </div>
+
+            <button class="primary-button" onclick="ejecutarEnvioNotificacion()">Enviar notificación</button>
+            <div id="notifySendStatus" class="status-box"></div>
+          </section>
+
+          <section class="info-card">
+            <div class="info-icon">i</div>
+            <div>
+              <h3 class="info-title">Información importante</h3>
+              <p class="info-text">La notificación quedará registrada con fecha y usuario que la envió.</p>
+            </div>
+          </section>
+
+          <footer class="secure-footer">
+            <div class="secure-content">
+              <span>▣</span>
+              <span>Sistema seguro y confidencial</span>
+            </div>
+          </footer>
+        </div>
+      </section>
+
+      <section id="notifyReadScreen" class="screen screen-scroll">
+        <div class="page-top">
+          <button class="top-back" onclick="goBack()">←</button>
+
+          <div class="brand-row">
+            <div class="brand-icon solid-cyan" data-icon="bell"></div>
+            <div class="brand-logo">
+              <img class="logo-real" src="https://raw.githubusercontent.com/SecSJNA/sec2-app/d810700d427ea454662ff6e4836c4d6431cb8115/logoPng.png" alt="Sec2">
+            </div>
+          </div>
+
+          <h1 class="page-title color-cyan">Mis notificaciones</h1>
+          <p id="notifyReadSubtitle" class="page-subtitle">Mensajes recibidos</p>
+
+          <div id="notifyReadList"></div>
+
+          <footer class="secure-footer">
+            <div class="secure-content">
+              <span>▣</span>
+              <span>Sistema seguro y confidencial</span>
+            </div>
+          </footer>
+        </div>
+      </section>
+
+      <section id="notifySentScreen" class="screen screen-scroll">
+        <div class="page-top">
+          <button class="top-back" onclick="goBack()">←</button>
+
+          <div class="brand-row">
+            <div class="brand-icon solid-green" data-icon="report"></div>
+            <div class="brand-logo">
+              <img class="logo-real" src="https://raw.githubusercontent.com/SecSJNA/sec2-app/d810700d427ea454662ff6e4836c4d6431cb8115/logoPng.png" alt="Sec2">
+            </div>
+          </div>
+
+          <h1 class="page-title color-green">Estado de notificaciones</h1>
+          <p id="notifySentSubtitle" class="page-subtitle">Mensajes enviados por Dirección</p>
+
+          <div id="notifySentList"></div>
+
+          <footer class="secure-footer">
+            <div class="secure-content">
+              <span>▣</span>
+              <span>Sistema seguro y confidencial</span>
+            </div>
+          </footer>
+        </div>
+      </section>
+
+      <section id="notifyDetailScreen" class="screen screen-scroll">
+        <div class="page-top">
+          <button class="top-back" onclick="goBack()">←</button>
+
+          <div class="brand-row">
+            <div id="notifyDetailIcon" class="brand-icon solid-cyan" data-icon="bell"></div>
+            <div class="brand-logo">
+              <img class="logo-real" src="https://raw.githubusercontent.com/SecSJNA/sec2-app/d810700d427ea454662ff6e4836c4d6431cb8115/logoPng.png" alt="Sec2">
+            </div>
+          </div>
+
+          <h1 id="notifyDetailTitle" class="page-title color-cyan">Detalle de notificación</h1>
+          <p id="notifyDetailSubtitle" class="page-subtitle">Información del mensaje</p>
+
+          <div id="notifyDetailContent"></div>
+
+          <footer class="secure-footer">
+            <div class="secure-content">
+              <span>▣</span>
+              <span>Sistema seguro y confidencial</span>
+            </div>
+          </footer>
+        </div>
+      </section>
+
+      <section id="statMonthScreen" class="screen screen-scroll">
+        <div class="page-top">
+          <button class="top-back" onclick="goBack()">←</button>
+
+          <div class="brand-row">
+            <div class="brand-icon solid-orange" data-icon="report"></div>
+            <div class="brand-logo">
+              <img class="logo-real" src="https://raw.githubusercontent.com/SecSJNA/sec2-app/d810700d427ea454662ff6e4836c4d6431cb8115/logoPng.png" alt="Sec2">
+            </div>
+          </div>
+
+          <h1 class="page-title color-orange">Estadística mensual</h1>
+          <p class="page-subtitle">Selecciona mes y año para consultar</p>
+
+          <section class="form-card">
+            <div class="form-row">
+              <div class="form-icon" data-icon="calendar"></div>
+              <div>
+                <label for="statMes">Mes</label>
+                <select id="statMes">
+                  <option value="">Seleccionar mes</option>
+                  <option value="1">01 - Enero</option>
+                  <option value="2">02 - Febrero</option>
+                  <option value="3">03 - Marzo</option>
+                  <option value="4">04 - Abril</option>
+                  <option value="5">05 - Mayo</option>
+                  <option value="6">06 - Junio</option>
+                  <option value="7">07 - Julio</option>
+                  <option value="8">08 - Agosto</option>
+                  <option value="9">09 - Septiembre</option>
+                  <option value="10">10 - Octubre</option>
+                  <option value="11">11 - Noviembre</option>
+                  <option value="12">12 - Diciembre</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-icon" data-icon="calendar"></div>
+              <div>
+                <label for="statAnio">Año</label>
+                <input id="statAnio" type="number" placeholder="Ejemplo: 2026">
+              </div>
+            </div>
+
+            <button class="primary-button" onclick="consultarEstadisticaMensual()">Continuar</button>
+            <div id="statMonthStatus" class="status-box"></div>
+          </section>
+
+          <div id="statMonthResults"></div>
+
+          <footer class="secure-footer">
+            <div class="secure-content">
+              <span>▣</span>
+              <span>Sistema seguro y confidencial</span>
+            </div>
+          </footer>
+        </div>
+      </section>
+
+    </main>

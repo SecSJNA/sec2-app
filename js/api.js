@@ -1,9 +1,5 @@
-// URL de producción oficial de tu Web App de Google Apps Script
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwDNzq42FPP83uuNxNGCCCqzT9iLp199zvBoH9N5FKpCeYJ1-66A6LAFagXd_Eibk6P/exec";
 
-/**
- * Realiza peticiones de consulta (GET) compatibles con Google Apps Script.
- */
 function getRequest(paramsObj, onSuccess, onFailure) {
   const params = new URLSearchParams(paramsObj);
   
@@ -42,10 +38,6 @@ function getRequest(paramsObj, onSuccess, onFailure) {
     });
 }
 
-/**
- * Realiza peticiones de escritura (POST) enviando los datos como texto plano.
- * Esto evita el pre-flight OPTIONS de CORS, el cual no está soportado por Apps Script.
- */
 function postRequest(payload, onSuccess, onFailure) {
   fetch(APPS_SCRIPT_URL, {
     method: "POST",

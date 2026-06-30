@@ -176,6 +176,26 @@ function ejecutarLogin() {
   );
 }
 
+function, esRolDireccion(rolStr) {
+  const r = (rolStr || "").toLowerCase();
+  return r.includes("dirección") || r.includes("dir");
+}
+
+function, esRolCorrespondencia(rolStr) {
+  const r = (rolStr || "").toLowerCase();
+  return r.includes("corresponde") || r.includes("cor");
+}
+
+function, esRolPrefectura(rolStr) {
+  const r = (rolStr || "").toLowerCase();
+  return r.includes("prefectura") || r.includes("pre");
+}
+
+function, esRolDocente(rolStr) {
+  const r = (rolStr || "").toLowerCase();
+  return r.includes("doc");
+}
+
 function cerrarSesion() {
   sessionStorage.clear();
   document.getElementById("loginIDAcceso").value = "";
@@ -212,7 +232,9 @@ function goBack() {
 }
 
 function goMain() {
-  profileMode = false; navigationStack = []; showScreen("main", false);
+  profileMode = false;
+  navigationStack = [];
+  showScreen("main", false);
 }
 
 function inicializarIconos() {
@@ -272,14 +294,28 @@ function estadoNotificacionMeta(estado) {
 function esNotificacionLeida(est) { return estadoNotificacionMeta(est); }
 
 function openModule(moduleName) {
-  currentModule = moduleName; profileMode = false;
-  sessionStorage.setItem("currentActiveModule", moduleName);
-
   const rol = (sessionStorage.getItem("userRol") || "").toLowerCase();
-  if (moduleName === "Dirección" && !rol.includes("dirección")) { alert("Módulo no autorizado para su cuenta."); return; }
-  if (moduleName === "Correspondencia" && !rol.includes("corresponde") && !rol.includes("dirección")) { alert("Módulo no autorizado para su cuenta."); return; }
-  if (moduleName === "Prefectura" && !rol.includes("prefectura") && !rol.includes("dirección")) { alert("Módulo no autorizado para su cuenta."); return; }
-  if (moduleName === "Docente" && !rol.includes("doc") && !rol.includes("dirección")) { alert("Módulo no autorizado para su cuenta."); return; }
+
+  if (moduleName === "Dirección" && !esRolDireccion(rol)) {
+    alert("Su rol es " + rol + ". No tiene acceso a este módulo.");
+    return;
+  }
+  if (moduleName === "Correspondencia" && !esRolCorrespondencia(rol) && !esRolDireccion(rol)) {
+    alert("Su rol es " + rol + ". No tiene acceso a este módulo.");
+    return;
+  }
+  if (moduleName === "Prefectura" && !esRolPrefectura(rol) && !esRolDireccion(rol)) {
+    alert("Su rol es " + rol + ". No tiene acceso a este módulo.");
+    return;
+  }
+  if (moduleName === "Docente" && !esRolDocente(rol) && !esRolDireccion(rol)) {
+    alert("Su rol es " + rol + ". No tiene acceso a este módulo.");
+    return;
+  }
+
+  currentModule = moduleName;
+  profileMode = false;
+  sessionStorage.setItem("currentActiveModule", moduleName);
 
   const config = MODULES[moduleName];
   const avatar = document.getElementById("moduleAvatar");
@@ -323,31 +359,38 @@ function openOption(optionName) {
 }
 
 function abrirMiPerfil() {
-  profileMode = true; selectedPersonID = obtenerIdSesionSegura();
+  profileMode = true;
+  selectedPersonID = sessionStorage.getItem("userIDAcceso") || obtenerIdSesionSegura();
   cargarResumenPersona(selectedPersonID);
 }
 
 function abrirSelectorHistorial() {
-  profileMode = false; const select = document.getElementById("historyPersonSelect");
+  profileMode = false;
+  const select = document.getElementById("historyPersonSelect");
   select.innerHTML = `<option value="">Cargando docentes...</option>`;
-  API.obtenerUsuariosParaFormulario(usuarios => {
-    select.innerHTML = `<option value="">Seleccionar docente</option>`;
-    usuarios.forEach(usuario => {
-      const option = document.createElement("option");
-      option.value = usuario.ID;
-      option.textContent = `${usuario.Apellidos} ${usuario.Nombre}`;
-      select.appendChild(option);
-    });
-  }, error => {
-    select.innerHTML = `<option value="">Error al cargar docentes</option>`; alert(obtenerMensajeError(error));
-  });
+  API.obtenerUsuariosParaFormulario(
+    usuarios => {
+      select.innerHTML = `<option value="">Seleccionar docente</option>`;
+      usuarios.forEach(usuario => {
+        const option = document.createElement("option");
+        option.value = usuario.IDAcceso; // Se usa el IDAcceso (Col H) como llave principal
+        option.textContent = `${usuario.Apellidos} ${usuario.Nombre}`;
+        select.appendChild(option);
+      });
+    },
+    error => {
+      select.innerHTML = `<option value="">Error al cargar docentes</option>`;
+      alert(obtenerMensajeError(error));
+    }
+  );
   showScreen("historySelectScreen");
 }
 
 function continuarHistorialPersona() {
   const id = document.getElementById("historyPersonSelect").value;
   if (!id) { alert("Selecciona un docente."); return; }
-  profileMode = false; cargarResumenPersona(id);
+  profileMode = false;
+  cargarResumenPersona(id);
 }
 
 function cargarResumenPersona(idPersona) {
@@ -361,7 +404,8 @@ function cargarResumenPersona(idPersona) {
 }
 
 function renderResumenPersona(respuesta) {
-  const p = respuesta.persona; const e = respuesta.estadisticas;
+  const p = respuesta.persona;
+  const e = respuesta.estadisticas;
   const ultima = respuesta.ultimaIncidencia ? formatearFecha(respuesta.ultimaIncidencia.FechaInicio) : "Sin registros";
   const tituloOpciones = profileMode ? "Mi historial" : "Opciones de consulta";
   const descripcionHistorial = profileMode ? "Ver mi historial personal completo." : "Ver todas las incidencias registradas.";
@@ -374,7 +418,7 @@ function renderResumenPersona(respuesta) {
         <div>
           <h2 class="data-card-title">${escapeHTML(p.Nombre)} ${escapeHTML(p.Apellidos)}</h2>
           <p class="data-card-text"><strong>Turno:</strong> ${TURNOS_TEXTO[p.Turno] || p.Turno}</p>
-          <p class="data-card-text"><strong>ID:</strong> ${escapeHTML(p.ID)}</p>
+          <p class="data-card-text"><strong>ID Acceso:</strong> ${escapeHTML(p.IDAcceso)}</p>
           <p class="data-card-text"><strong>Última incidencia:</strong> ${ultima}</p>
         </div>
       </div>
@@ -482,7 +526,7 @@ function renderDetalleIncidencia(respuesta) {
         <div class="mini-icon solid-${meta.color}" data-icon="${meta.icono}"></div>
         <div>
           <h2 class="data-card-title color-${meta.color}">${escapeHTML(i.TipoIncidencia || meta.name)}</h2>
-          <p class="data-card-text"><strong>ID:</strong> ${escapeHTML(i.IDIncidencia)}</p>
+          <p class="data-card-text"><strong>ID Incidencia:</strong> ${escapeHTML(i.IDIncidencia)}</p>
           <span class="tag" style="background:${cssVar('green')};">Activo</span>
         </div>
       </div>
@@ -490,7 +534,7 @@ function renderDetalleIncidencia(respuesta) {
     <article class="data-card">
       <h2 class="section-title">Docente</h2>
       <p class="data-card-text"><strong>${escapeHTML(i.Nombre)} ${escapeHTML(i.Apellidos)}</strong></p>
-      <p class="data-card-text"><strong>ID:</strong> ${escapeHTML(i.IDUsuario)}</p>
+      <p class="data-card-text"><strong>ID de Acceso:</strong> ${escapeHTML(i.IDUsuario)}</p>
       <p class="data-card-text"><strong>Turno:</strong> ${TURNOS_TEXTO[i.Turno] || i.Turno}</p>
     </article>
   `;
@@ -522,8 +566,8 @@ function renderDetalleIncidencia(respuesta) {
       <p class="data-card-text">${escapeHTML(i.Observaciones || "Sin observaciones.")}</p>
     </article>
     <article class="data-card">
-      <h2 class="section-title">Capturó</h2>
-      <p class="data-card-text"><strong>${escapeHTML(i.RegistradoPor || "Sin dato")}</strong></p>
+      <h2 class="section-title">Registrado por (Sello de Auditoría ID)</h2>
+      <p class="data-card-text"><strong>Sello:</strong> ${escapeHTML(i.RegistradoPor || "Sin dato")}</p>
       <p class="data-card-text"><strong>Fecha de captura:</strong> ${formatearFecha(i.FechaRegistro)}</p>
     </article>
   `;
@@ -532,7 +576,7 @@ function renderDetalleIncidencia(respuesta) {
     html += `<button class="primary-button" onclick="abrirEdicionUsoPermiso()">Editar incidencia</button>`;
   }
 
-  if (andPuedeEliminar) {
+  if (andEliminar) {
     html += `<button class="danger-button" onclick="eliminarIncidenciaActual()">Eliminar incidencia</button>`;
   }
 
@@ -656,7 +700,7 @@ function guardarEdicionUso() {
     status.className = "status-box show ok"; status.textContent = "Cambios guardados correctamente.";
     setTimeout(function() { abrirDetalleIncidencia(selectedIncidentID); }, 800);
   }, function(error) {
-    status.className = "status-box show error"; status.textContent = obtenerMensajeError(error);
+    status.className = "status-box show error"; status.textContent = obtenerMensError(error);
   });
 }
 
@@ -723,7 +767,7 @@ function abrirLeerNotificaciones() {
   API.obtenerNotificacionesUsuario(respuesta => {
     renderNotificacionesLeidas(respuesta.notificaciones);
   }, error => {
-    document.getElementById("notifyReadList").innerHTML = crearTarjetaSimple("Error", obtenerMensajeError(error));
+    document.getElementById("notifyReadList").innerHTML = crearTarjetaSimple("Error", obtenerMensError(error));
   });
 }
 
@@ -733,7 +777,7 @@ function renderNotificacionesLeidas(notificaciones) {
     container.innerHTML = crearTarjetaSimple("Sin notificaciones", "No se encontraron mensajes en su bandeja."); return;
   }
   notificaciones.forEach(n => {
-    const meta = estadoNotificacionMeta(n.Estado); const card = document.createElement("article");
+    const meta = estadoNotificacionLeida(n.Estado); const card = document.createElement("article");
     card.className = `notification-card-full ${meta.clase}`;
     card.onclick = () => abrirDetalleNotificacionRecibida(n.IDNotificacion);
     card.innerHTML = `
@@ -752,6 +796,8 @@ function renderNotificacionesLeidas(notificaciones) {
   inicializarIconos();
 }
 
+function NotLeida(est) { return estadoNotificacionMeta(est); }
+
 function abrirDetalleNotificacionRecibida(idNotificacion) {
   showScreen("notifyDetailScreen");
   document.getElementById("notifyDetailContent").innerHTML = crearTarjetaSimple("Cargando mensaje...", "Actualizando estado de lectura.");
@@ -769,7 +815,7 @@ function abrirDetalleNotificacionRecibida(idNotificacion) {
       </article>
     `;
   }, error => {
-    document.getElementById("notifyDetailContent").innerHTML = crearTarjetaSimple("Error al leer", obtenerMensajeError(error));
+    document.getElementById("notifyDetailContent").innerHTML = crearTarjetaSimple("Error al leer", obtenerMensError(error));
   });
 }
 
@@ -780,11 +826,11 @@ function abrirEnviarNotificacion() {
   API.obtenerUsuariosParaFormulario(usuarios => {
     select.innerHTML = `<option value="">Seleccionar persona</option>`;
     usuarios.forEach(u => {
-      const opt = document.createElement("option"); opt.value = u.ID;
+      const opt = document.createElement("option"); opt.value = u.IDAcceso;
       opt.textContent = `${u.Apellidos} ${u.Nombre} (${u.Rol})`; select.appendChild(opt);
     });
   }, error => {
-    select.innerHTML = `<option value="">Error cargando personal</option>`; alert(obtenerMensajeError(error));
+    select.innerHTML = `<option value="">Error cargando personal</option>`; alert(obtenerMensError(error));
   });
 }
 
@@ -801,7 +847,7 @@ function ejecutarEnvioNotificacion() {
     status.textContent = "Notificación enviada correctamente a " + respuesta.Nombre + " " + respuesta.Apellidos;
     document.getElementById("notifyMessage").value = "";
   }, error => {
-    status.className = "status-box show error"; status.textContent = obtenerMensajeError(error);
+    status.className = "status-box show error"; status.textContent = obtenerMensError(error);
   });
 }
 
@@ -812,7 +858,7 @@ function abrirNotificacionesEnviadas() {
   API.obtenerNotificacionesEnviadas(respuesta => {
     renderNotificacionesEnviadasLista(respuesta.notificaciones);
   }, error => {
-    document.getElementById("notifySentList").innerHTML = crearTarjetaSimple("Error", obtenerMensajeError(error));
+    document.getElementById("notifySentList").innerHTML = crearTarjetaSimple("Error", obtenerMensError(error));
   });
 }
 
@@ -837,14 +883,13 @@ function renderNotificacionesEnviadasLista(notificaciones) {
 
 function abrirDetalleNotificacionEnviada(idNotif) { alert("Revisando estatus de lectura del mensaje: " + idNotif); }
 
+function obtenerMensajeError(err) {
+  return err.message || err;
+}
+
 function esPermisoOfTexto(tipo) { return String(tipo || "").toLowerCase() === "permiso oficial"; }
 
 function esPermisoOficialTexto(tipo) { return String(tipo || "").toLowerCase() === "permiso oficial"; }
-
-function renderError(error) {
-  document.getElementById("dataList").innerHTML = crearTarjetaSimple("Error", obtenerMensajeError(error));
-  showScreen("dataScreen", false);
-}
 
 function openTipoIncidencia() {
   const container = document.getElementById("typeList"); container.innerHTML = "";
@@ -881,7 +926,7 @@ function abrirFormularioIncidencia(tipo) {
   API.obtenerUsuariosParaFormulario(usuarios => {
     select.innerHTML = `<option value="">Seleccionar docente</option>`;
     usuarios.forEach(u => {
-      const opt = document.createElement("option"); opt.value = u.ID;
+      const opt = document.createElement("option"); opt.value = u.IDAcceso;
       opt.textContent = `${u.Apellidos} ${u.Nombre} (${TURNOS_TEXTO[u.Turno] || u.Turno})`; select.appendChild(opt);
     });
   }, error => {

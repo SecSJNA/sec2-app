@@ -1,5 +1,5 @@
 const TEST_USERS = {
-  "Dirección": "D001",
+  "Direccion": "D001",
   "Correspondencia": "C001",
   "Prefectura": "P001",
   "Docente": "M001"
@@ -44,7 +44,7 @@ const PERMISSION_TYPES = [
 ];
 
 const MODULES = {
-  "Dirección": {
+  "Direccion": {
     titulo: "Módulo Dirección",
     subtitulo: "Administración General",
     avatar: "director",
@@ -116,7 +116,7 @@ window.addEventListener("load", () => {
   inicializarIconos();
   const llaveAcceso = sessionStorage.getItem("userIDAcceso");
   if (llaveAcceso) {
-    currentModule = sessionStorage.getItem("currentActiveModule") || "Dirección";
+    currentModule = sessionStorage.getItem("currentActiveModule") || "Direccion";
     showScreen("main", false);
   } else {
     showScreen("loginScreen", false);
@@ -148,7 +148,7 @@ function ejecutarLogin() {
       
       const rol = usr.Rol.toLowerCase();
       if (rol.includes("dirección") || rol.includes("dir")) {
-        currentModule = "Dirección";
+        currentModule = "Direccion";
       } else if (rol.includes("corresponde") || rol.includes("cor")) {
         currentModule = "Correspondencia";
       } else if (rol.includes("prefectura") || rol.includes("pre")) {
@@ -248,7 +248,7 @@ function cssVar(color) { return `var(--${color})`; }
 
 function obtenerIdSesionSegura() {
   if(!currentModule) {
-    currentModule = sessionStorage.getItem("currentActiveModule") || "Dirección";
+    currentModule = sessionStorage.getItem("currentActiveModule") || "Direccion";
   }
   return sessionStorage.getItem("userIDAcceso") || sessionStorage.getItem("userID") || TEST_USERS[currentModule] || "D001";
 }
@@ -296,7 +296,8 @@ function esNotificacionLeida(est) { return estadoNotificacionMeta(est); }
 function openModule(moduleName) {
   const rol = (sessionStorage.getItem("userRol") || "").toLowerCase();
 
-  if (moduleName === "Dirección" && !esRolDireccion(rol)) {
+  // Bloqueo estricto por roles usando nombres completos
+  if (moduleName === "Direccion" && !esRolDireccion(rol)) {
     alert("Su rol es " + rol + ". No tiene acceso a este módulo.");
     return;
   }
@@ -360,6 +361,7 @@ function openOption(optionName) {
 
 function abrirMiPerfil() {
   profileMode = true;
+  // Se obtiene el ID de acceso (Columna H) como llave raíz del perfil
   selectedPersonID = sessionStorage.getItem("userIDAcceso") || obtenerIdSesionSegura();
   cargarResumenPersona(selectedPersonID);
 }
@@ -373,7 +375,7 @@ function abrirSelectorHistorial() {
       select.innerHTML = `<option value="">Seleccionar docente</option>`;
       usuarios.forEach(usuario => {
         const option = document.createElement("option");
-        option.value = usuario.IDAcceso;
+        option.value = usuario.IDAcceso; // Desvinculado de Col A, vinculado a Col H (IDAcceso)
         option.textContent = `${usuario.Apellidos} ${usuario.Nombre}`;
         select.appendChild(option);
       });
@@ -409,7 +411,7 @@ function renderResumenPersona(respuesta) {
   const ultima = respuesta.ultimaIncidencia ? formatearFecha(respuesta.ultimaIncidencia.FechaInicio) : "Sin registros";
   const tituloOpciones = profileMode ? "Mi historial" : "Opciones de consulta";
   const descripcionHistorial = profileMode ? "Ver mi historial personal completo." : "Ver todas las incidencias registradas.";
-  if(!currentModule) currentModule = sessionStorage.getItem("currentActiveModule") || "Dirección";
+  if(!currentModule) currentModule = sessionStorage.getItem("currentActiveModule") || "Direccion";
   
   const html = `
     <article class="data-card">
@@ -418,7 +420,7 @@ function renderResumenPersona(respuesta) {
         <div>
           <h2 class="data-card-title">${escapeHTML(p.Nombre)} ${escapeHTML(p.Apellidos)}</h2>
           <p class="data-card-text"><strong>Turno:</strong> ${TURNOS_TEXTO[p.Turno] || p.Turno}</p>
-          <p class="data-card-text"><strong>ID Acceso:</strong> ${escapeHTML(p.IDAcceso)}</p>
+          <p class="data-card-text"><strong>ID de Acceso:</strong> ${escapeHTML(p.IDAcceso)}</p>
           <p class="data-card-text"><strong>Última incidencia:</strong> ${ultima}</p>
         </div>
       </div>
@@ -755,7 +757,7 @@ function escapeHTML(texto) {
 }
 
 function abrirNotificaciones() {
-  if (currentModule !== "Dirección") { abrirLeerNotificaciones(); return; }
+  if (currentModule !== "Direccion") { abrirLeerNotificaciones(); return; }
   showScreen("notifyMenuScreen");
 }
 
@@ -806,10 +808,10 @@ function abrirDetalleNotificacionRecibida(idNotificacion) {
     document.getElementById("notifyDetailIcon").setAttribute("data-icon", "bell");
     document.getElementById("notifyDetailContent").innerHTML = `
       <article class="notification-card-full" style="border-left:7px solid var(--cyan);">
-        <p class="notifyDate">Recibido: ${escapeHTML(n.FechaEnvio)}</p>
-        <p class="notifyMsg">${escapeHTML(n.Mensaje)}</p>
-        <p class="notifyMeta"><strong>Estatus:</strong> Leído</p>
-        <p class="notifyMeta"><strong>Leído el:</strong> ${escapeHTML(n.FechaLectura)}</p>
+        <p class="notification-date">Recibido: ${escapeHTML(n.FechaEnvio)}</p>
+        <p class="notification-message">${escapeHTML(n.Mensaje)}</p>
+        <p class="notification-meta"><strong>Estatus:</strong> Leído</p>
+        <p class="notification-meta"><strong>Leído el:</strong> ${escapeHTML(n.FechaLectura)}</p>
       </article>
     `;
   }, error => {
@@ -881,21 +883,12 @@ function renderNotificacionesEnviadasLista(notificaciones) {
 
 function abrirDetalleNotificacionEnviada(idNotif) { alert("Revisando estatus de lectura del mensaje: " + idNotif); }
 
-function esPermisoOfTexto(tipo) { return String(tipo || "").toLowerCase() === "permiso oficial"; }
-
-function esPermisoOficialTexto(tipo) { return String(tipo || "").toLowerCase() === "permiso oficial"; }
-
-function renderError(error) {
-  document.getElementById("dataList").innerHTML = crearTarjetaSimple("Error", obtenerMensajeError(error));
-  showScreen("dataScreen", false);
-}
-
 function openTipoIncidencia() {
   const container = document.getElementById("typeList"); container.innerHTML = "";
   document.getElementById("typeAccessName").textContent = currentModule; showScreen("typeScreen");
   
   PERMISSION_TYPES.forEach(tipo => {
-    if (currentModule !== "Dirección" && tipo.oficial) return;
+    if (currentModule !== "Direccion" && tipo.oficial) return;
     const button = document.createElement("button"); button.className = "type-card";
     button.onclick = () => abrirFormularioIncidencia(tipo);
     button.innerHTML = `

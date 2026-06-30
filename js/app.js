@@ -296,7 +296,7 @@ function esNotificacionLeida(est) { return estadoNotificacionMeta(est); }
 function openModule(moduleName) {
   const rol = (sessionStorage.getItem("userRol") || "").toLowerCase();
 
-  // Bloqueo estricto por roles usando nombres completos
+  // Validación estricta usando nombres limpios de módulo
   if (moduleName === "Direccion" && !esRolDireccion(rol)) {
     alert("Su rol es " + rol + ". No tiene acceso a este módulo.");
     return;
@@ -361,7 +361,7 @@ function openOption(optionName) {
 
 function abrirMiPerfil() {
   profileMode = true;
-  // Se obtiene el ID de acceso (Columna H) como llave raíz del perfil
+  // Apuntamos al IDAcceso (Columna H) como raíz de sesión para evitar cruces
   selectedPersonID = sessionStorage.getItem("userIDAcceso") || obtenerIdSesionSegura();
   cargarResumenPersona(selectedPersonID);
 }
@@ -375,7 +375,7 @@ function abrirSelectorHistorial() {
       select.innerHTML = `<option value="">Seleccionar docente</option>`;
       usuarios.forEach(usuario => {
         const option = document.createElement("option");
-        option.value = usuario.IDAcceso; // Desvinculado de Col A, vinculado a Col H (IDAcceso)
+        option.value = usuario.IDAcceso; // Enlazado unívocamente a IDAcceso (Col H)
         option.textContent = `${usuario.Apellidos} ${usuario.Nombre}`;
         select.appendChild(option);
       });
@@ -881,7 +881,16 @@ function renderNotificacionesEnviadasLista(notificaciones) {
   inicializarIconos();
 }
 
-function abrirDetalleNotificacionEnviada(idNotif) { alert("Revisando estatus de lectura del mensaje: " + idNotif); }
+function abrirDetalleNotificacionEnviada(idNotifId) { alert("Revisando estatus de lectura del mensaje: " + NotifId); }
+
+function esPermisoOfTexto(tipo) { return String(tipo || "").toLowerCase() === "permiso oficial"; }
+
+function esPermisoOficialTexto(tipo) { return String(tipo || "").toLowerCase() === "permiso oficial"; }
+
+function renderError(error) {
+  document.getElementById("dataList").innerHTML = crearTarjetaSimple("Error", obtenerMensajeError(error));
+  showScreen("dataScreen", false);
+}
 
 function openTipoIncidencia() {
   const container = document.getElementById("typeList"); container.innerHTML = "";

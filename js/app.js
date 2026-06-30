@@ -109,23 +109,104 @@ let selectedPersonID = "";
 let selectedIncidentID = "";
 let selectedNotificationID = "";
 let profileMode = false;
-
 let currentScreen = "loginScreen";
 let navigationStack = [];
 
-// Enrutador de arranque seguro (Reemplazo del temporizador)
+// Enrutador de arranque seguro (Validación de Llave H)
 window.addEventListener("load", () => {
   inicializarIconos();
   
-  // Verificamos si existe un registro de sesión activo o llave de acceso
-  const sesionActiva = sessionStorage.getItem("userIDAcceso");
-  
-  if (sesionActiva) {
-    // Si hay sesión viva, restauramos el módulo en memoria y entramos directo
-    currentModule = sessionStorage.getItem("currentActiveModule") || "";
+  const llaveAcceso = sessionStorage.getItem("userIDAcceso");
+  if (llaveAcceso) {
+    currentModule = sessionStorage.getItem("currentActiveModule") || "Dirección";
     showScreen("main", false);
   } else {
-    // Si no hay sesión, forzamos la vista obligatoria de inicio de sesión
     showScreen("loginScreen", false);
   }
 });
+
+function ejecutarLogin() {
+  const idAcceso = document.getElementById("loginIDAcceso").value.trim();
+  const contrasena = document.getElementById("loginContrasena").value.trim();
+  const statusBox = document.getElementById("loginStatus");
+
+  if (!idAcceso || !contrasena) {
+    statusBox.className = "status-box show error";
+    statusBox.textContent = "Por favor, completa ambos campos.";
+    return;
+  }
+
+  statusBox.className = "status-box show";
+  statusBox.textContent = "Validando credenciales seguras...";
+
+  API.iniciarSesion(idAcceso, contrasena, 
+    function(respuesta) {
+      const usr = respuesta;
+      
+      sessionStorage.setItem("userID", usr.ID);
+      sessionStorage.setItem("userIDAcceso", usr.IDAcceso || idAcceso);
+      sessionStorage.setItem("userRol", usr.Rol);
+      sessionStorage.setItem("userTurno", usr.Turno);
+      sessionStorage.setItem("userName", usr.Nombre);
+      
+      const rol = usr.Rol.toLowerCase();
+      if (rol.includes("dirección") || rol.includes("dir")) {
+        currentModule = "Dirección";
+      } else if (rol.includes("corresponde") || rol.includes("cor")) {
+        currentModule = "Correspondencia";
+      } else if (rol.includes("prefectura") || rol.includes("pre")) {
+        currentModule = "Prefectura";
+      } else {
+        currentModule = "Docente";
+      }
+
+      sessionStorage.setItem("currentActiveModule", currentModule);
+      
+      statusBox.className = "status-box show ok";
+      statusBox.textContent = "¡Bienvenido, " + usr.Nombre + "!";
+      
+      setTimeout(function() {
+        showScreen("splash", false);
+        setTimeout(function() {
+          showScreen("main", false);
+        }, 1500);
+      }, 800);
+    },
+    function(err) {
+      statusBox.className = "status-box show error";
+      statusBox.textContent = err || "Usuario o contraseña incorrectos.";
+    }
+  );
+}
+
+function cerrarSesion() {
+  sessionStorage.clear();
+  document.getElementById("loginIDAcceso").value = "";
+  document.getElementById("loginContrasena").value = "";
+  document.getElementById("loginStatus").className = "status-box";
+  showScreen("loginScreen", false);
+}
+
+function showScreen(id, pushHistory = true) {
+  if (pushHistory && currentScreen && currentScreen !== id) {
+    navigationStack.push(currentScreen);
+  }
+
+  document.querySelectorAll(".screen").forEach(screen => screen.classList.remove("active"));
+
+  setTimeout(() => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.classList.add("active");
+      currentScreen = id;
+      window.scrollTo(0, 0);
+      inicializarIconos();
+    }
+  }, 35);
+}
+
+function goBack() {
+  const previous = navigationStack.pop();
+  if (!previous || previous === "splash") {
+    goMain();
+    return

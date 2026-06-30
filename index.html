@@ -1081,19 +1081,6 @@
       justify-content: center;
     }
 
-    .notification-card {
-      border-radius: 16px;
-      border: 1px solid var(--border);
-      background: #ffffff;
-      box-shadow: 0 3px 10px rgba(18, 44, 84, 0.08);
-      padding: 14px;
-      margin-bottom: 10px;
-      display: grid;
-      grid-template-columns: 48px 1fr 92px;
-      gap: 10px;
-      align-items: center;
-    }
-
     .notification-card-full {
       border-radius: 16px;
       border: 1px solid var(--border);
@@ -1238,74 +1225,58 @@
         width: 118px;
         height: 90px;
       }
-
       .main-title {
         font-size: clamp(28px, 6.2vw, 42px);
       }
-
       .main-subtitle {
         font-size: clamp(15px, 3.5vw, 20px);
       }
-
       .module-list {
         gap: 12px;
       }
-
       .module-card {
         min-height: 108px;
         grid-template-columns: 84px 1fr 26px;
         padding: 13px 14px;
       }
-
       .module-icon {
         width: 72px;
         height: 72px;
       }
-
       .module-title {
         font-size: 21px;
       }
-
       .module-description {
         font-size: 15px;
         line-height: 1.26;
       }
-
       .stat-grid {
         gap: 6px;
       }
-
       .stat-small {
         height: 96px;
         padding: 7px 3px;
       }
-
       .stat-small .stat-num {
         font-size: 23px;
       }
-
       .stat-small .stat-label {
         font-size: 9.3px;
       }
-
       .incident-card {
         grid-template-columns: 40px 42px 1fr 78px;
         gap: 6px;
         padding: 10px;
       }
-
       .incident-name {
         font-size: 14px;
       }
-
       .detail-button {
         font-size: 10px;
       }
-
       .bars {
         gap: 4px;
       }
-
       .bar-label {
         font-size: 7.8px;
       }
@@ -1364,12 +1335,10 @@
             Portal Docentes<br>
             permisos e incidencias
           </h1>
-
           <div class="splash-logo">
             <img class="logo-real" src="https://raw.githubusercontent.com/SecSJNA/sec2-app/d810700d427ea454662ff6e4836c4d6431cb8115/logoPng.png" alt="Portal Docentes">
           </div>
         </div>
-
         <footer class="splash-footer">
           © 2026 Portal Docentes.<br>
           Todos los derechos reservados.<br>
@@ -1379,7 +1348,6 @@
 
       <section id="main" class="screen screen-scroll">
         <div class="content main-fixed-layout">
-
           <header class="main-header">
             <div class="main-logo">
               <img class="logo-real" src="https://raw.githubusercontent.com/SecSJNA/sec2-app/d810700d427ea454662ff6e4836c4d6431cb8115/logoPng.png" alt="Portal Docentes">
@@ -1396,7 +1364,6 @@
           </header>
 
           <section class="module-list">
-
             <button class="module-card" onclick="openModule('Dirección')">
               <div class="module-icon bg-blue color-blue" data-icon="director"></div>
               <div>
@@ -1432,7 +1399,6 @@
               </div>
               <div class="chevron color-purple">›</div>
             </button>
-
           </section>
 
           <section class="info-card">
@@ -1455,17 +1421,13 @@
 
       <section id="moduleMenu" class="screen screen-scroll">
         <div class="module-menu-wrap">
-
           <button class="top-back" onclick="goBack()">←</button>
-
           <header class="module-hero">
             <div id="moduleAvatar" class="module-avatar"></div>
             <h1 id="moduleTitle" class="module-hero-title">Módulo Dirección</h1>
             <p id="moduleSubtitle" class="module-hero-subtitle">Administración General</p>
           </header>
-
           <section id="moduleButtons" class="professional-list"></section>
-
           <section class="module-important">
             <div class="module-important-icon">i</div>
             <div>
@@ -1473,7 +1435,6 @@
               <p id="moduleImportantText" class="module-important-text">Información del módulo.</p>
             </div>
           </section>
-
           <section class="access-card">
             <div class="access-icon" data-icon="shield"></div>
             <div>
@@ -1482,34 +1443,28 @@
             </div>
             <button class="logout-fake" onclick="cerrarSesion()">Cerrar<br>sesión</button>
           </section>
-
           <footer class="secure-footer">
             <div class="secure-content">
               <span>▣</span>
               <span>Sistema seguro y confidencial</span>
             </div>
           </footer>
-
         </div>
       </section>
 
       <section id="dataScreen" class="screen screen-scroll">
         <div class="page-top">
           <button class="top-back" onclick="goBack()">←</button>
-
           <div class="brand-row">
             <div id="dataBrandIcon" class="brand-icon solid-blue" data-icon="report"></div>
             <div class="brand-logo">
               <img class="logo-real" src="https://raw.githubusercontent.com/SecSJNA/sec2-app/d810700d427ea454662ff6e4836c4d6431cb8115/logoPng.png" alt="Sec2">
             </div>
           </div>
-
           <h1 id="dataTitle" class="page-title">Reporte</h1>
           <p id="dataSubtitle" class="page-subtitle">Consultando información.</p>
-
           <div id="dataStats"></div>
           <div id="dataList"></div>
-
           <section class="access-card">
             <div class="access-icon" data-icon="shield"></div>
             <div>
@@ -1518,7 +1473,6 @@
             </div>
             <button class="logout-fake" onclick="cerrarSesion()">Cerrar<br>sesión</button>
           </section>
-
           <footer class="secure-footer">
             <div class="secure-content">
               <span>▣</span>
@@ -1531,28 +1485,22 @@
       <section id="historySelectScreen" class="screen screen-scroll">
         <div class="page-top">
           <button class="top-back" onclick="goBack()">←</button>
-
           <div class="brand-row">
             <div class="brand-icon solid-green" data-icon="history"></div>
             <div class="brand-logo">
               <img class="logo-real" src="https://raw.githubusercontent.com/SecSJNA/sec2-app/d810700d427ea454662ff6e4836c4d6431cb8115/logoPng.png" alt="Sec2">
             </div>
           </div>
-
           <h1 class="page-title">Historial de incidencias</h1>
           <p class="page-subtitle">Consulta histórica por docente</p>
-
           <section class="data-card">
             <h2 class="section-title">Docente</h2>
             <p class="section-subtitle">Seleccione al docente cuyo historial desea consultar.</p>
-
             <select id="historyPersonSelect">
               <option value="">Cargando docentes...</option>
             </select>
           </section>
-
           <button class="primary-button" onclick="continuarHistorialPersona()">Continuar</button>
-
           <section class="info-card">
             <div class="info-icon">i</div>
             <div>
@@ -1560,7 +1508,6 @@
               <p class="info-text">Seleccione un docente para consultar su resumen e historial.</p>
             </div>
           </section>
-
           <footer class="secure-footer">
             <div class="secure-content">
               <span>▣</span>
@@ -1573,19 +1520,15 @@
       <section id="personSummaryScreen" class="screen screen-scroll">
         <div class="page-top">
           <button class="top-back" onclick="goBack()">←</button>
-
           <div class="brand-row">
             <div class="brand-icon solid-gold" data-icon="user"></div>
             <div class="brand-logo">
               <img class="logo-real" src="https://raw.githubusercontent.com/SecSJNA/sec2-app/d810700d427ea454662ff6e4836c4d6431cb8115/logoPng.png" alt="Sec2">
             </div>
           </div>
-
           <h1 class="page-title color-gold">Mi perfil</h1>
           <p class="page-subtitle">Información personal e historial propio</p>
-
           <div id="personSummaryContent"></div>
-
           <footer class="secure-footer">
             <div class="secure-content">
               <span>▣</span>
@@ -1598,17 +1541,14 @@
       <section id="detailScreen" class="screen screen-scroll">
         <div class="page-top">
           <button class="top-back" onclick="goBack()">←</button>
-
           <div class="brand-row">
             <div id="detailBrandIcon" class="brand-icon solid-blue" data-icon="report"></div>
             <div class="brand-logo">
               <img class="logo-real" src="https://raw.githubusercontent.com/SecSJNA/sec2-app/d810700d427ea454662ff6e4836c4d6431cb8115/logoPng.png" alt="Sec2">
             </div>
           </div>
-
           <h1 class="page-title">Detalle de incidencia</h1>
           <div id="detailContent"></div>
-
           <footer class="secure-footer">
             <div class="secure-content">
               <span>▣</span>
@@ -1621,19 +1561,15 @@
       <section id="editUseScreen" class="screen screen-scroll">
         <div class="page-top">
           <button class="top-back" onclick="goBack()">←</button>
-
           <div class="brand-row">
             <div class="brand-icon solid-purple" data-icon="permiso-oficial"></div>
             <div class="brand-logo">
               <img class="logo-real" src="https://raw.githubusercontent.com/SecSJNA/sec2-app/d810700d427ea454662ff6e4836c4d6431cb8115/logoPng.png" alt="Sec2">
             </div>
           </div>
-
           <h1 class="page-title color-purple">Permiso oficial</h1>
           <p class="page-subtitle">Editar fechas de uso pendientes</p>
-
           <div id="editUseContent"></div>
-
           <footer class="secure-footer">
             <div class="secure-content">
               <span>▣</span>
@@ -1646,21 +1582,17 @@
       <section id="rangeScreen" class="screen screen-scroll">
         <div class="page-top">
           <button class="top-back" onclick="goBack()">←</button>
-
           <div class="brand-row">
             <div class="brand-icon solid-orange" data-icon="calendar"></div>
             <div class="brand-logo">
               <img class="logo-real" src="https://raw.githubusercontent.com/SecSJNA/sec2-app/d810700d427ea454662ff6e4836c4d6431cb8115/logoPng.png" alt="Sec2">
             </div>
           </div>
-
           <h1 class="page-title">Consulta de fechas</h1>
           <p class="page-subtitle">Consulta incidencias en un rango de fechas</p>
-
           <section class="range-card">
             <h2 class="section-title">Rango de fecha</h2>
             <p class="section-subtitle">Selecciona el rango de fechas que deseas consultar.</p>
-
             <div class="form-row">
               <div class="form-icon" data-icon="calendar"></div>
               <div>
@@ -1668,7 +1600,6 @@
                 <input id="rangeFechaInicio" type="date">
               </div>
             </div>
-
             <div class="form-row">
               <div class="form-icon" data-icon="calendar"></div>
               <div>
@@ -1676,14 +1607,11 @@
                 <input id="rangeFechaFin" type="date">
               </div>
             </div>
-
             <button class="primary-button" onclick="ejecutarConsultaFechas()">Consultar</button>
             <div id="rangeStatus" class="status-box"></div>
           </section>
-
           <div id="rangeStats"></div>
           <div id="rangeResults"></div>
-
           <footer class="secure-footer">
             <div class="secure-content">
               <span>▣</span>
@@ -1696,19 +1624,15 @@
       <section id="typeScreen" class="screen screen-scroll">
         <div class="page-top">
           <button class="top-back" onclick="goBack()">←</button>
-
           <div class="brand-row">
             <div class="brand-icon solid-purple" data-icon="file-plus"></div>
             <div class="brand-logo">
               <img class="logo-real" src="https://raw.githubusercontent.com/SecSJNA/sec2-app/d810700d427ea454662ff6e4836c4d6431cb8115/logoPng.png" alt="Sec2">
             </div>
           </div>
-
           <h1 class="page-title color-purple">Seleccionar tipo de incidencia</h1>
           <p class="page-subtitle">Seleccione el tipo de incidencia que desea registrar.</p>
-
           <section id="typeList" class="type-list"></section>
-
           <section class="info-card">
             <div class="info-icon">i</div>
             <div>
@@ -1716,7 +1640,6 @@
               <p class="info-text">Permiso oficial usa formato especial. Las demás incidencias usan fecha inicial y final.</p>
             </div>
           </section>
-
           <section class="access-card">
             <div class="access-icon" data-icon="shield"></div>
             <div>
@@ -1725,7 +1648,6 @@
             </div>
             <button class="logout-fake" onclick="cerrarSesion()">Cerrar<br>sesión</button>
           </section>
-
           <footer class="secure-footer">
             <div class="secure-content">
               <span>▣</span>
@@ -1738,17 +1660,14 @@
       <section id="formScreen" class="screen screen-scroll">
         <div class="page-top">
           <button class="top-back" onclick="goBack()">←</button>
-
           <div class="brand-row">
             <div id="formBrandIcon" class="brand-icon"></div>
             <div class="brand-logo">
               <img class="logo-real" src="https://raw.githubusercontent.com/SecSJNA/sec2-app/d810700d427ea454662ff6e4836c4d6431cb8115/logoPng.png" alt="Sec2">
             </div>
           </div>
-
           <h1 id="formTitle" class="page-title">Incidencia</h1>
           <p id="formSubtitle" class="page-subtitle">Captura la información requerida.</p>
-
           <section class="form-card">
             <div class="form-row">
               <div class="form-icon" data-icon="user"></div>
@@ -1866,255 +1785,6 @@
         </div>
       </section>
 
-      <section id="notifyMenuScreen" class="screen screen-scroll">
-        <div class="page-top">
-          <button class="top-back" onclick="goBack()">←</button>
-
-          <div class="brand-row">
-            <div class="brand-icon solid-cyan" data-icon="bell"></div>
-            <div class="brand-logo">
-              <img class="logo-real" src="https://raw.githubusercontent.com/SecSJNA/sec2-app/d810700d427ea454662ff6e4836c4d6431cb8115/logoPng.png" alt="Sec2">
-            </div>
-          </div>
-
-          <h1 class="page-title color-cyan">Notificaciones</h1>
-          <p class="page-subtitle">Centro de mensajes de Dirección</p>
-
-          <section class="professional-list">
-            <button class="professional-card" onclick="abrirLeerNotificaciones()">
-              <div class="professional-icon solid-cyan" data-icon="bell"></div>
-              <div>
-                <h2 class="professional-title color-cyan">Mis notificaciones</h2>
-                <p class="professional-desc">Ver mensajes recibidos.</p>
-              </div>
-              <div class="professional-arrow color-cyan">›</div>
-            </button>
-
-            <button class="professional-card" onclick="abrirEnviarNotificacion()">
-              <div class="professional-icon solid-blue" data-icon="message"></div>
-              <div>
-                <h2 class="professional-title color-blue">Enviar notificación</h2>
-                <p class="professional-desc">Seleccionar persona y escribir mensaje.</p>
-              </div>
-              <div class="professional-arrow color-blue">›</div>
-            </button>
-
-            <button class="professional-card" onclick="abrirNotificacionesEnviadas()">
-              <div class="professional-icon solid-green" data-icon="report"></div>
-              <div>
-                <h2 class="professional-title color-green">Notificaciones enviadas</h2>
-                <p class="professional-desc">Ver lectura de mensajes enviados.</p>
-              </div>
-              <div class="professional-arrow color-green">›</div>
-            </button>
-          </section>
-
-          <section class="info-card">
-            <div class="info-icon">i</div>
-            <div>
-              <h3 class="info-title">Información</h3>
-              <p class="info-text">Solo se muestran los mensajes enviados por el directivo actual.</p>
-            </div>
-          </section>
-
-          <footer class="secure-footer">
-            <div class="secure-content">
-              <span>▣</span>
-              <span>Sistema seguro y confidencial</span>
-            </div>
-          </footer>
-        </div>
-      </section>
-
-      <section id="notifySendScreen" class="screen screen-scroll">
-        <div class="page-top">
-          <button class="top-back" onclick="goBack()">←</button>
-
-          <div class="brand-row">
-            <div class="brand-icon solid-cyan" data-icon="bell"></div>
-            <div class="brand-logo">
-              <img class="logo-real" src="https://raw.githubusercontent.com/SecSJNA/sec2-app/d810700d427ea454662ff6e4836c4d6431cb8115/logoPng.png" alt="Sec2">
-            </div>
-          </div>
-
-          <h1 class="page-title color-cyan">Enviar notificación</h1>
-          <p class="page-subtitle">Enviar mensaje a una persona</p>
-
-          <section class="form-card">
-            <div class="form-row">
-              <div class="form-icon" data-icon="user"></div>
-              <div>
-                <label for="notifyUserSelect">Persona</label>
-                <select id="notifyUserSelect">
-                  <option value="">Cargando personas...</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-icon" data-icon="message"></div>
-              <div>
-                <label for="notifyMessage">Mensaje</label>
-                <textarea id="notifyMessage" placeholder="Escriba la notificación que recibirá la persona seleccionada."></textarea>
-              </div>
-            </div>
-
-            <button class="primary-button" onclick="ejecutarEnvioNotificacion()">Enviar notificación</button>
-            <div id="notifySendStatus" class="status-box"></div>
-          </section>
-
-          <section class="info-card">
-            <div class="info-icon">i</div>
-            <div>
-              <h3 class="info-title">Información importante</h3>
-              <p class="info-text">La notificación quedará registrada con fecha y usuario que la envió.</p>
-            </div>
-          </section>
-
-          <footer class="secure-footer">
-            <div class="secure-content">
-              <span>▣</span>
-              <span>Sistema seguro y confidencial</span>
-            </div>
-          </footer>
-        </div>
-      </section>
-
-      <section id="notifyReadScreen" class="screen screen-scroll">
-        <div class="page-top">
-          <button class="top-back" onclick="goBack()">←</button>
-
-          <div class="brand-row">
-            <div class="brand-icon solid-cyan" data-icon="bell"></div>
-            <div class="brand-logo">
-              <img class="logo-real" src="https://raw.githubusercontent.com/SecSJNA/sec2-app/d810700d427ea454662ff6e4836c4d6431cb8115/logoPng.png" alt="Sec2">
-            </div>
-          </div>
-
-          <h1 class="page-title color-cyan">Mis notificaciones</h1>
-          <p id="notifyReadSubtitle" class="page-subtitle">Mensajes recibidos</p>
-
-          <div id="notifyReadList"></div>
-
-          <footer class="secure-footer">
-            <div class="secure-content">
-              <span>▣</span>
-              <span>Sistema seguro y confidencial</span>
-            </div>
-          </footer>
-        </div>
-      </section>
-
-      <section id="notifySentScreen" class="screen screen-scroll">
-        <div class="page-top">
-          <button class="top-back" onclick="goBack()">←</button>
-
-          <div class="brand-row">
-            <div class="brand-icon solid-green" data-icon="report"></div>
-            <div class="brand-logo">
-              <img class="logo-real" src="https://raw.githubusercontent.com/SecSJNA/sec2-app/d810700d427ea454662ff6e4836c4d6431cb8115/logoPng.png" alt="Sec2">
-            </div>
-          </div>
-
-          <h1 class="page-title color-green">Estado de notificaciones</h1>
-          <p id="notifySentSubtitle" class="page-subtitle">Mensajes enviados por Dirección</p>
-
-          <div id="notifySentList"></div>
-
-          <footer class="secure-footer">
-            <div class="secure-content">
-              <span>▣</span>
-              <span>Sistema seguro y confidencial</span>
-            </div>
-          </footer>
-        </div>
-      </section>
-
-      <section id="notifyDetailScreen" class="screen screen-scroll">
-        <div class="page-top">
-          <button class="top-back" onclick="goBack()">←</button>
-
-          <div class="brand-row">
-            <div id="notifyDetailIcon" class="brand-icon solid-cyan" data-icon="bell"></div>
-            <div class="brand-logo">
-              <img class="logo-real" src="https://raw.githubusercontent.com/SecSJNA/sec2-app/d810700d427ea454662ff6e4836c4d6431cb8115/logoPng.png" alt="Sec2">
-            </div>
-          </div>
-
-          <h1 id="notifyDetailTitle" class="page-title color-cyan">Detalle de notificación</h1>
-          <p id="notifyDetailSubtitle" class="page-subtitle">Información del mensaje</p>
-
-          <div id="notifyDetailContent"></div>
-
-          <footer class="secure-footer">
-            <div class="secure-content">
-              <span>▣</span>
-              <span>Sistema seguro y confidencial</span>
-            </div>
-          </footer>
-        </div>
-      </section>
-
-      <section id="statMonthScreen" class="screen screen-scroll">
-        <div class="page-top">
-          <button class="top-back" onclick="goBack()">←</button>
-
-          <div class="brand-row">
-            <div class="brand-icon solid-orange" data-icon="report"></div>
-            <div class="brand-logo">
-              <img class="logo-real" src="https://raw.githubusercontent.com/SecSJNA/sec2-app/d810700d427ea454662ff6e4836c4d6431cb8115/logoPng.png" alt="Sec2">
-            </div>
-          </div>
-
-          <h1 class="page-title color-orange">Estadística mensual</h1>
-          <p class="page-subtitle">Selecciona mes y año para consultar</p>
-
-          <section class="form-card">
-            <div class="form-row">
-              <div class="form-icon" data-icon="calendar"></div>
-              <div>
-                <label for="statMes">Mes</label>
-                <select id="statMes">
-                  <option value="">Seleccionar mes</option>
-                  <option value="1">01 - Enero</option>
-                  <option value="2">02 - Febrero</option>
-                  <option value="3">03 - Marzo</option>
-                  <option value="4">04 - Abril</option>
-                  <option value="5">05 - Mayo</option>
-                  <option value="6">06 - Junio</option>
-                  <option value="7">07 - Julio</option>
-                  <option value="8">08 - Agosto</option>
-                  <option value="9">09 - Septiembre</option>
-                  <option value="10">10 - Octubre</option>
-                  <option value="11">11 - Noviembre</option>
-                  <option value="12">12 - Diciembre</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-icon" data-icon="calendar"></div>
-              <div>
-                <label for="statAnio">Año</label>
-                <input id="statAnio" type="number" placeholder="Ejemplo: 2026">
-              </div>
-            </div>
-
-            <button class="primary-button" onclick="consultarEstadisticaMensual()">Continuar</button>
-            <div id="statMonthStatus" class="status-box"></div>
-          </section>
-
-          <div id="statMonthResults"></div>
-
-          <footer class="secure-footer">
-            <div class="secure-content">
-              <span>▣</span>
-              <span>Sistema seguro y confidencial</span>
-            </div>
-          </footer>
-        </div>
-      </section>
-
     </main>
   </div>
 
@@ -2164,19 +1834,26 @@
       { nombre: "Permiso oficial", descripcion: "Registro de hasta tres fechas independientes.", color: "purple", icono: "permiso-oficial", medico: false, oficial: true },
       { nombre: "Incapacidad", descripcion: "Ausencia médica por uno o varios días.", color: "blue", icono: "incapacidad", medico: true, oficial: false },
       { nombre: "Humanitario sindical", descripcion: "Permiso humanitario autorizado por representación sindical.", color: "green", icono: "humanitario-sindical", medico: false, oficial: false },
-      { nombre: "Humanitario oficial", descripcion: "Permiso humanitario autorizado por la institution.", color: "orange", icono: "humanitario-oficial", medico: false, oficial: false },
-      { nombre: "Comisión sindical", descripcion: "Actividad oficial asignada por representación sindical.", color: "purple-soft", icono: "comision-sindical", medico: false, oficial: false },
-      { nombre: "Comisión oficial", descripcion: "Actividad oficial asignada por la institution.", color: "blue-soft", icono: "comision-oficial", medico: false, oficial: false },
+      { nombre: "Humanitario oficial", descripcion: "Permiso humanitario autorizado por la institución.", color: "orange", icono: "humanitario-oficial", medico: false, oficial: false },
+      { nombre: "Comisión sindical", descripcion: "Actividad oficial asignada por representación sindical.", color: "purple-soft", icono: "comision-ofical", medico: false, oficial: false },
+      { nombre: "Comisión oficial", descripcion: "Actividad oficial asignada por la institución.", color: "blue-soft", icono: "comision-oficial", medico: false, oficial: false },
       { nombre: "Especial", descripcion: "Incidencia extraordinaria no clasificada en categorías anteriores.", color: "gold", icono: "especial", medico: false, oficial: false }
     ];
 
-    // Inicialización de la pantalla activa al cargar en GitHub
+    // Enrutador seguro que reemplaza el temporizador para GitHub
     window.addEventListener("load", () => {
       inicializarIconos();
-      showScreen("loginScreen", false);
+      
+      const llaveAcceso = sessionStorage.getItem("userIDAcceso");
+      if (llaveAcceso) {
+        currentModule = sessionStorage.getItem("currentActiveModule") || "Dirección";
+        showScreen("main", false);
+      } else {
+        showScreen("loginScreen", false);
+      }
     });
 
-    // --- LÓGICA DE VALIDACIÓN DE INICIO DE SESIÓN ---
+    // --- LÓGICA DE VALIDACIÓN DE INICIO DE SESIÓN (COLUMNA H) ---
 
     function ejecutarLogin() {
       const idAcceso = document.getElementById("loginIDAcceso").value.trim();
@@ -2190,9 +1867,9 @@
       }
 
       statusBox.className = "status-box show";
-      statusBox.textContent = "Validando credenciales...";
+      statusBox.textContent = "Validando credenciales seguras...";
 
-      // Conexión segura y absoluta al endpoint de Apps Script (/exec) a través de la API
+      // API que conecta con el servidor de Google Apps Script (*.googleusercontent / /exec)
       API.iniciarSesion(idAcceso, contrasena, 
         function(respuesta) {
           const usr = respuesta;
@@ -2309,13 +1986,13 @@
         return { color: "orange", icono: "humanitario-oficial", name: tipo || "Humanitario oficial" };
       }
       if (texto.includes("comisión sindical") || texto.includes("comision sindical")) {
-        return { color: "purple-soft", icono: "comision-sindical", name: tipo || "Comisión sindical" };
+        return { color: "purple-soft", icono: "comision-of-sindical", name: tipo || "Comisión sindical" };
       }
       if (texto.includes("comisión oficial") || texto.includes("comision oficial")) {
-        return { color: "blue-soft", icono: "comision-oficial", name: tipo || "Comisión oficial" };
+        return { color: "blue-soft", icono: "comision-of-oficial", name: tipo || "Comisión oficial" };
       }
       if (texto === "comisión" || texto === "comision") {
-        return { color: "blue-soft", icono: "comision-oficial", name: tipo || "Comisión oficial" };
+        return { color: "blue-soft", icono: "comision-of-oficial", name: tipo || "Comisión oficial" };
       }
       if (texto.includes("especial")) {
         return { color: "gold", icono: "especial", name: tipo || "Especial" };
@@ -2706,8 +2383,6 @@
       
       API.obtenerDetalleIncidencia(
         selectedIncidentID,
-        currentModule,
-        obtenerIdSesionSegura(),
         respuesta => renderEditarUso(respuesta.incidencia),
         error => {
           document.getElementById("editUseContent").innerHTML = crearTarjetaSimple("Error", obtenerMensajeError(error));
@@ -2787,8 +2462,6 @@
       API.guardarUsosPermisoOficial(
         selectedIncidentID,
         datos,
-        currentModule,
-        obtenerIdSesionSegura(),
         function() {
           status.className = "status-box show ok";
           status.textContent = "Cambios guardados correctamente.";
@@ -2858,17 +2531,15 @@
 
     function abrirLeerNotificaciones() {
       document.getElementById("notifyReadList").innerHTML = crearTarjetaSimple("Cargando notificaciones...", "Consultando mensajes recibidos.");
-      document.getElementById("ReadSubtitle").textContent = "Mensajes recibidos (" + currentModule + ")";
+      document.getElementById("notifyReadSubtitle").textContent = "Mensajes recibidos (" + currentModule + ")";
       showScreen("notifyReadScreen");
       
       API.obtenerNotificacionesUsuario(
-        currentModule,
-        obtenerIdSesionSegura(),
         respuesta => {
           renderNotificacionesLeidas(respuesta.notificaciones);
         },
         error => {
-          document.getElementById("ReadList").innerHTML = crearTarjetaSimple("Error", obtenerMensajeError(error));
+          document.getElementById("notifyReadList").innerHTML = crearTarjetaSimple("Error", obtenerMensajeError(error));
         }
       );
     }
@@ -2901,18 +2572,12 @@
       inicializarIconos();
     }
 
-    function estadoNotMeta(est) {
-      return estadoNotificacionMeta(est);
-    }
-
     function abrirDetalleNotificacionRecibida(idNotificacion) {
       showScreen("notifyDetailScreen");
       document.getElementById("notifyDetailContent").innerHTML = crearTarjetaSimple("Cargando mensaje...", "Actualizando estado de lectura.");
       
       API.obtenerDetalleNotificacion(
         idNotificacion,
-        currentModule,
-        obtenerIdSesionSegura(),
         respuesta => {
           const n = respuesta.notificacion;
           const meta = estadoNotificacionMeta(n.Estado);
@@ -2973,8 +2638,6 @@
       
       API.guardarNotificacion(
         { IDUsuario: id, Mensaje: msg },
-        currentModule,
-        obtenerIdSesionSegura(),
         respuesta => {
           status.className = "status-box show ok";
           status.textContent = "Notificación enviada correctamente a " + respuesta.Nombre + " " + respuesta.Apellidos;
@@ -2992,8 +2655,6 @@
       showScreen("notifySentScreen");
       
       API.obtenerNotificacionesEnviadas(
-        currentModule,
-        obtenerIdSesionSegura(),
         respuesta => {
           renderNotificacionesEnviadasLista(respuesta.notificaciones);
         },
@@ -3023,35 +2684,6 @@
         container.appendChild(card);
       });
       inicializarIconos();
-    }
-
-    function abrirDetalleNotificacionEnviada(idNotificacion) {
-      showScreen("notifyDetailScreen");
-      document.getElementById("notifyDetailContent").innerHTML = crearTarjetaSimple("Cargando detalle...", "Consultando base de datos.");
-      
-      API.obtenerDetalleNotificacionEnviada(
-        idNotificacion,
-        currentModule,
-        obtenerIdSesionSegura(),
-        respuesta => {
-          const n = respuesta.notificacion;
-          const meta = estadoNotificacionMeta(n.Estado);
-          document.getElementById("notifyDetailIcon").className = `brand-icon solid-${meta.color}`;
-          document.getElementById("notifyDetailIcon").setAttribute("data-icon", "report");
-          document.getElementById("notifyDetailContent").innerHTML = `
-            <article class="notification-card-full" style="border-left:7px solid var(--green);">
-              <p class="notification-date">Para: ${escapeHTML(n.Nombre)} ${escapeHTML(n.Apellidos)}</p>
-              <p class="notification-date">Enviado: ${escapeHTML(n.FechaEnvio)}</p>
-              <p class="notification-message">${escapeHTML(n.Mensaje)}</p>
-              <p class="notification-meta"><strong>Estatus lectura:</strong> ${meta.texto}</p>
-              ${n.FechaLectura ? `<p class="notification-meta"><strong>Leído el:</strong> ${escapeHTML(n.FechaLectura)}</p>` : ""}
-            </article>
-          `;
-        },
-        error => {
-          document.getElementById("notifyDetailContent").innerHTML = crearTarjetaSimple("Error", obtenerMensajeError(error));
-        }
-      );
     }
 
     function openTipoIncidencia() {
@@ -3091,8 +2723,6 @@
       select.innerHTML = `<option value="">Cargando docentes...</option>`;
       
       API.obtenerUsuariosParaFormulario(
-        currentModule,
-        obtenerIdSesionSegura(),
         usuarios => {
           select.innerHTML = `<option value="">Seleccionar docente</option>`;
           usuarios.forEach(u => {
@@ -3137,6 +2767,7 @@
 
     function guardarFormulario() {
       const usrIDUsuario = document.getElementById("formUsuario").value;
+      const usuarioIDAcceso = sessionStorage.getItem("userIDAcceso");
       if (!usrIDUsuario) {
         alert("Selecciona un docente afectado.");
         return;
@@ -3154,15 +2785,15 @@
         Uso2Fecha: valorInput("uso2Fecha"),
         Uso3Fecha: valorInput("uso3Fecha"),
         LicenciaMedica: valorInput("formLicencia"),
-        Observaciones: valorInput("formObservaciones")
+        Observaciones: valorInput("formObservaciones"),
+        RegistradoPor: usuarioIDAcceso
       };
       
+      showScreen("splash", false);
       mostrarEstadoFormulario("Guardando incidencia...", false, false);
       
       API.guardarIncidencia(
         datos,
-        currentModule,
-        obtenerIdSesionSegura(),
         resultado => {
           mostrarEstadoFormulario("Incidencia guardada correctamente.", false, true);
           setTimeout(function() { abrirDetalleIncidencia(resultado.IDIncidencia); }, 1200);
@@ -3223,8 +2854,6 @@
       showScreen("dataScreen");
       
       API.obtenerReporteDia(
-        currentModule,
-        obtenerIdSesionSegura(),
         respuesta => {
           document.getElementById("dataSubtitle").textContent = "Personal activo o con incidencias el " + formatearFecha(respuesta.fecha);
           document.getElementById("dataStats").innerHTML = renderEstadisticaGeneral(respuesta);
@@ -3283,8 +2912,6 @@
       showScreen("dataScreen");
       
       API.obtenerReporteSemanal(
-        currentModule,
-        obtenerIdSesionSegura(),
         r => {
           document.getElementById("dataSubtitle").textContent = `Del ${formatearFecha(r.fechaInicio)} al ${formatearFecha(r.fechaFin)}`;
           document.getElementById("dataStats").innerHTML = renderEstadisticaGeneral(r);
@@ -3306,18 +2933,19 @@
     function ejecutarConsultaFechas() {
       const inicio = document.getElementById("rangeFechaInicio").value;
       const fin = document.getElementById("rangeFechaFin").value;
+      const status = document.getElementById("rangeStatus");
       
       if (!inicio || !fin) {
         alert("Selecciona ambas fechas para el rango de consulta.");
         return;
       }
+      status.className = "status-box show";
+      status.textContent = "Consultando...";
       
-      // Llama directo a la API con sus parámetros correspondientes
       API.consultarFechas(
         { FechaInicio: inicio, FechaFin: fin },
-        currentModule,
-        obtenerIdSesionSegura(),
         r => {
+          status.className = "status-box";
           document.getElementById("rangeStats").innerHTML = renderEstadisticaGeneral(r);
           const container = document.getElementById("rangeResults");
           container.innerHTML = "";
@@ -3335,7 +2963,8 @@
           inicializarIconos();
         },
         error => {
-          alert(obtenerMensajeError(error));
+          status.className = "status-box show error";
+          status.textContent = obtenerMensajeError(error);
         }
       );
     }
@@ -3365,8 +2994,6 @@
       
       API.obtenerEstadisticaMensual(
         selectedPersonID,
-        currentModule,
-        obtenerIdSesionSegura(),
         mes,
         anio,
         res => {

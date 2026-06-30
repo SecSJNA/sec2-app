@@ -110,12 +110,22 @@ let selectedIncidentID = "";
 let selectedNotificationID = "";
 let profileMode = false;
 
-let currentScreen = "splash";
+let currentScreen = "loginScreen";
 let navigationStack = [];
 
+// Enrutador de arranque seguro (Reemplazo del temporizador)
 window.addEventListener("load", () => {
-  // Dependencia de ui.js: inicializarIconos
   inicializarIconos();
-  // Dependencia de ui.js: showScreen
-  setTimeout(() => showScreen("main", false), 1550);
+  
+  // Verificamos si existe un registro de sesión activo o llave de acceso
+  const sesionActiva = sessionStorage.getItem("userIDAcceso");
+  
+  if (sesionActiva) {
+    // Si hay sesión viva, restauramos el módulo en memoria y entramos directo
+    currentModule = sessionStorage.getItem("currentActiveModule") || "";
+    showScreen("main", false);
+  } else {
+    // Si no hay sesión, forzamos la vista obligatoria de inicio de sesión
+    showScreen("loginScreen", false);
+  }
 });

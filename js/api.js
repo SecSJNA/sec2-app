@@ -4,13 +4,13 @@ function getRequest(paramsObj, onSuccess, onFailure) {
   const params = new URLSearchParams(paramsObj);
   
   fetch(`${APPS_SCRIPT_URL}?${params.toString()}`)
-    .then(response => {
+    .then(function(response) {
       if (!response.ok) {
         throw new Error("Error HTTP de red: " + response.status);
       }
       return response.text();
     })
-    .then(text => {
+    .then(function(text) {
       try {
         const data = JSON.parse(text);
         if (data.success) {
@@ -32,7 +32,7 @@ function getRequest(paramsObj, onSuccess, onFailure) {
         }
       }
     })
-    .catch(error => {
+    .catch(function(error) {
       console.error("GET Fetch Error:", error);
       onFailure("No se pudo conectar con el servidor. Verifica tu conexión de red o la URL de la Web App.");
     });
@@ -43,13 +43,13 @@ function postRequest(payload, onSuccess, onFailure) {
     method: "POST",
     body: JSON.stringify(payload)
   })
-    .then(response => {
+    .then(function(response) {
       if (!response.ok) {
         throw new Error("Error HTTP de red: " + response.status);
       }
       return response.text();
     })
-    .then(text => {
+    .then(function(text) {
       try {
         const data = JSON.parse(text);
         if (data.success) {
@@ -65,13 +65,24 @@ function postRequest(payload, onSuccess, onFailure) {
         }
       }
     })
-    .catch(error => {
+    .catch(function(error) {
       console.error("POST Fetch Error:", error);
       onFailure("Error de conexión de red al intentar guardar datos.");
     });
 }
 
 const API = {
+  // Ruta de comunicación validada para inicio de sesión (Paso 3)
+  iniciarSesion: function(idAcceso, contrasena, onSuccess, onFailure) {
+    postRequest({
+      action: "iniciarSesion",
+      datos: {
+        IDAcceso: idAcceso,
+        Contrasena: contrasena
+      }
+    }, onSuccess, onFailure);
+  },
+
   obtenerUsuariosParaFormulario: function(onSuccess, onFailure) {
     getRequest({ action: "obtenerUsuariosParaFormulario" }, onSuccess, onFailure);
   },

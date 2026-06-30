@@ -72,7 +72,6 @@ function postRequest(payload, onSuccess, onFailure) {
 }
 
 const API = {
-  // Ruta de comunicación validada para inicio de sesión (Paso 3)
   iniciarSesion: function(idAcceso, contrasena, onSuccess, onFailure) {
     postRequest({
       action: "iniciarSesion",
@@ -92,7 +91,7 @@ const API = {
       action: "obtenerResumenPersona",
       idPersona: idPersona,
       modulo: currentModule,
-      userTest: TEST_USERS[currentModule]
+      userTest: obtenerIdSesionSegura()
     }, onSuccess, onFailure);
   },
 
@@ -101,7 +100,7 @@ const API = {
       action: "obtenerHistorialPersona",
       idPersona: idPersona,
       modulo: currentModule,
-      userTest: TEST_USERS[currentModule],
+      userTest: obtenerIdSesionSegura(),
       filtro: filtro
     }, onSuccess, onFailure);
   },
@@ -111,7 +110,7 @@ const API = {
       action: "obtenerDetalleIncidencia",
       idIncidencia: idIncidencia,
       modulo: currentModule,
-      userTest: TEST_USERS[currentModule]
+      userTest: obtenerIdSesionSegura()
     }, onSuccess, onFailure);
   },
 
@@ -121,7 +120,7 @@ const API = {
       idIncidencia: idIncidencia,
       datos: datos,
       modulo: currentModule,
-      userTest: TEST_USERS[currentModule]
+      userTest: obtenerIdSesionSegura()
     }, onSuccess, onFailure);
   },
 
@@ -130,7 +129,7 @@ const API = {
       action: "eliminarIncidencia",
       idIncidencia: idIncidencia,
       modulo: currentModule,
-      userTest: TEST_USERS[currentModule]
+      userTest: obtenerIdSesionSegura()
     }, onSuccess, onFailure);
   },
 
@@ -139,7 +138,7 @@ const API = {
       action: "guardarIncidencia",
       datos: datos,
       modulo: currentModule,
-      userTest: TEST_USERS[currentModule]
+      userTest: obtenerIdSesionSegura()
     }, onSuccess, onFailure);
   },
 
@@ -147,7 +146,7 @@ const API = {
     getRequest({
       action: "obtenerReporteDia",
       modulo: currentModule,
-      userTest: TEST_USERS[currentModule]
+      userTest: obtenerIdSesionSegura()
     }, onSuccess, onFailure);
   },
 
@@ -155,7 +154,7 @@ const API = {
     getRequest({
       action: "obtenerReporteSemanal",
       modulo: currentModule,
-      userTest: TEST_USERS[currentModule]
+      userTest: obtenerIdSesionSegura()
     }, onSuccess, onFailure);
   },
 
@@ -164,7 +163,7 @@ const API = {
       action: "consultarFechas",
       rango: JSON.stringify(rango),
       modulo: currentModule,
-      userTest: TEST_USERS[currentModule]
+      userTest: obtenerIdSesionSegura()
     }, onSuccess, onFailure);
   },
 
@@ -173,7 +172,7 @@ const API = {
       action: "guardarNotificacion",
       datos: datos,
       modulo: currentModule,
-      userTest: TEST_USERS[currentModule]
+      userTest: obtenerIdSesionSegura()
     }, onSuccess, onFailure);
   },
 
@@ -181,7 +180,7 @@ const API = {
     getRequest({
       action: "obtenerNotificacionesUsuario",
       modulo: currentModule,
-      userTest: TEST_USERS[currentModule]
+      userTest: obtenerIdSesionSegura()
     }, onSuccess, onFailure);
   },
 
@@ -190,7 +189,7 @@ const API = {
       action: "obtenerDetalleNotificacion",
       idNotificacion: idNotificacion,
       modulo: currentModule,
-      userTest: TEST_USERS[currentModule]
+      userTest: obtenerIdSesionSegura()
     }, onSuccess, onFailure);
   },
 
@@ -198,7 +197,7 @@ const API = {
     getRequest({
       action: "obtenerNotificacionesEnviadas",
       modulo: currentModule,
-      userTest: TEST_USERS[currentModule]
+      userTest: obtenerIdSesionSegura()
     }, onSuccess, onFailure);
   },
 
@@ -207,7 +206,7 @@ const API = {
       action: "obtenerDetalleNotificacionEnviada",
       idNotificacion: idNotificacion,
       modulo: currentModule,
-      userTest: TEST_USERS[currentModule]
+      userTest: obtenerIdSesionSegura()
     }, onSuccess, onFailure);
   },
 
@@ -216,7 +215,7 @@ const API = {
       action: "obtenerEstadisticaMensual",
       idPersona: idPersona,
       modulo: currentModule,
-      userTest: TEST_USERS[currentModule],
+      userTest: obtenerIdSesionSegura(),
       mes: mes,
       anio: anio
     }, onSuccess, onFailure);

@@ -176,22 +176,22 @@ function ejecutarLogin() {
   );
 }
 
-function, esRolDireccion(rolStr) {
+function esRolDireccion(rolStr) {
   const r = (rolStr || "").toLowerCase();
   return r.includes("dirección") || r.includes("dir");
 }
 
-function, esRolCorrespondencia(rolStr) {
+function esRolCorrespondencia(rolStr) {
   const r = (rolStr || "").toLowerCase();
   return r.includes("corresponde") || r.includes("cor");
 }
 
-function, esRolPrefectura(rolStr) {
+function esRolPrefectura(rolStr) {
   const r = (rolStr || "").toLowerCase();
   return r.includes("prefectura") || r.includes("pre");
 }
 
-function, esRolDocente(rolStr) {
+function esRolDocente(rolStr) {
   const r = (rolStr || "").toLowerCase();
   return r.includes("doc");
 }
@@ -373,7 +373,7 @@ function abrirSelectorHistorial() {
       select.innerHTML = `<option value="">Seleccionar docente</option>`;
       usuarios.forEach(usuario => {
         const option = document.createElement("option");
-        option.value = usuario.IDAcceso; // Se usa el IDAcceso (Col H) como llave principal
+        option.value = usuario.IDAcceso;
         option.textContent = `${usuario.Apellidos} ${usuario.Nombre}`;
         select.appendChild(option);
       });
@@ -576,7 +576,7 @@ function renderDetalleIncidencia(respuesta) {
     html += `<button class="primary-button" onclick="abrirEdicionUsoPermiso()">Editar incidencia</button>`;
   }
 
-  if (andEliminar) {
+  if (andPuedeEliminar) {
     html += `<button class="danger-button" onclick="eliminarIncidenciaActual()">Eliminar incidencia</button>`;
   }
 
@@ -700,7 +700,7 @@ function guardarEdicionUso() {
     status.className = "status-box show ok"; status.textContent = "Cambios guardados correctamente.";
     setTimeout(function() { abrirDetalleIncidencia(selectedIncidentID); }, 800);
   }, function(error) {
-    status.className = "status-box show error"; status.textContent = obtenerMensError(error);
+    status.className = "status-box show error"; status.textContent = obtenerMensajeError(error);
   });
 }
 
@@ -767,7 +767,7 @@ function abrirLeerNotificaciones() {
   API.obtenerNotificacionesUsuario(respuesta => {
     renderNotificacionesLeidas(respuesta.notificaciones);
   }, error => {
-    document.getElementById("notifyReadList").innerHTML = crearTarjetaSimple("Error", obtenerMensError(error));
+    document.getElementById("notifyReadList").innerHTML = crearTarjetaSimple("Error", obtenerMensajeError(error));
   });
 }
 
@@ -777,7 +777,7 @@ function renderNotificacionesLeidas(notificaciones) {
     container.innerHTML = crearTarjetaSimple("Sin notificaciones", "No se encontraron mensajes en su bandeja."); return;
   }
   notificaciones.forEach(n => {
-    const meta = estadoNotificacionLeida(n.Estado); const card = document.createElement("article");
+    const meta = estadoNotificacionMeta(n.Estado); const card = document.createElement("article");
     card.className = `notification-card-full ${meta.clase}`;
     card.onclick = () => abrirDetalleNotificacionRecibida(n.IDNotificacion);
     card.innerHTML = `
@@ -796,8 +796,6 @@ function renderNotificacionesLeidas(notificaciones) {
   inicializarIconos();
 }
 
-function NotLeida(est) { return estadoNotificacionMeta(est); }
-
 function abrirDetalleNotificacionRecibida(idNotificacion) {
   showScreen("notifyDetailScreen");
   document.getElementById("notifyDetailContent").innerHTML = crearTarjetaSimple("Cargando mensaje...", "Actualizando estado de lectura.");
@@ -808,14 +806,14 @@ function abrirDetalleNotificacionRecibida(idNotificacion) {
     document.getElementById("notifyDetailIcon").setAttribute("data-icon", "bell");
     document.getElementById("notifyDetailContent").innerHTML = `
       <article class="notification-card-full" style="border-left:7px solid var(--cyan);">
-        <p class="notification-date">Recibido: ${escapeHTML(n.FechaEnvio)}</p>
-        <p class="notification-message">${escapeHTML(n.Mensaje)}</p>
-        <p class="notification-meta"><strong>Estatus:</strong> Leído</p>
-        <p class="notification-meta"><strong>Leído el:</strong> ${escapeHTML(n.FechaLectura)}</p>
+        <p class="notifyDate">Recibido: ${escapeHTML(n.FechaEnvio)}</p>
+        <p class="notifyMsg">${escapeHTML(n.Mensaje)}</p>
+        <p class="notifyMeta"><strong>Estatus:</strong> Leído</p>
+        <p class="notifyMeta"><strong>Leído el:</strong> ${escapeHTML(n.FechaLectura)}</p>
       </article>
     `;
   }, error => {
-    document.getElementById("notifyDetailContent").innerHTML = crearTarjetaSimple("Error al leer", obtenerMensError(error));
+    document.getElementById("notifyDetailContent").innerHTML = crearTarjetaSimple("Error al leer", obtenerMensajeError(error));
   });
 }
 
@@ -830,7 +828,7 @@ function abrirEnviarNotificacion() {
       opt.textContent = `${u.Apellidos} ${u.Nombre} (${u.Rol})`; select.appendChild(opt);
     });
   }, error => {
-    select.innerHTML = `<option value="">Error cargando personal</option>`; alert(obtenerMensError(error));
+    select.innerHTML = `<option value="">Error cargando personal</option>`; alert(obtenerMensajeError(error));
   });
 }
 
@@ -847,7 +845,7 @@ function ejecutarEnvioNotificacion() {
     status.textContent = "Notificación enviada correctamente a " + respuesta.Nombre + " " + respuesta.Apellidos;
     document.getElementById("notifyMessage").value = "";
   }, error => {
-    status.className = "status-box show error"; status.textContent = obtenerMensError(error);
+    status.className = "status-box show error"; status.textContent = obtenerMensajeError(error);
   });
 }
 
@@ -858,7 +856,7 @@ function abrirNotificacionesEnviadas() {
   API.obtenerNotificacionesEnviadas(respuesta => {
     renderNotificacionesEnviadasLista(respuesta.notificaciones);
   }, error => {
-    document.getElementById("notifySentList").innerHTML = crearTarjetaSimple("Error", obtenerMensError(error));
+    document.getElementById("notifySentList").innerHTML = crearTarjetaSimple("Error", obtenerMensajeError(error));
   });
 }
 
@@ -883,13 +881,14 @@ function renderNotificacionesEnviadasLista(notificaciones) {
 
 function abrirDetalleNotificacionEnviada(idNotif) { alert("Revisando estatus de lectura del mensaje: " + idNotif); }
 
-function obtenerMensajeError(err) {
-  return err.message || err;
-}
-
 function esPermisoOfTexto(tipo) { return String(tipo || "").toLowerCase() === "permiso oficial"; }
 
 function esPermisoOficialTexto(tipo) { return String(tipo || "").toLowerCase() === "permiso oficial"; }
+
+function renderError(error) {
+  document.getElementById("dataList").innerHTML = crearTarjetaSimple("Error", obtenerMensajeError(error));
+  showScreen("dataScreen", false);
+}
 
 function openTipoIncidencia() {
   const container = document.getElementById("typeList"); container.innerHTML = "";
@@ -1137,4 +1136,8 @@ function consultarEstadisticaMensual() {
   }, function(error) {
     status.className = "status-box show error"; status.textContent = obtenerMensajeError(error);
   });
+}
+
+function obtenerMensajeError(err) {
+  return err.message || err;
 }

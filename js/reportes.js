@@ -13,9 +13,9 @@ function renderReporteDia(respuesta) {
   document.getElementById("dataStats").innerHTML = crearStatsHTML(respuesta.presentes, respuesta.ausentes);
 
   document.getElementById("dataList").innerHTML = `
-        <h2 class="section-title">Incidencias activas</h2>
-        <p class="section-subtitle">Fechas cercanas al periodo consultado.</p>
-      `;
+    <h2 class="section-title">Incidencias activas</h2>
+    <p class="section-subtitle">Fechas cercanas al periodo consultado.</p>
+  `;
   renderListaIncidenciasEn("dataList", respuesta.incidencias, "No hay incidencias activas para este día.");
 }
 
@@ -36,9 +36,9 @@ function renderReporteSemanal(respuesta) {
   const lista = document.getElementById("dataList");
 
   lista.innerHTML = `
-        <h2 class="section-title">Incidencias de la semana</h2>
-        <p class="section-subtitle">Fechas cercanas al periodo consultado.</p>
-      `;
+    <h2 class="section-title">Incidencias de la semana</h2>
+    <p class="section-subtitle">Fechas cercanas al periodo consultado.</p>
+  `;
   if (!respuesta.incidencias || respuesta.incidencias.length === 0) {
     lista.innerHTML += crearTarjetaSimple("Sin registros", "No hay incidencias activas en esta semana.");
     inicializarIconos();
@@ -89,9 +89,9 @@ function renderConsultaFechas(respuesta) {
   document.getElementById("rangeStats").innerHTML = crearStatsHTML(respuesta.presentes, respuesta.ausentes);
 
   results.innerHTML = `
-        <h2 class="section-title">Resultados</h2>
-        <p class="section-subtitle">Fechas cercanas al periodo consultado.</p>
-      `;
+    <h2 class="section-title">Resultados</h2>
+    <p class="section-subtitle">Fechas cercanas al periodo consultado.</p>
+  `;
   if (total === 0) {
     results.innerHTML += crearTarjetaSimple("Sin resultados", "No se encontraron permisos en esas fechas.");
     return;
@@ -127,10 +127,7 @@ function consultarEstadisticaMensual() {
   status.className = "status-box show";
   status.textContent = "Consultando estadística mensual...";
 
-  API.obtenerEstadisticaMensual(
-    selectedPersonID,
-    mes,
-    anio,
+  API.obtenerEstadisticaMensual(selectedPersonID, mes, anio,
     renderEstadisticaMensual,
     error => {
       status.className = "status-box show error";
@@ -156,34 +153,34 @@ function renderEstadisticaMensual(respuesta) {
     const meta = iconMeta(item.tipo);
     const altura = item.cantidad === 0 ? 3 : Math.max(8, Math.round((item.cantidad / maximo) * 160));
     bars += `
-          <div class="bar-item">
-            <div class="bar-value">${item.cantidad}</div>
-            <div class="bar solid-${meta.color}" style="height:${altura}px;"></div>
-            <div class="bar-label">${escapeHTML(abreviarTipo(item.tipo))}</div>
-           </div>
-        `;
+      <div class="bar-item">
+        <div class="bar-value">${item.cantidad}</div>
+        <div class="bar solid-${meta.color}" style="height:${altura}px;"></div>
+        <div class="bar-label">${escapeHTML(abreviarTipo(item.tipo))}</div>
+      </div>
+    `;
   });
   container.innerHTML = `
-        <article class="data-card">
-          <h2 class="data-card-title">Resumen mensual</h2>
-          <p class="data-card-text"><strong>Persona:</strong> ${escapeHTML(respuesta.persona.Nombre)} ${escapeHTML(respuesta.persona.Apellidos)}</p>
-          <p class="data-card-text"><strong>Periodo:</strong> ${respuesta.mes}/${respuesta.anio}</p>
-          <p class="data-card-text"><strong>Total de incidencias:</strong> ${respuesta.total}</p>
-          <p class="data-card-text"><strong>Tipo más frecuente:</strong> ${escapeHTML(respuesta.tipoMasFrecuente)}</p>
-        </article>
+    <article class="data-card">
+      <h2 class="data-card-title">Resumen mensual</h2>
+      <p class="data-card-text"><strong>Persona:</strong> ${escapeHTML(respuesta.persona.Nombre)} ${escapeHTML(respuesta.persona.Apellidos)}</p>
+      <p class="data-card-text"><strong>Periodo:</strong> ${respuesta.mes}/${respuesta.anio}</p>
+      <p class="data-card-text"><strong>Total de incidencias:</strong> ${respuesta.total}</p>
+      <p class="data-card-text"><strong>Tipo más frecuente:</strong> ${escapeHTML(respuesta.tipoMasFrecuente)}</p>
+    </article>
 
-        <section class="chart-wrap">
-           <h2 class="section-title">Gráfica mensual</h2>
-          <p class="section-subtitle">Cantidad de incidencias por tipo.</p>
+    <section class="chart-wrap">
+       <h2 class="section-title">Gráfica mensual</h2>
+      <p class="section-subtitle">Cantidad de incidencias por tipo.</p>
 
-          <div class="chart-area">
-            <div class="chart-y">Cantidad</div>
-            <div class="bars">${bars}</div>
-          </div>
+      <div class="chart-area">
+        <div class="chart-y">Cantidad</div>
+        <div class="bars">${bars}</div>
+      </div>
 
-          <div class="chart-axis-label">Tipo de incidencia</div>
-        </section>
-      `;
+      <div class="chart-axis-label">Tipo de incidencia</div>
+    </section>
+  `;
   inicializarIconos();
 }
 
@@ -225,22 +222,22 @@ function renderListaIncidenciasEn(idContenedor, incidencias, mensajeVacio) {
 
 function crearStatsHTML(presentes, ausentes) {
   return `
-        <section class="summary-stat-row">
-          <article class="summary-big-card presentes">
-            <div class="summary-big-icon solid-green" data-icon="user"></div>
-            <div>
-              <p class="summary-big-title color-green">Presentes</p>
-              <p class="summary-big-number color-green">${presentes}</p>
-             </div>
-          </article>
+    <section class="summary-stat-row">
+      <article class="summary-big-card presentes">
+        <div class="summary-big-icon solid-green" data-icon="user"></div>
+        <div>
+          <p class="summary-big-title color-green">Presentes</p>
+          <p class="summary-big-number color-green">${presentes}</p>
+        </div>
+      </article>
 
-          <article class="summary-big-card ausentes">
-            <div class="summary-big-icon solid-red" data-icon="user"></div>
-            <div>
-              <p class="summary-big-title color-red">Ausentes</p>
-              <p class="summary-big-number color-red">${ausentes}</p>
-            </div>
-           </article>
-        </section>
-      `;
+      <article class="summary-big-card ausentes">
+        <div class="summary-big-icon solid-red" data-icon="user"></div>
+        <div>
+          <p class="summary-big-title color-red">Ausentes</p>
+          <p class="summary-big-number color-red">${ausentes}</p>
+        </div>
+      </article>
+    </section>
+  `;
 }

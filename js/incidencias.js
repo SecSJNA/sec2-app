@@ -100,9 +100,121 @@ function cargarResumenPersona(idPersona) {
   );
 }
 
+
+function configurarPantallaResumenPersona() {
+  const titulo = document.querySelector("#personSummaryScreen .page-title");
+  const subtitulo = document.querySelector("#personSummaryScreen .page-subtitle");
+  const icono = document.querySelector("#personSummaryScreen .brand-icon");
+
+  if (profileMode) {
+    if (titulo) {
+      titulo.textContent = "Mi perfil";
+      titulo.className = "page-title color-gold";
+    }
+
+    if (subtitulo) {
+      subtitulo.textContent = "Información personal e historial propio";
+    }
+
+    if (icono) {
+      icono.className = "brand-icon solid-gold";
+      icono.setAttribute("data-icon", "user");
+    }
+  } else {
+    if (titulo) {
+      titulo.textContent = "Resumen del docente";
+      titulo.className = "page-title color-green";
+    }
+
+    if (subtitulo) {
+      subtitulo.textContent = "Información general e historial de incidencias";
+    }
+
+    if (icono) {
+      icono.className = "brand-icon solid-green";
+      icono.setAttribute("data-icon", "history");
+    }
+  }
+}
+
+function calcularEstadisticasRapidasResumen(respuesta) {
+  const incidencias = respuesta && Array.isArray(respuesta.incidencias) ? respuesta.incidencias : [];
+  const estadisticasBackend = respuesta && respuesta.estadisticas ? respuesta.estadisticas : {};
+
+  const resultado = {
+    total: Number(estadisticasBackend.total || incidencias.length || 0),
+    permisosOficiales: 0,
+    incapacidades: 0,
+    comisiones: 0,
+    humanitarios: 0,
+    especiales: 0
+  };
+
+  incidencias.forEach(function(incidencia) {
+    const tipo = String(incidencia.TipoIncidencia || "")
+      .trim()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase();
+
+    if (tipo.includes("permiso oficial") || tipo.includes("permiso personal")) {
+      resultado.permisosOficiales++;
+      return;
+    }
+
+    if (tipo.includes("incapacidad") || tipo.includes("licencia medica")) {
+      resultado.incapacidades++;
+      return;
+    }
+
+    if (tipo.includes("comision oficial") || tipo.includes("comision sindical")) {
+      resultado.comisiones++;
+      return;
+    }
+
+    if (tipo.includes("humanitario oficial") || tipo.includes("humanitario sindical")) {
+      resultado.humanitarios++;
+      return;
+    }
+
+    if (tipo.includes("especial")) {
+      resultado.especiales++;
+      return;
+    }
+  });
+
+  /*
+    Si por alguna razón el backend mandó estadísticas pero no mandó lista completa,
+    se respeta el backend como respaldo.
+  */
+  if (!incidencias.length) {
+    resultado.permisosOficiales = Number(estadisticasBackend.permisosOficiales || 0);
+    resultado.incapacidades = Number(estadisticasBackend.incapacidades || 0);
+    resultado.comisiones = Number(estadisticasBackend.comisiones || 0);
+    resultado.especiales = Number(estadisticasBackend.especiales || estadisticasBackend.otras || 0);
+  }
+
+  return resultado;
+}
+
+function crearGridEstadisticasRapidas(stats) {
+  return `
+    <section class="stat-grid stat-grid-compact">
+      ${statMini(stats.total || 0, "Total<br>incidencias", "blue", "humanitario-sindical")}
+      ${statMini(stats.permisosOficiales || 0, "Permisos<br>oficiales", "purple", "permiso-oficial")}
+      ${statMini(stats.incapacidades || 0, "Incapacidades", "green", "incapacidad")}
+      ${statMini(stats.comisiones || 0, "Comisiones", "orange", "comision-oficial")}
+      ${statMini(stats.humanitarios || 0, "Humanitarios", "cyan", "humanitario-oficial")}
+      ${statMini(stats.especiales || 0, "Especiales", "gold", "especial")}
+    </section>
+  `;
+}
+
 function renderResumenPersona(respuesta) {
+  configurarPantallaResumenPersona();
+
   const p = respuesta && respuesta.persona ? respuesta.persona : {};
-  const e = respuesta && respuesta.estadisticas ? respuesta.estadisticas : {};
+  const stats = calcularEstadisticasRapidasResumen(respuesta);
   const ultima = respuesta && respuesta.ultimaIncidencia
     ? formatearFecha(respuesta.ultimaIncidencia.FechaInicio)
     : "Sin registros";
@@ -110,9 +222,8 @@ function renderResumenPersona(respuesta) {
   const tituloOpciones = profileMode ? "Mi historial" : "Opciones de consulta";
   const descripcionHistorial = profileMode
     ? "Ver mi historial personal completo."
-    : "Ver todas las incidencias registradas.";
+    : "Ver todas las incidencias registradas del docente.";
 
-  const idAccesoVisible = p.IDAcceso || selectedPersonID || "Sin dato";
   const moduloVisible = currentModule || sessionStorage.getItem("currentActiveModule") || "";
 
   const html = `
@@ -122,19 +233,12 @@ function renderResumenPersona(respuesta) {
         <div>
           <h2 class="data-card-title">${escapeHTML(p.Nombre || "")} ${escapeHTML(p.Apellidos || "")}</h2>
           <p class="data-card-text"><strong>Turno:</strong> ${escapeHTML(TURNOS_TEXTO[p.Turno] || p.Turno || "Sin dato")}</p>
-          <p class="data-card-text"><strong>IDAcceso:</strong> ${escapeHTML(idAccesoVisible)}</p>
           <p class="data-card-text"><strong>Última incidencia:</strong> ${escapeHTML(ultima)}</p>
         </div>
       </div>
 
       <h2 class="section-title">Estadísticas rápidas</h2>
-      <section class="stat-grid">
-        ${statMini(e.total || 0, "Total<br>incidencias", "blue", "humanitario-sindical")}
-        ${statMini(e.permisosOficiales || 0, "Permisos<br>oficiales", "purple", "permiso-oficial")}
-        ${statMini(e.incapacidades || 0, "Incapacidades", "blue", "incapacidad")}
-        ${statMini(e.comisiones || 0, "Comisiones", "blue-soft", "comision-oficial")}
-        ${statMini(e.otras || 0, "Otras", "gold", "especial")}
-      </section>
+      ${crearGridEstadisticasRapidas(stats)}
 
       <h2 class="section-title">${tituloOpciones}</h2>
       ${optionCard("Historial completo", descripcionHistorial, "green", "history", "cargarHistorialPersona('todas')")}
@@ -146,7 +250,7 @@ function renderResumenPersona(respuesta) {
       <div class="info-icon">i</div>
       <div>
         <h3 class="info-title">Información</h3>
-        <p class="info-text">${profileMode ? "Este apartado es personal y solo de consulta." : "Seleccione una opción para consultar información detallada."}</p>
+        <p class="info-text">${profileMode ? "Este apartado es personal y solo de consulta." : "Seleccione una opción para consultar información detallada del docente."}</p>
       </div>
     </section>
 
@@ -289,7 +393,6 @@ function renderDetalleIncidencia(respuesta) {
     <article class="data-card">
       <h2 class="section-title">Docente</h2>
       <p class="data-card-text"><strong>${escapeHTML(i.Nombre || "")} ${escapeHTML(i.Apellidos || "")}</strong></p>
-      <p class="data-card-text"><strong>IDAcceso:</strong> ${escapeHTML(i.IDUsuario || "Sin dato")}</p>
       <p class="data-card-text"><strong>Turno:</strong> ${escapeHTML(TURNOS_TEXTO[i.Turno] || i.Turno || "Sin dato")}</p>
     </article>
   `;
@@ -771,7 +874,6 @@ function crearCardIncidencia(incidencia, conDetalle) {
       <span class="tag" style="background:${cssVar(meta.color)};">${escapeHTML(incidencia.TipoIncidencia || meta.name || "Incidencia")}</span>
       <p class="incident-detail">${escapeHTML(fechaInicio)} a ${escapeHTML(fechaFin)}</p>
       <p class="incident-detail"><strong>ID Incidencia:</strong> ${escapeHTML(incidencia.IDIncidencia || "Sin ID")}</p>
-      <p class="incident-detail"><strong>IDAcceso:</strong> ${escapeHTML(incidencia.IDUsuario || "Sin dato")}</p>
     </div>
     ${botonDetalle}
   `;

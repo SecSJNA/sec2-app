@@ -1,7 +1,12 @@
 function abrirMiPerfil() {
   profileMode = true;
-  selectedPersonID = TEST_USERS[currentModule];
-  cargarResumenPersona(TEST_USERS[currentModule]);
+  // Ya no usamos TEST_USERS, usamos el ID obtenido de la sesión segura
+  const id = sessionStorage.getItem("userIDAcceso");
+  if (id) {
+    cargarResumenPersona(id);
+  } else {
+    cerrarSesion();
+  }
 }
 
 function abrirSelectorHistorial() {
@@ -33,14 +38,13 @@ function continuarHistorialPersona() {
     alert("Selecciona un docente.");
     return;
   }
-
   profileMode = false;
   cargarResumenPersona(id);
 }
 
 function cargarResumenPersona(idPersona) {
   selectedPersonID = idPersona;
-  document.getElementById("personSummaryContent").innerHTML = crearTarjetaSimple("Cargando resumen...", "Consultando Google Sheets.");
+  document.getElementById("personSummaryContent").innerHTML = crearTarjetaSimple("Cargando resumen...", "Consultando base de datos.");
   showScreen("personSummaryScreen");
 
   API.obtenerResumenPersona(
@@ -59,6 +63,7 @@ function renderResumenPersona(respuesta) {
 
   const tituloOpciones = profileMode ? "Mi historial" : "Opciones de consulta";
   const descripcionHistorial = profileMode ? "Ver mi historial personal completo." : "Ver todas las incidencias registradas.";
+  
   const html = `
         <article class="data-card">
           <div class="summary-header">
@@ -72,7 +77,6 @@ function renderResumenPersona(respuesta) {
           </div>
 
           <h2 class="section-title">Estadísticas rápidas</h2>
-
           <section class="stat-grid">
             ${statMini(e.total, "Total<br>incidencias", "blue", "humanitario-sindical")}
             ${statMini(e.permisosOficiales, "Permisos<br>oficiales", "purple", "permiso-oficial")}
@@ -82,7 +86,6 @@ function renderResumenPersona(respuesta) {
           </section>
 
           <h2 class="section-title">${tituloOpciones}</h2>
-
           ${optionCard("Historial completo", descripcionHistorial, "green", "history", "cargarHistorialPersona('todas')")}
           ${optionCard("Próximas incidencias", "Consultar incidencias futuras programadas.", "blue", "calendar", "cargarHistorialPersona('proximas')")}
           ${optionCard("Estadística mensual", "Consultar gráfica mensual por tipo de incidencia.", "orange", "report", "abrirEstadisticaMensual()")}
@@ -102,7 +105,7 @@ function renderResumenPersona(respuesta) {
             <h2 class="access-title">Acceso: ${currentModule}</h2>
             <p class="access-text">${profileMode ? "Consulta personal sin edición." : "Consulta de historial e incidencias del docente."}</p>
           </div>
-          <button class="logout-fake" onclick="goMain()">Cerrar<br>sesión</button>
+          <button class="logout-fake" onclick="cerrarSesion()">Cerrar<br>sesión</button>
         </section>
       `;
   document.getElementById("personSummaryContent").innerHTML = html;
@@ -136,15 +139,13 @@ function cargarHistorialPersona(filtro) {
   document.getElementById("dataTitle").textContent = filtro === "proximas" ? "Próximas incidencias" : "Historial completo";
   document.getElementById("dataSubtitle").textContent = "Consulta de incidencias registradas.";
   document.getElementById("dataStats").innerHTML = "";
-  document.getElementById("dataList").innerHTML = crearTarjetaSimple("Cargando historial...", "Consultando Google Sheets.");
+  document.getElementById("dataList").innerHTML = crearTarjetaSimple("Cargando historial...", "Consultando base de datos.");
   document.getElementById("dataAccessName").textContent = currentModule;
   document.getElementById("dataBrandIcon").className = "brand-icon solid-green";
   document.getElementById("dataBrandIcon").setAttribute("data-icon", "history");
   showScreen("dataScreen");
 
-  API.obtenerHistorialPersona(
-    selectedPersonID,
-    filtro,
+  API.obtenerHistorialPersona(selectedPersonID, filtro,
     respuesta => {
       document.getElementById("dataSubtitle").textContent = `${respuesta.persona.Nombre} ${respuesta.persona.Apellidos}`;
       renderHistorialConDetalles(respuesta.incidencias);
@@ -160,7 +161,6 @@ function renderHistorialConDetalles(incidencias) {
     container.innerHTML = crearTarjetaSimple("Sin registros", "No hay incidencias para mostrar.");
     return;
   }
-
   container.innerHTML = `
         <h2 class="section-title">Incidencias registradas</h2>
         <p class="section-subtitle">Fechas cercanas al periodo consultado.</p>
@@ -168,17 +168,15 @@ function renderHistorialConDetalles(incidencias) {
   incidencias.forEach(incidencia => {
     container.appendChild(crearCardIncidencia(incidencia, true));
   });
-
   inicializarIconos();
 }
 
 function abrirDetalleIncidencia(idIncidencia) {
   selectedIncidentID = idIncidencia;
-  document.getElementById("detailContent").innerHTML = crearTarjetaSimple("Cargando detalle...", "Consultando Google Sheets.");
+  document.getElementById("detailContent").innerHTML = crearTarjetaSimple("Cargando detalle...", "Consultando base de datos.");
   showScreen("detailScreen");
 
-  API.obtenerDetalleIncidencia(
-    idIncidencia,
+  API.obtenerDetalleIncidencia(idIncidencia,
     renderDetalleIncidencia,
     error => {
       document.getElementById("detailContent").innerHTML = crearTarjetaSimple("Error", obtenerMensajeError(error));
@@ -194,6 +192,7 @@ function renderDetalleIncidencia(respuesta) {
 
   document.getElementById("detailBrandIcon").className = `brand-icon solid-${meta.color}`;
   document.getElementById("detailBrandIcon").setAttribute("data-icon", meta.icono);
+  
   let html = `
         <article class="data-card">
           <div style="display:grid;grid-template-columns:60px 1fr;gap:12px;align-items:center;">
@@ -263,7 +262,7 @@ function renderDetalleIncidencia(respuesta) {
             <h2 class="access-title">Acceso: ${currentModule}</h2>
             <p class="access-text">${profileMode ? "Consulta personal sin edición." : "Consulta y monitoreo de incidencias."}</p>
           </div>
-          <button class="logout-fake" onclick="goMain()">Cerrar<br>sesión</button>
+          <button class="logout-fake" onclick="cerrarSesion()">Cerrar<br>sesión</button>
         </section>
       `;
   document.getElementById("detailContent").innerHTML = html;
@@ -304,8 +303,7 @@ function abrirEdicionUsoPermiso() {
   document.getElementById("editUseContent").innerHTML = crearTarjetaSimple("Cargando edición...", "Consultando permiso oficial.");
   showScreen("editUseScreen");
 
-  API.obtenerDetalleIncidencia(
-    selectedIncidentID,
+  API.obtenerDetalleIncidencia(selectedIncidentID,
     respuesta => renderEditarUso(respuesta.incidencia),
     error => {
       document.getElementById("editUseContent").innerHTML = crearTarjetaSimple("Error", obtenerMensajeError(error));
@@ -348,7 +346,7 @@ function renderEditarUso(i) {
             <h2 class="access-title">Acceso: Dirección</h2>
             <p class="access-text">Edición de fechas de uso pendientes.</p>
           </div>
-          <button class="logout-fake" onclick="goMain()">Cerrar<br>sesión</button>
+          <button class="logout-fake" onclick="cerrarSesion()">Cerrar<br>sesión</button>
         </section>
       `;
   document.getElementById("editUseContent").innerHTML = html;
@@ -375,9 +373,7 @@ function editUsoRow(num, fecha, estado) {
 }
 
 function guardarEdicionUso() {
-  if (!confirm("¿Confirmas guardar las fechas de uso pendientes?")) {
-    return;
-  }
+  if (!confirm("¿Confirmas guardar las fechas de uso pendientes?")) return;
 
   const status = document.getElementById("editUseStatus");
   status.className = "status-box show";
@@ -389,9 +385,7 @@ function guardarEdicionUso() {
     Uso3Fecha: valorInput("editUso3")
   };
 
-  API.guardarUsosPermisoOficial(
-    selectedIncidentID,
-    datos,
+  API.guardarUsosPermisoOficial(selectedIncidentID, datos,
     () => {
       status.className = "status-box show ok";
       status.textContent = "Cambios guardados correctamente.";
@@ -410,15 +404,12 @@ function valorInput(id) {
 }
 
 function eliminarIncidenciaActual() {
-  if (!confirm("¿Confirmas eliminar esta incidencia?")) {
-    return;
-  }
+  if (!confirm("¿Confirmas eliminar esta incidencia?")) return;
 
-  API.eliminarIncidencia(
-    selectedIncidentID,
+  API.eliminarIncidencia(selectedIncidentID,
     () => {
       alert("Incidencia eliminada correctamente.");
-      cargarResumenPersona(selectedPersonID || TEST_USERS[currentModule]);
+      cargarResumenPersona(selectedPersonID);
     },
     error => alert(obtenerMensajeError(error))
   );
@@ -453,7 +444,6 @@ function buscarTipo(nombre) {
 
 function abrirFormularioTipo(nombreTipo) {
   selectedType = buscarTipo(nombreTipo);
-
   document.getElementById("formTitle").textContent = selectedType.nombre;
   document.getElementById("formTitle").className = `page-title color-${selectedType.color}`;
   document.getElementById("formSubtitle").textContent = selectedType.descripcion;
@@ -492,7 +482,6 @@ function cargarUsuariosFormulario() {
     usuarios => {
       const select = document.getElementById("formUsuario");
       select.innerHTML = `<option value="">Seleccionar docente</option>`;
-
       usuarios.forEach(usuario => {
         const option = document.createElement("option");
         option.value = usuario.ID;
@@ -530,30 +519,14 @@ function guardarFormulario() {
     Uso3Fecha: document.getElementById("uso3Fecha").value
   };
 
-  if (!datos.IDUsuario) {
-    mostrarEstadoFormulario("Selecciona un docente.", true);
-    return;
-  }
-
-  if (!datos.TipoIncidencia) {
-    mostrarEstadoFormulario("Selecciona el tipo de incidencia.", true);
-    return;
-  }
-
-  if (selectedType.oficial && !datos.FechaOficial1) {
-    mostrarEstadoFormulario("El permiso oficial requiere al menos Fecha Oficial 1.", true);
-    return;
-  }
-
-  if (!selectedType.oficial && (!datos.FechaInicio || !datos.FechaFin)) {
-    mostrarEstadoFormulario("Selecciona fecha de inicio y fecha de fin.", true);
-    return;
-  }
+  if (!datos.IDUsuario) { mostrarEstadoFormulario("Selecciona un docente.", true); return; }
+  if (!datos.TipoIncidencia) { mostrarEstadoFormulario("Selecciona el tipo de incidencia.", true); return; }
+  if (selectedType.oficial && !datos.FechaOficial1) { mostrarEstadoFormulario("El permiso oficial requiere al menos Fecha Oficial 1.", true); return; }
+  if (!selectedType.oficial && (!datos.FechaInicio || !datos.FechaFin)) { mostrarEstadoFormulario("Selecciona fecha de inicio y fecha de fin.", true); return; }
 
   mostrarEstadoFormulario("Guardando incidencia...", false);
 
-  API.guardarIncidencia(
-    datos,
+  API.guardarIncidencia(datos,
     incidencia => {
       mostrarEstadoFormulario(`Incidencia guardada correctamente: ${incidencia.IDIncidencia}`, false, true);
       selectedIncidentID = incidencia.IDIncidencia;
@@ -574,20 +547,16 @@ function crearCardIncidencia(incidencia, conDetalle) {
 
   const card = document.createElement("article");
   card.className = "incident-card";
-
   card.innerHTML = `
         <div class="person-avatar" data-icon="user"></div>
         <div class="incident-avatar solid-${meta.color}" data-icon="${meta.icono}"></div>
-
         <div>
           <h2 class="incident-name">${escapeHTML(nombreCompleto || "Sin nombre")}</h2>
           <span class="tag" style="background:${cssVar(meta.color)};">${escapeHTML(incidencia.TipoIncidencia || meta.nombre)}</span>
           <p class="incident-detail">${fechaInicio} a ${fechaFin}</p>
           <p class="incident-detail"><strong>ID:</strong> ${escapeHTML(incidencia.IDIncidencia || "Sin ID")}</p>
         </div>
-
         <button class="detail-button" onclick="abrirDetalleIncidencia('${escapeHTML(incidencia.IDIncidencia)}')">Ver detalle</button>
       `;
-
   return card;
 }

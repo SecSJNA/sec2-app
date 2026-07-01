@@ -6,10 +6,13 @@ function showScreen(id, pushHistory = true) {
   document.querySelectorAll(".screen").forEach(screen => screen.classList.remove("active"));
 
   setTimeout(() => {
-    document.getElementById(id).classList.add("active");
-    currentScreen = id;
-    window.scrollTo(0, 0);
-    inicializarIconos();
+    const el = document.getElementById(id);
+    if (el) {
+      el.classList.add("active");
+      currentScreen = id;
+      window.scrollTo(0, 0);
+      inicializarIconos();
+    }
   }, 35);
 }
 
@@ -19,7 +22,6 @@ function goBack() {
     goMain();
     return;
   }
-
   showScreen(previous, false);
 }
 
@@ -45,62 +47,51 @@ function iconMeta(tipo) {
   if (texto.includes("permiso oficial") || texto.includes("permiso personal")) {
     return { color: "purple", icono: "permiso-oficial", nombre: tipo || "Permiso oficial" };
   }
-
   if (texto.includes("incapacidad") || texto.includes("licencia médica") || texto.includes("licencia medica")) {
     return { color: "blue", icono: "incapacidad", nombre: tipo || "Incapacidad" };
   }
-
   if (texto.includes("humanitario sindical")) {
     return { color: "green", icono: "humanitario-sindical", nombre: tipo || "Humanitario sindical" };
   }
-
   if (texto.includes("humanitario oficial")) {
     return { color: "orange", icono: "humanitario-oficial", nombre: tipo || "Humanitario oficial" };
   }
-
   if (texto.includes("comisión sindical") || texto.includes("comision sindical")) {
     return { color: "purple-soft", icono: "comision-sindical", nombre: tipo || "Comisión sindical" };
   }
-
   if (texto.includes("comisión oficial") || texto.includes("comision oficial")) {
     return { color: "blue-soft", icono: "comision-oficial", nombre: tipo || "Comisión oficial" };
   }
-
   if (texto === "comisión" || texto === "comision") {
     return { color: "blue-soft", icono: "comision-oficial", nombre: tipo || "Comisión oficial" };
   }
-
   if (texto.includes("especial")) {
     return { color: "gold", icono: "especial", nombre: tipo || "Especial" };
   }
-
   return { color: "gold", icono: "especial", nombre: tipo || "Especial" };
 }
 
 function estadoNotificacionMeta(estado) {
   const texto = String(estado || "").toLowerCase();
   if (texto === "leida" || texto === "leída") {
-    return {
-      color: "green",
-      texto: "Leída",
-      icono: "shield",
-      clase: "notification-read"
-    };
+    return { color: "green", texto: "Leída", icono: "shield", clase: "notification-read" };
   }
-
-  return {
-    color: "orange",
-    texto: "No leída",
-    icono: "bell",
-    clase: "notification-unread"
-  };
+  return { color: "orange", texto: "No leída", icono: "bell", clase: "notification-unread" };
 }
 
 function openModule(moduleName) {
+  // BLINDAJE DE UI: Verificación de acceso antes de pintar el módulo
+  const userRol = sessionStorage.getItem("userRol");
+  if (userRol !== "Dirección" && userRol !== moduleName) {
+    alert("Acceso no autorizado al módulo.");
+    return;
+  }
+
   currentModule = moduleName;
   profileMode = false;
-  const config = MODULES[moduleName];
+  sessionStorage.setItem("currentActiveModule", moduleName);
 
+  const config = MODULES[moduleName];
   const avatar = document.getElementById("moduleAvatar");
   avatar.className = `module-avatar bg-${config.avatarColor} color-${config.avatarColor}`;
   avatar.setAttribute("data-icon", config.avatar);
@@ -111,6 +102,7 @@ function openModule(moduleName) {
   document.getElementById("moduleImportantText").textContent = config.importante;
   document.getElementById("accessTitle").textContent = "Acceso: " + moduleName;
   document.getElementById("accessText").textContent = config.acceso;
+  
   const container = document.getElementById("moduleButtons");
   container.innerHTML = "";
 
@@ -119,20 +111,19 @@ function openModule(moduleName) {
     button.className = "professional-card";
     button.onclick = () => openOption(option.nombre);
     button.innerHTML = `
-          <div class="professional-icon solid-${option.color}" data-icon="${option.icono}"></div>
-          <div>
-            <h2 class="professional-title color-${option.color}">${option.nombre}</h2>
-             <p class="professional-desc">${option.descripcion}</p>
-          </div>
-          <div class="professional-arrow color-${option.color}">›</div>
-        `;
+      <div class="professional-icon solid-${option.color}" data-icon="${option.icono}"></div>
+      <div>
+        <h2 class="professional-title color-${option.color}">${option.nombre}</h2>
+        <p class="professional-desc">${option.descripcion}</p>
+      </div>
+      <div class="professional-arrow color-${option.color}">›</div>
+    `;
     container.appendChild(button);
   });
   showScreen("moduleMenu");
 }
 
 function openOption(optionName) {
-  // Dependencias de llamadas externas: abrirMiPerfil, openTipoIncidencia, cargarReporteDia, cargarReporteSemanal, abrirConsultaFechas, abrirSelectorHistorial, abrirNotificaciones
   if (optionName === "Mi perfil" || optionName === "Mi Perfil") return abrirMiPerfil();
   if (optionName === "Otorgar incidencia") return openTipoIncidencia();
   if (optionName === "Reporte del día") return cargarReporteDia();
@@ -144,11 +135,11 @@ function openOption(optionName) {
 
 function crearTarjetaSimple(titulo, texto) {
   return `
-        <article class="data-card">
-          <h2 class="data-card-title">${escapeHTML(titulo)}</h2>
-          <p class="data-card-text">${escapeHTML(texto)}</p>
-        </article>
-      `;
+    <article class="data-card">
+      <h2 class="data-card-title">${escapeHTML(titulo)}</h2>
+      <p class="data-card-text">${escapeHTML(texto)}</p>
+    </article>
+  `;
 }
 
 function mostrarEstadoFormulario(mensaje, esError, esOk) {
@@ -175,10 +166,8 @@ function obtenerMensajeError(error) {
 function formatearFecha(fechaISO) {
   if (!fechaISO) return "Sin fecha";
   if (fechaISO === "Pendiente") return "Pendiente";
-
   const partes = fechaISO.toString().split("-");
   if (partes.length !== 3) return fechaISO;
-
   return `${partes[2]}/${partes[1]}/${partes[0]}`;
 }
 
@@ -190,9 +179,6 @@ function recortarTexto(texto, limite) {
 
 function escapeHTML(texto) {
   return String(texto)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }

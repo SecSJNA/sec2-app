@@ -1409,3 +1409,139 @@ label {
     margin-top: 0;
   }
 }
+
+
+/* =========================================================
+   V2 — Resumen docente / Mi perfil
+   Ajustes compactos para estadísticas rápidas de 6 categorías.
+   No modifica lógica, solo presentación.
+   ========================================================= */
+
+.stat-grid-compact {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 12px 0 16px;
+  align-items: stretch;
+}
+
+.stat-grid-compact .stat-small {
+  height: 92px;
+  min-width: 0;
+  border-radius: 14px;
+  padding: 7px 4px;
+  display: grid;
+  grid-template-rows: 26px 28px 1fr;
+  justify-items: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.stat-grid-compact .mini-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: transparent !important;
+  box-shadow: none;
+}
+
+.stat-grid-compact .stat-num {
+  font-size: 25px;
+  line-height: 1;
+  margin: 0;
+  font-weight: 900;
+}
+
+.stat-grid-compact .stat-label {
+  font-size: 9.5px;
+  line-height: 1.08;
+  color: #111827;
+  font-weight: 800;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+#personSummaryScreen .summary-header {
+  grid-template-columns: 76px 1fr;
+  gap: 12px;
+  padding-bottom: 12px;
+  margin-bottom: 10px;
+}
+
+#personSummaryScreen .big-avatar {
+  width: 70px;
+  height: 70px;
+}
+
+#personSummaryScreen .data-card-title {
+  margin-bottom: 6px;
+}
+
+#personSummaryScreen .section-title {
+  margin-top: 13px;
+  margin-bottom: 8px;
+}
+
+#personSummaryScreen .professional-card {
+  min-height: 82px;
+  grid-template-columns: 66px 1fr 28px;
+  padding: 10px 12px;
+}
+
+#personSummaryScreen .professional-icon {
+  width: 52px;
+  height: 52px;
+}
+
+#personSummaryScreen .professional-title {
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+
+#personSummaryScreen .professional-desc {
+  font-size: 13px;
+}
+
+@media (max-width: 390px) {
+  .stat-grid-compact {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .stat-grid-compact .stat-small {
+    height: 88px;
+    padding: 6px 3px;
+  }
+
+  .stat-grid-compact .mini-icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .stat-grid-compact .stat-num {
+    font-size: 22px;
+  }
+
+  .stat-grid-compact .stat-label {
+    font-size: 8.7px;
+  }
+
+  #personSummaryScreen .professional-card {
+    min-height: 78px;
+    grid-template-columns: 58px 1fr 24px;
+    padding: 9px 10px;
+  }
+
+  #personSummaryScreen .professional-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  #personSummaryScreen .professional-title {
+    font-size: 16px;
+  }
+
+  #personSummaryScreen .professional-desc {
+    font-size: 12.5px;
+  }
+}

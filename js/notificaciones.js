@@ -1,44 +1,83 @@
 function abrirNotificaciones() {
-  if (currentModule === "Dirección") {
+  const rol = canonicalizarRolNotificaciones(sessionStorage.getItem("userRol"));
+  currentModule = currentModule || sessionStorage.getItem("currentActiveModule") || rol;
+
+  if (rol === "Direccion" && currentModule === "Direccion") {
     showScreen("notifyMenuScreen");
-  } else {
-    abrirLeerNotificaciones();
+    return;
   }
+
+  abrirLeerNotificaciones();
 }
 
 function abrirEnviarNotificacion() {
+  const rol = canonicalizarRolNotificaciones(sessionStorage.getItem("userRol"));
+
+  if (rol !== "Direccion") {
+    alert("Solo Dirección puede enviar notificaciones.");
+    return;
+  }
+
   const select = document.getElementById("notifyUserSelect");
+  const mensaje = document.getElementById("notifyMessage");
+  const status = document.getElementById("notifySendStatus");
+
+  if (!select || !mensaje || !status) {
+    alert("Faltan elementos de envío de notificaciones en el index.");
+    return;
+  }
+
   select.innerHTML = `<option value="">Cargando personas...</option>`;
-  document.getElementById("notifyMessage").value = "";
-  document.getElementById("notifySendStatus").className = "status-box";
-  document.getElementById("notifySendStatus").textContent = "";
+  mensaje.value = "";
+  status.className = "status-box";
+  status.textContent = "";
+
+  showScreen("notifySendScreen");
 
   API.obtenerUsuariosParaFormulario(
-    usuarios => {
+    function(usuarios) {
       select.innerHTML = `<option value="">Seleccionar persona</option>`;
-      usuarios.forEach(usuario => {
+
+      (usuarios || []).forEach(function(usuario) {
+        const idAcceso = usuario.IDAcceso || "";
+
+        if (!idAcceso) return;
+
         const option = document.createElement("option");
-        option.value = usuario.ID;
-        option.textContent = `${usuario.Apellidos} ${usuario.Nombre}`;
+        option.value = idAcceso;
+        option.textContent = `${usuario.Apellidos || ""} ${usuario.Nombre || ""} (${usuario.Rol || "Sin rol"})`.trim();
         select.appendChild(option);
       });
     },
-    error => {
+    function(error) {
       select.innerHTML = `<option value="">Error al cargar personas</option>`;
-      const status = document.getElementById("notifySendStatus");
       status.className = "status-box show error";
       status.textContent = obtenerMensajeError(error);
     }
   );
-  showScreen("notifySendScreen");
 }
 
 function ejecutarEnvioNotificacion() {
-  const datos = {
-    IDUsuario: document.getElementById("notifyUserSelect").value,
-    Mensaje: document.getElementById("notifyMessage").value
-  };
+  const rol = canonicalizarRolNotificaciones(sessionStorage.getItem("userRol"));
+
+  if (rol !== "Direccion") {
+    alert("Solo Dirección puede enviar notificaciones.");
+    return;
+  }
+
+  const select = document.getElementById("notifyUserSelect");
+  const mensaje = document.getElementById("notifyMessage");
   const status = document.getElementById("notifySendStatus");
+
+  if (!select || !mensaje || !status) {
+    alert("Faltan elementos de envío de notificaciones en el index.");
+    return;
+  }
+
+  const datos = {
+    IDUsuario: select.value,
+    Mensaje: mensaje.value
+  };
 
   if (!datos.IDUsuario) {
     status.className = "status-box show error";
@@ -46,23 +85,28 @@ function ejecutarEnvioNotificacion() {
     return;
   }
 
-  if (!datos.Mensaje.trim()) {
+  if (!String(datos.Mensaje || "").trim()) {
     status.className = "status-box show error";
     status.textContent = "Escribe un mensaje.";
+    return;
+  }
+
+  if (!confirm("¿Confirmas enviar esta notificación?")) {
     return;
   }
 
   status.className = "status-box show";
   status.textContent = "Enviando notificación...";
 
-  API.guardarNotificacion(datos,
-    notificacion => {
+  API.guardarNotificacion(
+    datos,
+    function(notificacion) {
       status.className = "status-box show ok";
-      status.textContent = `Notificación enviada correctamente: ${notificacion.IDNotificacion}`;
-      document.getElementById("notifyUserSelect").value = "";
-      document.getElementById("notifyMessage").value = "";
+      status.textContent = `Notificación enviada correctamente: ${notificacion.IDNotificacion || "sin folio"}`;
+      select.value = "";
+      mensaje.value = "";
     },
-    error => {
+    function(error) {
       status.className = "status-box show error";
       status.textContent = obtenerMensajeError(error);
     }
@@ -70,170 +114,319 @@ function ejecutarEnvioNotificacion() {
 }
 
 function abrirLeerNotificaciones() {
-  document.getElementById("notifyReadList").innerHTML = crearTarjetaSimple("Cargando notificaciones...", "Consultando mensajes recibidos.");
+  const lista = document.getElementById("notifyReadList");
+  const subtitle = document.getElementById("notifyReadSubtitle");
+
+  if (!lista) {
+    alert("No se encontró notifyReadList en el index.");
+    return;
+  }
+
+  lista.innerHTML = crearTarjetaSimple("Cargando notificaciones...", "Consultando mensajes recibidos.");
+
+  if (subtitle) {
+    subtitle.textContent = "Mensajes recibidos";
+  }
+
   showScreen("notifyReadScreen");
 
-  API.obtenerNotificacionesUsuario(renderLeerNotificaciones,
-    error => {
-      document.getElementById("notifyReadList").innerHTML = crearTarjetaSimple("Error", obtenerMensajeError(error));
+  API.obtenerNotificacionesUsuario(
+    renderLeerNotificaciones,
+    function(error) {
+      lista.innerHTML = crearTarjetaSimple("Error", obtenerMensajeError(error));
     }
   );
 }
 
 function renderLeerNotificaciones(respuesta) {
-  document.getElementById("notifyReadSubtitle").textContent = `${respuesta.usuario.Nombre} ${respuesta.usuario.Apellidos}`;
+  const usuario = respuesta && respuesta.usuario ? respuesta.usuario : {};
+  const subtitle = document.getElementById("notifyReadSubtitle");
   const container = document.getElementById("notifyReadList");
+
+  if (subtitle) {
+    subtitle.textContent = `${usuario.Nombre || ""} ${usuario.Apellidos || ""}`.trim() || "Mensajes recibidos";
+  }
+
+  if (!container) return;
+
   container.innerHTML = "";
 
-  if (!respuesta.notificaciones || respuesta.notificaciones.length === 0) {
+  if (!respuesta || !respuesta.notificaciones || respuesta.notificaciones.length === 0) {
     container.innerHTML = crearTarjetaSimple("Sin notificaciones", "No tienes mensajes recibidos.");
     return;
   }
 
-  respuesta.notificaciones.forEach(notificacion => {
+  respuesta.notificaciones.forEach(function(notificacion) {
     container.appendChild(crearCardNotificacionRecibida(notificacion));
   });
+
   inicializarIconos();
 }
 
 function crearCardNotificacionRecibida(notificacion) {
   const meta = estadoNotificacionMeta(notificacion.Estado);
   const card = document.createElement("article");
-  card.className = `notification-card ${meta.clase}`;
+
+  card.className = `notification-card-full ${meta.clase}`;
   card.innerHTML = `
-    <div class="notification-status-icon solid-${meta.color}" data-icon="${meta.icono}"></div>
-    <div>
-      <p class="notification-date">${escapeHTML(notificacion.FechaEnvio || "Sin fecha")}</p>
-      <p class="notification-message">${escapeHTML(recortarTexto(notificacion.Mensaje || "", 72))}</p>
-      <p class="notification-meta"><strong>Estado:</strong> ${escapeHTML(meta.texto)}</p>
+    <div style="display:grid;grid-template-columns:50px 1fr auto;gap:10px;align-items:center;">
+      <div class="notification-status-icon solid-${meta.color}" data-icon="${meta.icono}"></div>
+      <div>
+        <p class="notification-date">${escapeHTML(notificacion.FechaEnvio || "Sin fecha")}</p>
+        <p class="notification-message">${escapeHTML(recortarTextoSeguro(notificacion.Mensaje || "", 90))}</p>
+        <p class="notification-meta"><strong>Estado:</strong> ${escapeHTML(meta.texto)}</p>
+      </div>
+      <button class="detail-button" onclick="abrirDetalleNotificacionRecibida('${escapeHTML(notificacion.IDNotificacion || "")}')">Ver detalle</button>
     </div>
-    <button class="detail-button" onclick="abrirDetalleNotificacionRecibida('${escapeHTML(notificacion.IDNotificacion)}')">Ver detalle</button>
   `;
+
   return card;
 }
 
 function abrirDetalleNotificacionRecibida(idNotificacion) {
-  selectedNotificationID = idNotificacion;
-  document.getElementById("notifyDetailTitle").textContent = "Detalle de notificación";
-  document.getElementById("notifyDetailTitle").className = "page-title color-cyan";
-  document.getElementById("notifyDetailSubtitle").textContent = "Mensaje recibido";
-  document.getElementById("notifyDetailIcon").className = "brand-icon solid-cyan";
-  document.getElementById("notifyDetailIcon").setAttribute("data-icon", "bell");
-  document.getElementById("notifyDetailContent").innerHTML = crearTarjetaSimple("Cargando detalle...", "Consultando mensaje.");
+  selectedNotificationID = String(idNotificacion || "").trim();
+
+  if (!selectedNotificationID) {
+    alert("No se recibió ID de notificación.");
+    return;
+  }
+
+  prepararPantallaDetalleNotificacion("Detalle de notificación", "Mensaje recibido", "cyan", "bell");
+
+  const contenedor = document.getElementById("notifyDetailContent");
+
+  if (contenedor) {
+    contenedor.innerHTML = crearTarjetaSimple("Cargando detalle...", "Consultando mensaje y actualizando lectura.");
+  }
+
   showScreen("notifyDetailScreen");
 
-  API.obtenerDetalleNotificacion(idNotificacion, 
-    respuesta => renderDetalleNotificacion(respuesta.notificacion, "recibida"),
-    error => {
-      document.getElementById("notifyDetailContent").innerHTML = crearTarjetaSimple("Error", obtenerMensajeError(error));
+  API.obtenerDetalleNotificacion(
+    selectedNotificationID,
+    function(respuesta) {
+      renderDetalleNotificacion(respuesta.notificacion, "recibida");
+    },
+    function(error) {
+      if (contenedor) {
+        contenedor.innerHTML = crearTarjetaSimple("Error", obtenerMensajeError(error));
+      }
     }
   );
 }
 
 function abrirNotificacionesEnviadas() {
-  document.getElementById("notifySentList").innerHTML = crearTarjetaSimple("Cargando notificaciones...", "Consultando mensajes enviados.");
+  const rol = canonicalizarRolNotificaciones(sessionStorage.getItem("userRol"));
+
+  if (rol !== "Direccion") {
+    alert("Solo Dirección puede consultar notificaciones enviadas.");
+    return;
+  }
+
+  const lista = document.getElementById("notifySentList");
+
+  if (!lista) {
+    alert("No se encontró notifySentList en el index.");
+    return;
+  }
+
+  lista.innerHTML = crearTarjetaSimple("Cargando notificaciones...", "Consultando mensajes enviados.");
   showScreen("notifySentScreen");
 
-  API.obtenerNotificacionesEnviadas(renderNotificacionesEnviadas,
-    error => {
-      document.getElementById("notifySentList").innerHTML = crearTarjetaSimple("Error", obtenerMensajeError(error));
+  API.obtenerNotificacionesEnviadas(
+    renderNotificacionesEnviadas,
+    function(error) {
+      lista.innerHTML = crearTarjetaSimple("Error", obtenerMensajeError(error));
     }
   );
 }
 
 function renderNotificacionesEnviadas(respuesta) {
-  document.getElementById("notifySentSubtitle").textContent = `Enviadas por: ${respuesta.usuario.Nombre} ${respuesta.usuario.Apellidos}`;
+  const usuario = respuesta && respuesta.usuario ? respuesta.usuario : {};
+  const subtitle = document.getElementById("notifySentSubtitle");
   const container = document.getElementById("notifySentList");
+
+  if (subtitle) {
+    subtitle.textContent = `Enviadas por: ${usuario.Nombre || ""} ${usuario.Apellidos || ""}`.trim();
+  }
+
+  if (!container) return;
+
   container.innerHTML = "";
 
-  if (!respuesta.notificaciones || respuesta.notificaciones.length === 0) {
+  if (!respuesta || !respuesta.notificaciones || respuesta.notificaciones.length === 0) {
     container.innerHTML = crearTarjetaSimple("Sin notificaciones enviadas", "Aún no has enviado notificaciones.");
     return;
   }
 
-  respuesta.notificaciones.forEach(notificacion => {
+  respuesta.notificaciones.forEach(function(notificacion) {
     container.appendChild(crearCardNotificacionEnviada(notificacion));
   });
+
   inicializarIconos();
 }
 
 function crearCardNotificacionEnviada(notificacion) {
   const meta = estadoNotificacionMeta(notificacion.Estado);
   const nombre = `${notificacion.Nombre || ""} ${notificacion.Apellidos || ""}`.trim();
-
   const card = document.createElement("article");
-  card.className = `notification-card ${meta.clase}`;
+
+  card.className = `notification-card-full ${meta.clase}`;
   card.innerHTML = `
-    <div class="notification-status-icon solid-${meta.color}" data-icon="${meta.icono}"></div>
-    <div>
-      <p class="notification-date">${escapeHTML(notificacion.FechaEnvio || "Sin fecha")}</p>
-      <p class="notification-message">${escapeHTML(nombre || "Sin destinatario")}</p>
-      <p class="notification-meta"><strong>Estado:</strong> ${escapeHTML(meta.texto)}</p>
+    <div style="display:grid;grid-template-columns:50px 1fr auto;gap:10px;align-items:center;">
+      <div class="notification-status-icon solid-${meta.color}" data-icon="${meta.icono}"></div>
+      <div>
+        <p class="notification-date">${escapeHTML(notificacion.FechaEnvio || "Sin fecha")}</p>
+        <p class="notification-message">${escapeHTML(nombre || "Sin destinatario")}</p>
+        <p class="notification-meta"><strong>IDAcceso:</strong> ${escapeHTML(notificacion.IDUsuario || "Sin dato")}</p>
+        <p class="notification-meta"><strong>Estado:</strong> ${escapeHTML(meta.texto)}</p>
+      </div>
+      <button class="detail-button" onclick="abrirDetalleNotificacionEnviada('${escapeHTML(notificacion.IDNotificacion || "")}')">Ver detalle</button>
     </div>
-    <button class="detail-button" onclick="abrirDetalleNotificacionEnviada('${escapeHTML(notificacion.IDNotificacion)}')">Ver detalle</button>
   `;
+
   return card;
 }
 
 function abrirDetalleNotificacionEnviada(idNotificacion) {
-  selectedNotificationID = idNotificacion;
-  document.getElementById("notifyDetailTitle").textContent = "Detalle de enviada";
-  document.getElementById("notifyDetailTitle").className = "page-title color-green";
-  document.getElementById("notifyDetailSubtitle").textContent = "Estado de lectura";
-  document.getElementById("notifyDetailIcon").className = "brand-icon solid-green";
-  document.getElementById("notifyDetailIcon").setAttribute("data-icon", "report");
-  document.getElementById("notifyDetailContent").innerHTML = crearTarjetaSimple("Cargando detalle...", "Consultando mensaje enviado.");
+  const rol = canonicalizarRolNotificaciones(sessionStorage.getItem("userRol"));
+
+  if (rol !== "Direccion") {
+    alert("Solo Dirección puede consultar detalle de notificaciones enviadas.");
+    return;
+  }
+
+  selectedNotificationID = String(idNotificacion || "").trim();
+
+  if (!selectedNotificationID) {
+    alert("No se recibió ID de notificación.");
+    return;
+  }
+
+  prepararPantallaDetalleNotificacion("Detalle de enviada", "Estado de lectura", "green", "report");
+
+  const contenedor = document.getElementById("notifyDetailContent");
+
+  if (contenedor) {
+    contenedor.innerHTML = crearTarjetaSimple("Cargando detalle...", "Consultando mensaje enviado.");
+  }
+
   showScreen("notifyDetailScreen");
 
-  API.obtenerDetalleNotificacionEnviada(idNotificacion, 
-    respuesta => renderDetalleNotificacion(respuesta.notificacion, "enviada"),
-    error => {
-      document.getElementById("notifyDetailContent").innerHTML = crearTarjetaSimple("Error", obtenerMensajeError(error));
+  API.obtenerDetalleNotificacionEnviada(
+    selectedNotificationID,
+    function(respuesta) {
+      renderDetalleNotificacion(respuesta.notificacion, "enviada");
+    },
+    function(error) {
+      if (contenedor) {
+        contenedor.innerHTML = crearTarjetaSimple("Error", obtenerMensajeError(error));
+      }
     }
   );
 }
 
-function renderDetalleNotificacion(notificacion, modo) {
-  const meta = estadoNotificacionMeta(notificacion.Estado);
-  const nombre = `${notificacion.Nombre || ""} ${notificacion.Apellidos || ""}`.trim();
+function prepararPantallaDetalleNotificacion(titulo, subtitulo, color, icono) {
+  const title = document.getElementById("notifyDetailTitle");
+  const subtitle = document.getElementById("notifyDetailSubtitle");
+  const icon = document.getElementById("notifyDetailIcon");
 
-  let html = `
+  if (title) {
+    title.textContent = titulo;
+    title.className = `page-title color-${color}`;
+  }
+
+  if (subtitle) {
+    subtitle.textContent = subtitulo;
+  }
+
+  if (icon) {
+    icon.className = `brand-icon solid-${color}`;
+    icon.setAttribute("data-icon", icono);
+  }
+}
+
+function renderDetalleNotificacion(notificacion, modo) {
+  const n = notificacion || {};
+  const meta = estadoNotificacionMeta(n.Estado);
+  const nombre = `${n.Nombre || ""} ${n.Apellidos || ""}`.trim();
+  const tituloPersona = modo === "enviada" ? "Destinatario" : "Persona";
+
+  const html = `
     <article class="notification-card-full ${meta.clase}">
       <div style="display:grid;grid-template-columns:58px 1fr;gap:12px;align-items:center;">
         <div class="notification-status-icon solid-${meta.color}" data-icon="${meta.icono}"></div>
         <div>
           <h2 class="data-card-title color-${meta.color}">${escapeHTML(meta.texto)}</h2>
-          <p class="data-card-text"><strong>ID:</strong> ${escapeHTML(notificacion.IDNotificacion || "Sin ID")}</p>
+          <p class="data-card-text"><strong>ID Notificación:</strong> ${escapeHTML(n.IDNotificacion || "Sin ID")}</p>
         </div>
       </div>
     </article>
 
     <article class="data-card">
-      <h2 class="section-title">${modo === "enviada" ? "Destinatario" : "Mensaje recibido"}</h2>
+      <h2 class="section-title">${escapeHTML(tituloPersona)}</h2>
       <p class="data-card-text"><strong>${escapeHTML(nombre || "Sin nombre")}</strong></p>
-      <p class="data-card-text"><strong>ID usuario:</strong> ${escapeHTML(notificacion.IDUsuario || "Sin dato")}</p>
-      <p class="data-card-text"><strong>Turno:</strong> ${TURNOS_TEXTO[notificacion.Turno] || notificacion.Turno || "Sin dato"}</p>
+      <p class="data-card-text"><strong>IDAcceso:</strong> ${escapeHTML(n.IDUsuario || "Sin dato")}</p>
+      <p class="data-card-text"><strong>Turno:</strong> ${escapeHTML(TURNOS_TEXTO[n.Turno] || n.Turno || "Sin dato")}</p>
     </article>
 
     <article class="data-card">
       <h2 class="section-title">Mensaje</h2>
-      <p class="data-card-text">${escapeHTML(notificacion.Mensaje || "Sin mensaje.")}</p>
+      <p class="data-card-text">${escapeHTML(n.Mensaje || "Sin mensaje.")}</p>
     </article>
 
     <article class="data-card">
       <h2 class="section-title">Envío</h2>
-      <p class="data-card-text"><strong>Enviado por:</strong> ${escapeHTML(notificacion.EnviadoPor || "Sin dato")}</p>
-      <p class="data-card-text"><strong>Fecha de envío:</strong> ${escapeHTML(notificacion.FechaEnvio || "Sin fecha")}</p>
+      <p class="data-card-text"><strong>Enviado por ID:</strong> ${escapeHTML(n.EnviadoPor || "Sin dato")}</p>
+      <p class="data-card-text"><strong>Fecha de envío:</strong> ${escapeHTML(n.FechaEnvio || "Sin fecha")}</p>
     </article>
 
     <article class="data-card">
       <h2 class="section-title">Lectura</h2>
       <p class="data-card-text"><strong>Estado:</strong> ${escapeHTML(meta.texto)}</p>
-      <p class="data-card-text"><strong>Fecha de lectura:</strong> ${escapeHTML(notificacion.FechaLectura || "Sin lectura registrada")}</p>
-      <p class="data-card-text"><strong>Leído por:</strong> ${escapeHTML(notificacion.LeidoPor || "Sin lectura registrada")}</p>
+      <p class="data-card-text"><strong>Fecha de lectura:</strong> ${escapeHTML(n.FechaLectura || "Sin lectura registrada")}</p>
+      <p class="data-card-text"><strong>Leído por ID:</strong> ${escapeHTML(n.LeidoPor || "Sin lectura registrada")}</p>
     </article>
   `;
 
-  document.getElementById("notifyDetailContent").innerHTML = html;
+  const contenedor = document.getElementById("notifyDetailContent");
+
+  if (contenedor) {
+    contenedor.innerHTML = html;
+  }
+
   inicializarIconos();
+}
+
+function recortarTextoSeguro(texto, limite) {
+  const limpio = String(texto || "");
+  const max = Number(limite || 90);
+
+  if (typeof recortarTexto === "function") {
+    return recortarTexto(limpio, max);
+  }
+
+  if (limpio.length <= max) {
+    return limpio;
+  }
+
+  return limpio.slice(0, max - 1) + "…";
+}
+
+function canonicalizarRolNotificaciones(valor) {
+  if (typeof canonicalizarRolLocal === "function") {
+    return canonicalizarRolLocal(valor);
+  }
+
+  const texto = String(valor || "")
+    .trim()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+
+  if (texto === "direccion" || texto === "dir") return "Direccion";
+  if (texto === "prefectura" || texto === "pre") return "Prefectura";
+  if (texto === "docente" || texto === "doc") return "Docente";
+  if (texto === "correspondencia" || texto === "cor") return "Correspondencia";
+
+  return String(valor || "").trim();
 }

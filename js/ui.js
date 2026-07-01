@@ -1,27 +1,36 @@
 function showScreen(id, pushHistory = true) {
+  if (!id) return;
+
   if (pushHistory && currentScreen && currentScreen !== id) {
     navigationStack.push(currentScreen);
   }
 
-  document.querySelectorAll(".screen").forEach(screen => screen.classList.remove("active"));
+  document.querySelectorAll(".screen").forEach(function(screen) {
+    screen.classList.remove("active");
+  });
 
-  setTimeout(() => {
+  setTimeout(function() {
     const el = document.getElementById(id);
+
     if (el) {
       el.classList.add("active");
       currentScreen = id;
       window.scrollTo(0, 0);
       inicializarIconos();
+    } else {
+      console.warn("Pantalla no encontrada:", id);
     }
   }, 35);
 }
 
 function goBack() {
   const previous = navigationStack.pop();
-  if (!previous || previous === "splash") {
+
+  if (!previous || previous === "splash" || previous === "loginScreen") {
     goMain();
     return;
   }
+
   showScreen(previous, false);
 }
 
@@ -32,105 +41,312 @@ function goMain() {
 }
 
 function inicializarIconos() {
-  document.querySelectorAll("[data-icon]").forEach(el => {
+  document.querySelectorAll("[data-icon]").forEach(function(el) {
     const nombre = el.getAttribute("data-icon");
-    if (SVG[nombre]) el.innerHTML = SVG[nombre];
+
+    if (SVG && SVG[nombre]) {
+      el.innerHTML = SVG[nombre];
+    }
   });
 }
 
 function cssVar(color) {
-  return `var(--${color})`;
+  return `var(--${color || "blue"})`;
+}
+
+function normalizarTextoUI(valor) {
+  return String(valor || "").trim();
+}
+
+function quitarAcentosUI(valor) {
+  return normalizarTextoUI(valor).normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+function canonicalizarRolUI(valor) {
+  const texto = quitarAcentosUI(valor).toLowerCase();
+
+  if (texto === "direccion" || texto === "dir") return "Direccion";
+  if (texto === "prefectura" || texto === "pre") return "Prefectura";
+  if (texto === "docente" || texto === "doc") return "Docente";
+  if (texto === "correspondencia" || texto === "cor") return "Correspondencia";
+
+  return normalizarTextoUI(valor);
+}
+
+function canonicalizarModuloUI(valor) {
+  return canonicalizarRolUI(valor);
+}
+
+function esRolValidoUI(rol) {
+  const r = canonicalizarRolUI(rol);
+
+  return r === "Direccion" ||
+         r === "Prefectura" ||
+         r === "Docente" ||
+         r === "Correspondencia";
+}
+
+function obtenerRolSesionUI() {
+  return canonicalizarRolUI(sessionStorage.getItem("userRol"));
+}
+
+function obtenerIDAccesoSesionUI() {
+  return normalizarTextoUI(sessionStorage.getItem("userIDAcceso"));
+}
+
+function obtenerModuloSesionUI() {
+  return canonicalizarModuloUI(sessionStorage.getItem("currentActiveModule"));
 }
 
 function iconMeta(tipo) {
-  const texto = String(tipo || "").toLowerCase();
+  const original = String(tipo || "").trim();
+  const texto = quitarAcentosUI(original).toLowerCase();
+
   if (texto.includes("permiso oficial") || texto.includes("permiso personal")) {
-    return { color: "purple", icono: "permiso-oficial", nombre: tipo || "Permiso oficial" };
+    return {
+      color: "purple",
+      icono: "permiso-oficial",
+      nombre: original || "Permiso oficial",
+      name: original || "Permiso oficial"
+    };
   }
-  if (texto.includes("incapacidad") || texto.includes("licencia médica") || texto.includes("licencia medica")) {
-    return { color: "blue", icono: "incapacidad", nombre: tipo || "Incapacidad" };
+
+  if (texto.includes("incapacidad") || texto.includes("licencia medica")) {
+    return {
+      color: "blue",
+      icono: "incapacidad",
+      nombre: original || "Incapacidad",
+      name: original || "Incapacidad"
+    };
   }
+
   if (texto.includes("humanitario sindical")) {
-    return { color: "green", icono: "humanitario-sindical", nombre: tipo || "Humanitario sindical" };
+    return {
+      color: "green",
+      icono: "humanitario-sindical",
+      nombre: original || "Humanitario sindical",
+      name: original || "Humanitario sindical"
+    };
   }
+
   if (texto.includes("humanitario oficial")) {
-    return { color: "orange", icono: "humanitario-oficial", nombre: tipo || "Humanitario oficial" };
+    return {
+      color: "orange",
+      icono: "humanitario-oficial",
+      nombre: original || "Humanitario oficial",
+      name: original || "Humanitario oficial"
+    };
   }
-  if (texto.includes("comisión sindical") || texto.includes("comision sindical")) {
-    return { color: "purple-soft", icono: "comision-sindical", nombre: tipo || "Comisión sindical" };
+
+  if (texto.includes("comision sindical")) {
+    return {
+      color: "purple-soft",
+      icono: "comision-sindical",
+      nombre: original || "Comisión sindical",
+      name: original || "Comisión sindical"
+    };
   }
-  if (texto.includes("comisión oficial") || texto.includes("comision oficial")) {
-    return { color: "blue-soft", icono: "comision-oficial", nombre: tipo || "Comisión oficial" };
+
+  if (texto.includes("comision oficial")) {
+    return {
+      color: "blue-soft",
+      icono: "comision-oficial",
+      nombre: original || "Comisión oficial",
+      name: original || "Comisión oficial"
+    };
   }
-  if (texto === "comisión" || texto === "comision") {
-    return { color: "blue-soft", icono: "comision-oficial", nombre: tipo || "Comisión oficial" };
+
+  if (texto === "comision") {
+    return {
+      color: "blue-soft",
+      icono: "comision-oficial",
+      nombre: original || "Comisión oficial",
+      name: original || "Comisión oficial"
+    };
   }
+
   if (texto.includes("especial")) {
-    return { color: "gold", icono: "especial", nombre: tipo || "Especial" };
+    return {
+      color: "gold",
+      icono: "especial",
+      nombre: original || "Especial",
+      name: original || "Especial"
+    };
   }
-  return { color: "gold", icono: "especial", nombre: tipo || "Especial" };
+
+  return {
+    color: "gold",
+    icono: "especial",
+    nombre: original || "Especial",
+    name: original || "Especial"
+  };
 }
 
 function estadoNotificacionMeta(estado) {
-  const texto = String(estado || "").toLowerCase();
-  if (texto === "leida" || texto === "leída") {
-    return { color: "green", texto: "Leída", icono: "shield", clase: "notification-read" };
+  const texto = quitarAcentosUI(estado).toLowerCase();
+
+  if (texto === "leida") {
+    return {
+      color: "green",
+      texto: "Leída",
+      icono: "shield",
+      clase: "notification-read"
+    };
   }
-  return { color: "orange", texto: "No leída", icono: "bell", clase: "notification-unread" };
+
+  return {
+    color: "orange",
+    texto: "No leída",
+    icono: "bell",
+    clase: "notification-unread"
+  };
+}
+
+function esNotificacionLeida(estado) {
+  return estadoNotificacionMeta(estado).texto === "Leída";
 }
 
 function openModule(moduleName) {
-  // BLINDAJE DE UI: Verificación de acceso antes de pintar el módulo
-  const userRol = sessionStorage.getItem("userRol");
-  if (userRol !== "Dirección" && userRol !== moduleName) {
-    alert("Acceso no autorizado al módulo.");
+  const moduloSolicitado = canonicalizarModuloUI(moduleName);
+  const rolSesion = obtenerRolSesionUI();
+  const idAccesoSesion = obtenerIDAccesoSesionUI();
+
+  if (!idAccesoSesion || !esRolValidoUI(rolSesion)) {
+    alert("Sesión inválida. Ingresa nuevamente.");
+    cerrarSesion();
     return;
   }
 
-  currentModule = moduleName;
+  if (!esRolValidoUI(moduloSolicitado) || !MODULES[moduloSolicitado]) {
+    alert("Módulo no reconocido.");
+    return;
+  }
+
+  /*
+    Regla principal:
+    cada usuario solo puede entrar al módulo que coincide exactamente con su rol.
+    Dirección no abre Prefectura, Docente ni Correspondencia desde UI.
+  */
+  if (moduloSolicitado !== rolSesion) {
+    alert(
+      "No tienes acceso a este módulo.\n\n" +
+      "Tu rol registrado es: " + rolSesion + ".\n" +
+      "Solo puedes ingresar al módulo " + rolSesion + "."
+    );
+    return;
+  }
+
+  currentModule = moduloSolicitado;
   profileMode = false;
-  sessionStorage.setItem("currentActiveModule", moduleName);
 
-  const config = MODULES[moduleName];
+  sessionStorage.setItem("currentActiveModule", moduloSolicitado);
+
+  const config = MODULES[moduloSolicitado];
+
   const avatar = document.getElementById("moduleAvatar");
-  avatar.className = `module-avatar bg-${config.avatarColor} color-${config.avatarColor}`;
-  avatar.setAttribute("data-icon", config.avatar);
+  if (avatar) {
+    avatar.className = `module-avatar bg-${config.avatarColor} color-${config.avatarColor}`;
+    avatar.setAttribute("data-icon", config.avatar);
+  }
 
-  document.getElementById("moduleTitle").textContent = config.titulo;
-  document.getElementById("moduleTitle").className = `module-hero-title color-${config.avatarColor}`;
-  document.getElementById("moduleSubtitle").textContent = config.subtitulo;
-  document.getElementById("moduleImportantText").textContent = config.importante;
-  document.getElementById("accessTitle").textContent = "Acceso: " + moduleName;
-  document.getElementById("accessText").textContent = config.acceso;
-  
+  const moduleTitle = document.getElementById("moduleTitle");
+  if (moduleTitle) {
+    moduleTitle.textContent = config.titulo;
+    moduleTitle.className = `module-hero-title color-${config.avatarColor}`;
+  }
+
+  const moduleSubtitle = document.getElementById("moduleSubtitle");
+  if (moduleSubtitle) {
+    moduleSubtitle.textContent = config.subtitulo;
+  }
+
+  const moduleImportantText = document.getElementById("moduleImportantText");
+  if (moduleImportantText) {
+    moduleImportantText.textContent = config.importante;
+  }
+
+  const accessTitle = document.getElementById("accessTitle");
+  if (accessTitle) {
+    accessTitle.textContent = "Acceso: " + moduloSolicitado;
+  }
+
+  const accessText = document.getElementById("accessText");
+  if (accessText) {
+    accessText.textContent = config.acceso;
+  }
+
   const container = document.getElementById("moduleButtons");
+
+  if (!container) {
+    alert("No se encontró el contenedor moduleButtons en el index.");
+    return;
+  }
+
   container.innerHTML = "";
 
-  config.opciones.forEach(option => {
+  config.opciones.forEach(function(option) {
     const button = document.createElement("button");
     button.className = "professional-card";
-    button.onclick = () => openOption(option.nombre);
+    button.onclick = function() {
+      openOption(option.nombre);
+    };
     button.innerHTML = `
       <div class="professional-icon solid-${option.color}" data-icon="${option.icono}"></div>
       <div>
-        <h2 class="professional-title color-${option.color}">${option.nombre}</h2>
-        <p class="professional-desc">${option.descripcion}</p>
+        <h2 class="professional-title color-${option.color}">${escapeHTML(option.nombre)}</h2>
+        <p class="professional-desc">${escapeHTML(option.descripcion)}</p>
       </div>
       <div class="professional-arrow color-${option.color}">›</div>
     `;
     container.appendChild(button);
   });
+
   showScreen("moduleMenu");
 }
 
 function openOption(optionName) {
-  if (optionName === "Mi perfil" || optionName === "Mi Perfil") return abrirMiPerfil();
-  if (optionName === "Otorgar incidencia") return openTipoIncidencia();
-  if (optionName === "Reporte del día") return cargarReporteDia();
-  if (optionName === "Reporte semanal") return cargarReporteSemanal();
-  if (optionName === "Consulta de fechas") return abrirConsultaFechas();
-  if (optionName === "Historial" || optionName === "Historial general") return abrirSelectorHistorial();
-  if (optionName === "Notificaciones") return abrirNotificaciones();
+  const opcion = String(optionName || "").trim();
+  const rolSesion = obtenerRolSesionUI();
+
+  if (!obtenerIDAccesoSesionUI() || !esRolValidoUI(rolSesion)) {
+    alert("Sesión inválida. Ingresa nuevamente.");
+    cerrarSesion();
+    return;
+  }
+
+  if (opcion === "Mi perfil" || opcion === "Mi Perfil") {
+    return abrirMiPerfil();
+  }
+
+  if (opcion === "Otorgar incidencia") {
+    if (rolSesion !== "Direccion") {
+      alert("Solo Dirección puede registrar incidencias.");
+      return;
+    }
+    return openTipoIncidencia();
+  }
+
+  if (opcion === "Reporte del día") {
+    return cargarReporteDia();
+  }
+
+  if (opcion === "Reporte semanal") {
+    return cargarReporteSemanal();
+  }
+
+  if (opcion === "Consulta de fechas") {
+    return abrirConsultaFechas();
+  }
+
+  if (opcion === "Historial" || opcion === "Historial general") {
+    return abrirSelectorHistorial();
+  }
+
+  if (opcion === "Notificaciones") {
+    return abrirNotificaciones();
+  }
+
+  alert("Opción no reconocida: " + opcion);
 }
 
 function crearTarjetaSimple(titulo, texto) {
@@ -144,41 +360,131 @@ function crearTarjetaSimple(titulo, texto) {
 
 function mostrarEstadoFormulario(mensaje, esError, esOk) {
   const status = document.getElementById("formStatus");
+
+  if (!status) {
+    if (esError) alert(mensaje);
+    return;
+  }
+
   status.className = "status-box show";
-  if (esError) status.classList.add("error");
-  if (esOk) status.classList.add("ok");
+
+  if (esError) {
+    status.classList.add("error");
+  }
+
+  if (esOk) {
+    status.classList.add("ok");
+  }
+
   status.textContent = mensaje;
 }
 
 function esPermisoOficialTexto(tipo) {
-  return String(tipo || "").toLowerCase() === "permiso oficial";
+  return quitarAcentosUI(tipo).toLowerCase() === "permiso oficial";
+}
+
+function esPermisoOfTexto(tipo) {
+  return esPermisoOficialTexto(tipo);
 }
 
 function renderError(error) {
-  document.getElementById("dataList").innerHTML = crearTarjetaSimple("Error", obtenerMensajeError(error));
+  const mensaje = obtenerMensajeError(error);
+  const lista = document.getElementById("dataList");
+
+  if (lista) {
+    lista.innerHTML = crearTarjetaSimple("Error", mensaje);
+  } else {
+    alert(mensaje);
+  }
+
   showScreen("dataScreen", false);
 }
 
 function obtenerMensajeError(error) {
-  return error && error.message ? error.message : String(error);
+  if (!error) return "Error desconocido.";
+  if (error.message) return error.message;
+  return String(error);
 }
 
 function formatearFecha(fechaISO) {
   if (!fechaISO) return "Sin fecha";
   if (fechaISO === "Pendiente") return "Pendiente";
-  const partes = fechaISO.toString().split("-");
-  if (partes.length !== 3) return fechaISO;
-  return `${partes[2]}/${partes[1]}/${partes[0]}`;
+
+  const texto = String(fechaISO).trim();
+
+  /*
+    Google Apps Script puede regresar fechas como:
+    - YYYY-MM-DD
+    - YYYY-MM-DDTHH:mm:ss.sssZ
+    - objeto Date convertido a string
+  */
+  const isoCorto = texto.match(/^(\d{4})-(\d{2})-(\d{2})/);
+
+  if (isoCorto) {
+    return `${isoCorto[3]}/${isoCorto[2]}/${isoCorto[1]}`;
+  }
+
+  const fecha = new Date(texto);
+
+  if (!isNaN(fecha.getTime())) {
+    const dia = String(fecha.getDate()).padStart(2, "0");
+    const mes = String(fecha.getMonth() + 1).padStart(2, "0");
+    const anio = fecha.getFullYear();
+    return `${dia}/${mes}/${anio}`;
+  }
+
+  return texto;
+}
+
+function formatearFechaParaInput(fechaISO) {
+  if (!fechaISO) return "";
+
+  const texto = String(fechaISO).trim();
+  const isoCorto = texto.match(/^(\d{4})-(\d{2})-(\d{2})/);
+
+  if (isoCorto) {
+    return `${isoCorto[1]}-${isoCorto[2]}-${isoCorto[3]}`;
+  }
+
+  const fecha = new Date(texto);
+
+  if (!isNaN(fecha.getTime())) {
+    const dia = String(fecha.getDate()).padStart(2, "0");
+    const mes = String(fecha.getMonth() + 1).padStart(2, "0");
+    const anio = fecha.getFullYear();
+    return `${anio}-${mes}-${dia}`;
+  }
+
+  return "";
+}
+
+function formatearFechaReal(fechaISO) {
+  return formatearFechaParaInput(fechaISO);
 }
 
 function recortarTexto(texto, limite) {
   const limpio = String(texto || "");
-  if (limpio.length <= limite) return limpio;
-  return limpio.substring(0, limite).trim() + "...";
+  const max = Number(limite || 80);
+
+  if (limpio.length <= max) {
+    return limpio;
+  }
+
+  return limpio.substring(0, max).trim() + "...";
 }
 
 function escapeHTML(texto) {
-  return String(texto)
-    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+  return String(texto ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+/*
+  Compatibilidad para módulos que llaman canonicalizarRolLocal.
+*/
+function canonicalizarRolLocal(valor) {
+  return canonicalizarRolUI(valor);
 }

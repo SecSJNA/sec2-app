@@ -1,20 +1,29 @@
-# SEC2-APP — Portal de permisos e incidencias
+# BASEMAESTRASEC2 — Portal Docentes / Sistema de permisos e incidencias
 
-Sistema web móvil para consulta, registro, control y seguimiento de permisos, incidencias, reportes y notificaciones del personal escolar.
+Documento maestro operativo para GitHub README.md y respaldo técnico del proyecto SEC2-APP.
 
-Este proyecto está diseñado para funcionar con **costo cero**, usando:
-
-- **GitHub Pages** como frontend público.
-- **Google Apps Script** como backend/API.
-- **Google Sheets** como base de datos.
-- Acceso mediante **IDAcceso + contraseña**.
-- Validación de roles desde backend.
+Estado: BASE BUENA V2 / V3 visual
+Fecha de corte: 2026-07-01
+Uso: copiar completo a README.md o conservar como guía de recuperación.
 
 ---
 
-## 1. Arquitectura definitiva
+## 1. Descripción general
 
-La arquitectura final recomendada es:
+SEC2-APP es un sistema web móvil para consulta, registro, control y seguimiento de permisos, incidencias, reportes y notificaciones del personal escolar.
+
+El sistema está diseñado para costo cero usando:
+
+- GitHub Pages como frontend público.
+- Google Apps Script como backend/API.
+- Google Sheets como base de datos.
+- Acceso mediante IDAcceso + contraseña.
+- Validación de roles y sesión desde backend.
+- Interfaz exclusiva móvil en orientación vertical.
+
+---
+
+## 2. Arquitectura final
 
 ```text
 USUARIO
@@ -23,195 +32,155 @@ GitHub Pages
   ↓
 index.html + css/style.css + js/*.js
   ↓
-Apps Script Web App
+Apps Script Web App /exec
   ↓
 Code.gs
   ↓
 Google Sheets
 ```
 
-GitHub muestra la interfaz visual.
+Reglas fundamentales:
 
-Apps Script funciona como motor/API.
-
-Google Sheets guarda usuarios, incidencias, papelera, configuración y notificaciones.
+```text
+GitHub = app visual real
+Apps Script = API/backend
+Google Sheets = base de datos
+Apps Script index.html = pantalla mínima opcional, NO es la app visual
+```
 
 ---
 
-## 2. Qué archivos se usan en producción
+## 3. Archivos vigentes y dónde van
 
-### 2.1 Frontend real en GitHub
+### 3.1 GitHub Pages
 
-Estos son los archivos que deben estar en el repositorio GitHub:
-
-```text
-sec2-app/
-├── index.html
-├── logoPng.png
-├── README.md
-├── css/
-│   └── style.css
-└── js/
-    ├── api.js
-    ├── app.js
-    ├── ui.js
-    ├── incidencias.js
-    ├── reportes.js
-    └── notificaciones.js
-```
-
-### 2.2 Backend real en Apps Script
-
-En Google Apps Script se usa:
+Estos archivos van en el repositorio GitHub:
 
 ```text
-Code.gs
+INDEXGITHUBV3.txt        → index.html
+styleV2.txt              → css/style.css
+apigithubjs.txt          → js/api.js
+appgithubjs.txt          → js/app.js
+uigithubjs.txt           → js/ui.js
+incidenciasV2.txt        → js/incidencias.js
+reportesgithubjs.txt     → js/reportes.js
+notificacionesgithubjs.txt → js/notificaciones.js
+logoPng.png              → logoPng.png
+BASEMAESTRASEC2.TXT      → README.md, si se quiere usar como README
 ```
 
-Opcionalmente puede existir:
+### 3.2 Google Apps Script
+
+Estos archivos van en Apps Script:
 
 ```text
-index.html
+Codegsrealdefinitivo_v3_lista_completa_sin_compatibilidad_antigua.txt → Code.gs
+indexscrip.txt                                                        → index.html
 ```
 
-pero ese `index.html` de Apps Script **no es la app visual real**. Solo puede servir como pantalla mínima de referencia que indique que la API está activa.
+El `index.html` de Apps Script solo debe mostrar una pantalla mínima de API activa. No debe contener la app visual completa.
 
 ---
 
-## 3. Archivos corregidos y cómo pegarlos
+## 4. Archivos obsoletos o de respaldo
 
-Los archivos corregidos se entregaron como TXT para descargarlos y pegar su contenido en el archivo real correspondiente.
-
-### 3.1 Archivos de GitHub
+No usar para producción actual:
 
 ```text
-indexgithubhtml.txt          → index.html
-stylegithubcss.txt           → css/style.css
-apigithubjs.txt              → js/api.js
-appgithubjs.txt              → js/app.js
-uigithubjs.txt               → js/ui.js
-incidenciasgithubjs.txt      → js/incidencias.js
-reportesgithubjs.txt         → js/reportes.js
-notificacionesgithubjs.txt   → js/notificaciones.js
+SEC2_Code.gs_COMPLETO_CORREGIDO.txt
+indexgithubhtml.txt
+indexgithubhtml_final.txt
+indexgithubhtml_final_v2_menuprincipal.txt
+INDEXGITHUBV2.txt
+stylegithubcss.txt
+incidenciasgithubjs.txt
+SEC2_api.js_COMPLETO_CORREGIDO.txt
+SEC2_app.js_COMPLETO_CORREGIDO.txt
+SEC2_index.html_COMPLETO_CORREGIDO.txt
 ```
 
-### 3.2 Archivos de Apps Script
+Notas:
 
 ```text
-SEC2_Code.gs_COMPLETO_CORREGIDO.txt → Code.gs
-indexscrip.txt                      → index.html opcional de Apps Script
+INDEXGITHUBV2.txt funcionó, pero fue reemplazado por INDEXGITHUBV3.txt.
+stylegithubcss.txt funcionó como base, pero fue reemplazado por styleV2.txt.
+incidenciasgithubjs.txt funcionó como base, pero fue reemplazado por incidenciasV2.txt.
 ```
-
-### 3.3 Regla importante
-
-No mezclar versiones anteriores con las nuevas.
-
-La versión real para GitHub debe usar los archivos separados del segundo bloque corregido.
 
 ---
 
-## 4. Diferencia entre index de GitHub e index de Apps Script
+## 5. Regla crítica de versiones
 
-### 4.1 index.html de GitHub
+No mezclar archivos de distintas etapas.
 
-Este es el que sí usa el usuario.
-
-Contiene:
-
-- Login.
-- Pantalla principal.
-- Botones de módulos.
-- Formularios.
-- Reportes.
-- Historial.
-- Consulta de fechas.
-- Notificaciones.
-- Carga de archivos JS separados.
-- Carga del CSS.
-
-Este archivo va en:
+La combinación buena actual es:
 
 ```text
-GitHub → index.html
+INDEXGITHUBV3.txt
+styleV2.txt
+incidenciasV2.txt
+apigithubjs.txt
+appgithubjs.txt
+uigithubjs.txt
+reportesgithubjs.txt
+notificacionesgithubjs.txt
+Codegsrealdefinitivo_v3_lista_completa_sin_compatibilidad_antigua.txt
+indexscrip.txt
 ```
 
-### 4.2 index.html de Apps Script
-
-Este no es la app.
-
-Solo puede mostrar una pantalla simple como:
-
-```text
-SEC2 API activa
-Este proyecto funciona como backend para la app en GitHub.
-```
-
-Este archivo va en:
-
-```text
-Apps Script → index.html
-```
-
-No debe confundirse con el index real de GitHub.
+Si algo falla, regresar exactamente a esa combinación.
 
 ---
 
-## 5. Orden correcto de carga de scripts en GitHub
+## 6. Orden actual de scripts en GitHub
 
-El `index.html` de GitHub debe cargar los scripts en este orden:
+El `index.html` de GitHub debe cargar los scripts al final del body en este orden:
 
 ```html
 <script src="js/api.js"></script>
+<script src="js/app.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/incidencias.js"></script>
 <script src="js/reportes.js"></script>
 <script src="js/notificaciones.js"></script>
-<script src="js/app.js"></script>
 ```
 
-### Motivo
+Motivo:
 
-- `api.js` define la comunicación con Apps Script.
-- `ui.js` define utilidades visuales, navegación, roles y helpers.
-- `incidencias.js` define perfil, historial, detalle, registro y edición.
-- `reportes.js` define reportes y estadísticas.
-- `notificaciones.js` define mensajes recibidos y enviados.
-- `app.js` inicializa sesión, login, constantes, módulos y flujo general.
+```text
+api.js comunica con Apps Script.
+app.js inicializa sesión, módulos y variables globales.
+ui.js contiene utilidades visuales y navegación.
+incidencias.js controla perfiles, historial, registro, detalle y permisos.
+reportes.js controla reportes y estadísticas.
+notificaciones.js controla mensajes recibidos/enviados.
+```
 
 ---
 
-## 6. Roles oficiales del sistema
+## 7. Regla sobre CSS
 
-Los roles válidos son exactamente:
+El `index.html` de GitHub NO debe tener un bloque grande `<style>...</style>` interno.
 
-```text
-Direccion
-Prefectura
-Docente
-Correspondencia
+Debe usar solo:
+
+```html
+<link rel="stylesheet" href="css/style.css">
 ```
 
-### 6.1 Regla de escritura
-
-Usar:
+Motivo:
 
 ```text
-Direccion
+El CSS interno viejo anulaba styleV2.
+La regla vieja .stat-grid { display:flex; flex-direction:column; } rompía el resumen rápido.
+El diseño correcto vive en css/style.css.
 ```
-
-No usar:
-
-```text
-Dirección
-```
-
-Aunque visualmente pueda aparecer “Dirección”, internamente el sistema debe usar **Direccion sin acento**.
 
 ---
 
-## 7. Regla principal de acceso por módulos
+## 8. Pantalla inicial
 
-En la pantalla principal se muestran los cuatro módulos:
+La pantalla inicial muestra cuatro módulos:
 
 ```text
 Dirección
@@ -220,9 +189,43 @@ Prefectura
 Docente
 ```
 
-Pero cada usuario solo puede entrar al módulo correspondiente a su rol.
+Regla visual actual:
 
-### 7.1 Accesos permitidos
+```text
+Debajo de los módulos debe aparecer:
+- Información importante.
+- Tarjeta de acceso / sesión activa.
+- Botón cerrar sesión.
+- Footer de sistema seguro y confidencial.
+```
+
+Ese comportamiento está en `INDEXGITHUBV3.txt`.
+
+---
+
+## 9. Roles oficiales
+
+Los roles internos válidos son exactamente:
+
+```text
+Direccion
+Correspondencia
+Prefectura
+Docente
+```
+
+Regla:
+
+```text
+Usar Direccion sin acento como clave interna.
+Puede mostrarse “Dirección” visualmente, pero internamente debe ser Direccion.
+```
+
+---
+
+## 10. Acceso por módulos
+
+Aunque la pantalla principal muestre los cuatro módulos, cada usuario solo debe entrar al módulo que corresponde a su rol.
 
 ```text
 Rol Direccion       → módulo Direccion
@@ -231,21 +234,18 @@ Rol Prefectura      → módulo Prefectura
 Rol Docente         → módulo Docente
 ```
 
-### 7.2 Accesos bloqueados
+Regla final adoptada:
 
-Un usuario con rol `Docente` no entra a `Direccion`, `Prefectura` ni `Correspondencia`.
-
-Un usuario con rol `Prefectura` no entra a `Direccion`, `Docente` ni `Correspondencia`.
-
-Un usuario con rol `Correspondencia` no entra a `Direccion`, `Prefectura` ni `Docente`.
-
-Un usuario con rol `Direccion` no entra como otro módulo. Dirección tiene su propio módulo administrativo.
+```text
+Dirección tampoco entra a los otros módulos como si fuera otro rol.
+Dirección tiene su propio módulo administrativo.
+```
 
 ---
 
-## 8. Identidad principal del usuario
+## 11. Identidad del sistema
 
-La identidad principal del sistema es:
+La identidad real de una persona es:
 
 ```text
 IDAcceso
@@ -257,11 +257,7 @@ No es:
 ID
 ```
 
-### 8.1 Columna A: ID
-
-La columna `ID` sirve como sello interno o auditoría.
-
-Ejemplos:
+La columna A `ID` sirve como sello/auditoría:
 
 ```text
 RegistradoPor
@@ -270,24 +266,22 @@ EnviadoPor
 LeidoPor
 ```
 
-### 8.2 Columna H: IDAcceso
-
-La columna `IDAcceso` sirve para identificar a la persona real que inicia sesión, consulta, recibe incidencias o recibe notificaciones.
-
-Ejemplos:
+La columna H `IDAcceso` sirve como identidad funcional:
 
 ```text
+inicio de sesión
 IDUsuario en Incidencias
 IDUsuario en Notificaciones
-idPersona en consultas
-idAccesoSesion en API
+consultas de historial
+perfil personal
+notificaciones recibidas
 ```
 
 ---
 
-## 9. Hoja Usuarios
+## 12. Hoja Usuarios
 
-La hoja `Usuarios` debe tener esta estructura:
+Estructura actual esperada:
 
 ```text
 A: ID
@@ -301,175 +295,91 @@ H: IDAcceso
 I: Contrasena
 ```
 
-### 9.1 Significado de columnas
+### 12.1 Columna ID
 
-| Columna | Campo | Uso |
-|---|---|---|
-| A | ID | Sello interno/auditoría |
-| B | Nombre | Nombre visible |
-| C | Apellidos | Apellidos visibles |
-| D | Correo | Correo del usuario |
-| E | Rol | Direccion, Prefectura, Docente o Correspondencia |
-| F | Turno | A, M o V |
-| G | Activo | TRUE/SI/ACTIVO según backend |
-| H | IDAcceso | Identidad principal |
-| I | Contrasena | Contraseña de acceso |
+Uso:
+
+```text
+sello de auditoría
+quién registró
+quién eliminó
+quién envió
+quién leyó
+```
+
+No usar para buscar perfil o persona.
+
+### 12.2 Columna IDAcceso
+
+Uso:
+
+```text
+login
+sesión
+consultas
+relación con Incidencias.IDUsuario
+relación con Notificaciones.IDUsuario
+```
+
+### 12.3 Columna Activo
+
+Valores esperados:
+
+```text
+Sí / Si / si / sí
+No / no
+```
+
+Si está en `No`, el usuario no debe poder iniciar sesión.
 
 ---
 
-## 10. Turnos oficiales
+## 13. Hoja Incidencias
 
-Los turnos válidos son:
-
-```text
-A = Ambos
-M = Matutino
-V = Vespertino
-```
-
-En frontend se muestran como:
-
-```js
-const TURNOS_TEXTO = {
-  "A": "Ambos",
-  "M": "Matutino",
-  "V": "Vespertino"
-};
-```
-
----
-
-## 11. Sesión en frontend
-
-Después del login correcto se guardan datos en `sessionStorage`.
-
-### 11.1 Variables principales
+La regla limpia actual es:
 
 ```text
-userID             → ID de auditoría, columna A
-userIDAcceso       → IDAcceso real, columna H
-userRol            → Rol exacto
-userTurno          → Turno
-userName           → Nombre visible
-currentActiveModule → Módulo activo
+Incidencias.IDUsuario = Usuarios.IDAcceso
 ```
 
-### 11.2 Variable más importante
+No se debe mezclar con el ID de columna A.
+
+Si existen incidencias viejas creadas con otro identificador, pueden no coincidir. La decisión final fue trabajar limpio desde cero con IDAcceso.
+
+Columnas esperadas principales:
 
 ```text
-sessionStorage.getItem("userIDAcceso")
-```
-
-Esa es la identidad principal del usuario.
-
----
-
-## 12. Comunicación frontend/backend
-
-El frontend llama al backend usando `fetch`.
-
-La URL está definida en:
-
-```text
-js/api.js
-```
-
-Variable:
-
-```js
-const APPS_SCRIPT_URL = "URL_DEL_DESPLIEGUE_DE_APPS_SCRIPT";
-```
-
----
-
-## 13. Parámetros obligatorios enviados a Apps Script
-
-Todas las llamadas después del login deben incluir:
-
-```text
-idAccesoSesion
-rolSesion
-modulo
-```
-
-Estos valores se inyectan automáticamente desde `api.js`.
-
-No deben escribirse manualmente desde los demás archivos.
-
----
-
-## 14. Login
-
-El login usa:
-
-```text
-IDAcceso
-Contrasena
-```
-
-Acción backend:
-
-```text
-iniciarSesion
-```
-
-El flujo esperado es:
-
-```text
-Usuario escribe IDAcceso y contraseña
-↓
-api.js llama iniciarSesion
-↓
-Code.gs valida contra hoja Usuarios
-↓
-Code.gs devuelve usuario válido
-↓
-app.js guarda sessionStorage
-↓
-se muestra splash
-↓
-se muestra pantalla principal
+IDIncidencia
+IDUsuario
+Nombre
+Apellidos
+Correo
+Rol
+Turno
+TipoIncidencia
+FechaInicio
+FechaFin
+LicenciaMedica
+Observaciones
+RegistradoPor
+FechaRegistro
+Estado
+FechaOficial1
+FechaOficial2
+FechaOficial3
+Uso1Fecha
+Uso1Estado
+Uso2Fecha
+Uso2Estado
+Uso3Fecha
+Uso3Estado
 ```
 
 ---
 
-## 15. Funciones principales de api.js
+## 14. Tipos de incidencia
 
-El archivo `js/api.js` contiene el objeto:
-
-```js
-API
-```
-
-Con funciones como:
-
-```text
-iniciarSesion
-obtenerUsuariosParaFormulario
-obtenerResumenPersona
-obtenerHistorialPersona
-obtenerDetalleIncidencia
-guardarUsosPermisoOficial
-eliminarIncidencia
-guardarIncidencia
-obtenerReporteDia
-obtenerReporteSemanal
-consultarFechas
-guardarNotificacion
-obtenerNotificacionesUsuario
-obtenerDetalleNotificacion
-obtenerNotificacionesEnviadas
-obtenerDetalleNotificacionEnviada
-obtenerEstadisticaMensual
-```
-
----
-
-## 16. Incidencias
-
-El sistema permite registrar distintos tipos de incidencia.
-
-### 16.1 Tipos contemplados
+Tipos oficiales:
 
 ```text
 Permiso oficial
@@ -481,463 +391,40 @@ Comisión oficial
 Especial
 ```
 
-### 16.2 Permiso oficial
+---
 
-El permiso oficial tiene estructura especial:
+## 15. Resumen rápido de perfil / docente
 
-```text
-FechaOficial1
-FechaOficial2
-FechaOficial3
-Uso1Fecha
-Uso2Fecha
-Uso3Fecha
-Uso1Estado
-Uso2Estado
-Uso3Estado
-```
-
-La fecha oficial representa la fecha autorizada.
-
-La fecha de uso representa cuándo se utilizó.
-
-### 16.3 Incidencias normales
-
-Las demás incidencias usan:
+La pantalla de resumen rápido debe mostrar 6 cuadros compactos en 3 columnas x 2 filas:
 
 ```text
-FechaInicio
-FechaFin
+Total incidencias | Permisos oficiales | Incapacidades
+Comisiones        | Humanitarios       | Especiales
 ```
 
-Ejemplos:
+Reglas de conteo:
 
 ```text
-Incapacidad
-Humanitario sindical
-Humanitario oficial
-Comisión sindical
-Comisión oficial
-Especial
+Total incidencias = todas las incidencias de la persona
+Permisos oficiales = permiso oficial / permiso personal, según código visual actual
+Incapacidades = incapacidades / licencias médicas
+Comisiones = comisión oficial + comisión sindical
+Humanitarios = humanitario oficial + humanitario sindical
+Especiales = especial
 ```
+
+Regla visual:
+
+```text
+Mi perfil = oro
+Resumen del docente consultado = verde
+```
+
+`IDAcceso` no debe mostrarse visualmente en perfil, resumen, historial ni detalle de incidencia.
 
 ---
 
-## 17. Registro de incidencias
-
-Solo Dirección puede registrar incidencias.
-
-### 17.1 Validación frontend
-
-`js/incidencias.js` valida que el rol sea:
-
-```text
-Direccion
-```
-
-### 17.2 Validación backend
-
-`Code.gs` también debe validar que el usuario en sesión tenga permiso real.
-
-La seguridad real siempre debe estar en Apps Script, no solo en el frontend.
-
----
-
-## 18. Edición de permisos oficiales
-
-Solo Dirección puede editar fechas de uso pendientes de un permiso oficial.
-
-El flujo es:
-
-```text
-Abrir detalle de incidencia
-↓
-Si es Permiso oficial y puedeEditar = true
-↓
-Mostrar botón editar
-↓
-Cambiar Uso1Fecha / Uso2Fecha / Uso3Fecha si están pendientes
-↓
-Guardar cambios
-```
-
----
-
-## 19. Eliminación de incidencias
-
-Solo Dirección puede eliminar incidencias.
-
-La eliminación debe mover o registrar la incidencia en la hoja `Papelera`.
-
-No debe desaparecer sin rastro.
-
-La auditoría debe registrar:
-
-```text
-EliminadoPor
-FechaEliminacion
-```
-
----
-
-## 20. Reporte del día
-
-Roles permitidos:
-
-```text
-Direccion
-Prefectura
-```
-
-El reporte muestra:
-
-```text
-presentes
-ausentes
-incidencias activas
-fecha consultada
-```
-
----
-
-## 21. Reporte semanal
-
-Roles permitidos:
-
-```text
-Direccion
-Prefectura
-```
-
-El reporte muestra incidencias dentro de un rango semanal.
-
-Puede usarse como vista operativa para Prefectura.
-
----
-
-## 22. Consulta de fechas
-
-Roles permitidos:
-
-```text
-Direccion
-Correspondencia
-```
-
-Permite consultar incidencias entre:
-
-```text
-FechaInicio
-FechaFin
-```
-
-Validaciones del frontend:
-
-```text
-no dejar fechas vacías
-la fecha inicial no puede ser posterior a la fecha final
-```
-
-El backend también debe validar permisos y fechas.
-
----
-
-## 23. Historial por persona
-
-Roles permitidos:
-
-```text
-Direccion
-Correspondencia
-```
-
-Además, cada usuario puede consultar su propio perfil.
-
-La consulta debe hacerse por:
-
-```text
-IDAcceso
-```
-
-No por:
-
-```text
-ID
-```
-
----
-
-## 24. Mi perfil
-
-Todos los roles pueden abrir `Mi perfil`.
-
-Muestra:
-
-```text
-Nombre
-Apellidos
-Turno
-IDAcceso
-Última incidencia
-Estadísticas rápidas
-Historial completo
-Próximas incidencias
-Estadística mensual
-```
-
----
-
-## 25. Estadística mensual
-
-La estadística mensual se consulta por:
-
-```text
-selectedPersonID
-mes
-anio
-```
-
-`selectedPersonID` debe contener `IDAcceso`.
-
-La pantalla muestra:
-
-```text
-Persona
-IDAcceso
-Periodo
-Total de incidencias
-Tipo más frecuente
-Gráfica mensual
-```
-
----
-
-## 26. Notificaciones
-
-El sistema tiene:
-
-```text
-Notificaciones recibidas
-Enviar notificación
-Notificaciones enviadas
-Detalle de notificación
-Estado de lectura
-```
-
----
-
-## 27. Notificaciones recibidas
-
-Todos los roles pueden consultar sus notificaciones recibidas.
-
-Al abrir una notificación recibida, el backend debe marcarla como:
-
-```text
-Leída
-```
-
-y registrar:
-
-```text
-FechaLectura
-LeidoPor
-```
-
-`LeidoPor` debe ser sello de auditoría del backend.
-
----
-
-## 28. Enviar notificaciones
-
-Solo Dirección puede enviar notificaciones.
-
-El destinatario se selecciona por:
-
-```text
-IDAcceso
-```
-
-No por:
-
-```text
-ID
-```
-
-La notificación debe guardar:
-
-```text
-IDNotificacion
-IDUsuario
-Mensaje
-Estado
-FechaEnvio
-EnviadoPor
-FechaLectura
-LeidoPor
-```
-
----
-
-## 29. Notificaciones enviadas
-
-Solo Dirección puede consultar notificaciones enviadas.
-
-Permite revisar:
-
-```text
-destinatario
-mensaje
-estado
-fecha de envío
-fecha de lectura
-leído por
-```
-
----
-
-## 30. Estados de notificación
-
-Estados esperados:
-
-```text
-No leída
-Leída
-```
-
-El frontend también reconoce:
-
-```text
-No leida
-Leida
-```
-
-y normaliza visualmente.
-
----
-
-## 31. Hojas esperadas en Google Sheets
-
-El libro de Google Sheets debe contener:
-
-```text
-Usuarios
-Incidencias
-Papelera
-Configuracion
-Notificaciones
-```
-
----
-
-## 32. Hoja Incidencias
-
-Debe contener los campos necesarios para:
-
-```text
-IDIncidencia
-IDUsuario
-TipoIncidencia
-FechaInicio
-FechaFin
-FechaOficial1
-FechaOficial2
-FechaOficial3
-Uso1Fecha
-Uso1Estado
-Uso2Fecha
-Uso2Estado
-Uso3Fecha
-Uso3Estado
-LicenciaMedica
-Observaciones
-Estado
-RegistradoPor
-FechaRegistro
-```
-
-La columna `IDUsuario` debe guardar el `IDAcceso` de la persona afectada.
-
----
-
-## 33. Hoja Notificaciones
-
-Debe contener campos equivalentes a:
-
-```text
-IDNotificacion
-IDUsuario
-Mensaje
-Estado
-FechaEnvio
-EnviadoPor
-FechaLectura
-LeidoPor
-```
-
-`IDUsuario` debe ser `IDAcceso`.
-
-`EnviadoPor` y `LeidoPor` deben ser sellos de auditoría.
-
----
-
-## 34. Hoja Papelera
-
-Debe servir para conservar incidencias eliminadas.
-
-Debe guardar:
-
-```text
-datos originales de la incidencia
-EliminadoPor
-FechaEliminacion
-Motivo si se agrega después
-```
-
----
-
-## 35. Seguridad
-
-La seguridad real debe estar en `Code.gs`.
-
-El frontend bloquea pantallas para experiencia de usuario, pero no debe considerarse seguridad absoluta.
-
-El backend debe validar:
-
-```text
-usuario activo
-IDAcceso existente
-rol correcto
-módulo correcto
-permiso para la acción solicitada
-```
-
----
-
-## 36. Validaciones críticas en backend
-
-Apps Script debe validar:
-
-```text
-idAccesoSesion
-rolSesion
-modulo
-```
-
-Y confirmar que:
-
-```text
-idAccesoSesion existe en Usuarios
-usuario está activo
-rolSesion coincide con el rol real del usuario
-modulo coincide con rol o permiso permitido
-acción está permitida para ese rol
-```
-
----
-
-## 37. Reglas de permisos por rol
-
-### 37.1 Dirección
+## 16. Módulo Dirección
 
 Puede:
 
@@ -955,14 +442,18 @@ editar uso de permiso oficial
 eliminar incidencias
 ```
 
-### 37.2 Correspondencia
+No debe entrar a otros módulos como si fuera otro rol.
+
+---
+
+## 17. Módulo Correspondencia
 
 Puede:
 
 ```text
 ver perfil propio
 consultar fechas
-consultar historial
+consultar historial general
 ver notificaciones recibidas
 ```
 
@@ -976,7 +467,9 @@ enviar notificaciones
 ver notificaciones enviadas
 ```
 
-### 37.3 Prefectura
+---
+
+## 18. Módulo Prefectura
 
 Puede:
 
@@ -993,11 +486,13 @@ No puede:
 registrar incidencias
 editar incidencias
 eliminar incidencias
-consultar historial general si backend no lo permite
+consultar otros docentes, salvo que backend lo permita explícitamente
 enviar notificaciones
 ```
 
-### 37.4 Docente
+---
+
+## 19. Módulo Docente
 
 Puede:
 
@@ -1022,772 +517,346 @@ editar incidencias
 
 ---
 
-## 38. Despliegue de Apps Script
+## 20. Hoja Notificaciones
 
-Pasos generales:
+Columnas funcionales esperadas:
 
-1. Abrir Google Apps Script.
-2. Pegar el contenido corregido en `Code.gs`.
-3. Si se desea, crear `index.html` con el contenido mínimo de `indexscrip.txt`.
-4. Guardar.
-5. Implementar como aplicación web.
-6. Ejecutar como propietario.
-7. Permitir acceso según necesidad del proyecto.
-8. Copiar la URL del despliegue.
-9. Pegar esa URL en `APPS_SCRIPT_URL` dentro de `js/api.js`.
+```text
+IDNotificacion
+IDUsuario
+Nombre
+Apellidos
+Correo
+Rol
+Turno
+Mensaje
+EnviadoPor
+FechaEnvio
+Estado
+FechaLectura
+LeidoPor
+```
+
+Regla de identidad:
+
+```text
+Notificaciones.IDUsuario = Usuarios.IDAcceso
+```
+
+Estado esperado:
+
+```text
+No leida / No leída
+Leída / Leida
+```
 
 ---
 
-## 39. Despliegue de GitHub Pages
+## 21. Lectura automática de notificaciones
 
-Pasos generales:
-
-1. Subir archivos corregidos al repositorio.
-2. Verificar estructura:
+Diseño esperado:
 
 ```text
-index.html
-css/style.css
+El frontend abre el detalle de una notificación recibida.
+API.obtenerDetalleNotificacion llama al backend.
+Code.gs debe marcar Estado = Leída.
+Code.gs debe guardar FechaLectura.
+Code.gs debe guardar LeidoPor.
+```
+
+Regla técnica:
+
+```text
+El frontend no debe marcar leído manualmente.
+La acción real debe hacerla Code.gs al ejecutar obtenerDetalleNotificacion.
+```
+
+Prueba mínima:
+
+```text
+1. Dirección envía notificación a Docente.
+2. Docente entra a Notificaciones.
+3. Debe aparecer como No leída.
+4. Docente abre detalle.
+5. Volver a revisar hoja Notificaciones.
+6. Debe cambiar a Leída y llenar FechaLectura / LeidoPor.
+7. Dirección revisa Enviadas.
+8. Debe ver estado Leída.
+```
+
+---
+
+## 22. Reportes
+
+Reportes esperados:
+
+```text
+Reporte del día
+Reporte semanal
+Consulta de fechas
+Estadística mensual
+Historial completo
+Próximas incidencias
+```
+
+Dirección y Prefectura usan reportes generales según permisos.
+
+Docente usa reportes propios.
+
+Correspondencia consulta historial y fechas.
+
+---
+
+## 23. Apps Script Web App
+
+Configuración esperada:
+
+```text
+Ejecutar como: propietario del script
+Acceso: según necesidad de publicación
+URL usada por GitHub: termina en /exec
+No usar /dev para producción
+```
+
+La URL `/exec` debe estar en:
+
+```text
 js/api.js
-js/ui.js
-js/incidencias.js
-js/reportes.js
-js/notificaciones.js
-js/app.js
-logoPng.png
-README.md
-```
-
-3. Activar GitHub Pages desde configuración del repositorio.
-4. Seleccionar rama principal.
-5. Abrir la URL pública de GitHub Pages.
-6. Probar login.
-
----
-
-## 40. Prueba mínima recomendada
-
-Antes de usarlo en escuela, probar con usuarios ficticios.
-
-### 40.1 Usuarios sugeridos
-
-```text
-Direccion       → D001
-Correspondencia → C001
-Prefectura      → P001
-Docente         → M001
-```
-
-### 40.2 Pruebas de login
-
-Probar:
-
-```text
-D001 entra solo a Dirección
-C001 entra solo a Correspondencia
-P001 entra solo a Prefectura
-M001 entra solo a Docente
-```
-
-Cada uno debe ver los 4 botones, pero solo debe abrir su propio módulo.
-
----
-
-## 41. Prueba de incidencias
-
-Con Dirección:
-
-```text
-iniciar sesión
-abrir Dirección
-otorgar incidencia
-seleccionar docente
-guardar incidencia normal
-abrir detalle
-verificar IDAcceso del docente
-verificar sello de RegistradoPor en backend
+const APPS_SCRIPT_URL = ".../exec";
 ```
 
 ---
 
-## 42. Prueba de permiso oficial
+## 24. API segura
 
-Con Dirección:
-
-```text
-otorgar Permiso oficial
-poner FechaOficial1
-dejar usos pendientes
-guardar
-abrir detalle
-editar usos pendientes
-guardar cambios
-verificar detalle
-```
-
----
-
-## 43. Prueba de reportes
-
-Con Dirección o Prefectura:
+El frontend debe enviar automáticamente:
 
 ```text
-abrir reporte del día
-abrir reporte semanal
-verificar presentes
-verificar ausentes
-verificar lista de incidencias
-```
-
----
-
-## 44. Prueba de consulta de fechas
-
-Con Dirección o Correspondencia:
-
-```text
-abrir consulta de fechas
-poner fecha inicial
-poner fecha final
-consultar
-ver resultados
-probar rango invertido
-probar fechas vacías
-```
-
----
-
-## 45. Prueba de notificaciones
-
-Con Dirección:
-
-```text
-abrir notificaciones
-enviar notificación a un docente
-ver enviadas
-ver estado No leída
-```
-
-Con Docente:
-
-```text
-entrar a módulo Docente
-abrir notificaciones
-abrir detalle de notificación
-```
-
-Después:
-
-```text
-volver con Dirección
-ver notificaciones enviadas
-confirmar que aparece Leída
-confirmar FechaLectura
-confirmar LeidoPor
-```
-
----
-
-## 46. Errores que ya se corrigieron
-
-Se corrigieron problemas como:
-
-```text
-Dirección con acento usado internamente
-uso de userTest
-uso de ID en lugar de IDAcceso
-detalle de notificación enviada con variable NotifId inexistente
-pantallas faltantes de notificaciones
-pantalla faltante de estadística mensual
-cierre incorrecto </htm
-mezcla entre index de Apps Script e index de GitHub
-orden incorrecto de carga de scripts
-```
-
----
-
-## 47. Errores que no deben regresar
-
-No volver a usar:
-
-```text
-userTest
-TEST_USERS como identidad real
-usuario.ID para seleccionar persona
-Dirección como clave interna de módulo
-HtmlService como interfaz principal si se usa GitHub
-index de Apps Script como app real
-```
-
----
-
-## 48. Palabras clave internas correctas
-
-Usar:
-
-```text
-Direccion
-Correspondencia
-Prefectura
-Docente
-IDAcceso
 idAccesoSesion
 rolSesion
 modulo
-currentActiveModule
-userIDAcceso
 ```
 
-Evitar:
+Esos valores salen de:
 
 ```text
-Dirección como clave interna
+sessionStorage.getItem("userIDAcceso")
+sessionStorage.getItem("userRol")
+sessionStorage.getItem("currentActiveModule")
+```
+
+No usar:
+
+```text
 userTest
-ID como persona principal
+ID de columna A como identidad principal
 ```
 
 ---
 
-## 49. Sobre contraseñas
+## 25. Validaciones críticas de backend
 
-En esta versión las contraseñas viven en Google Sheets.
-
-Para uso real, se recomienda:
+Apps Script debe validar:
 
 ```text
-usar contraseñas no obvias
-no publicar la hoja
-no publicar Code.gs si contiene SPREADSHEET_ID
-limitar permisos de edición del Sheet
-usar IDs de acceso internos
+idAccesoSesion existe
+usuario activo
+rol real coincide con rolSesion
+modulo coincide con el rol permitido
+acción permitida para ese rol
 ```
 
 ---
 
-## 50. Sobre repositorio público
+## 26. Caché / retardo de Sheets
 
-Si el repositorio de GitHub es público, debe evitarse subir:
+Pendiente final no resuelto del todo:
 
 ```text
-SPREADSHEET_ID
-datos reales de usuarios
-contraseñas
-capturas con datos sensibles
-Code.gs si contiene información privada
+Apps Script / Google Sheets puede tardar en reflejar cambios manuales.
+Ejemplos:
+- agregar IDAcceso
+- agregar contraseña
+- cambiar Activo
+- borrar incidencias
+- crear usuarios
 ```
 
-El frontend necesita la URL pública del despliegue de Apps Script, pero la seguridad debe estar en backend.
+Se observó que con tiempo la lista de docentes sí se actualiza.
 
----
-
-## 51. Comprobación rápida después de subir cambios
-
-Después de subir archivos, abrir consola del navegador y revisar:
+Siguiente fase opcional:
 
 ```text
-sin errores 404 en css/js
-sin errores de funciones no definidas
-sin errores CORS
-login responde JSON válido
-los botones abren solo el módulo correcto
+gsV2.txt
 ```
 
----
-
-## 52. Si aparece error de comunicación
-
-Revisar:
+Objetivo:
 
 ```text
-APPS_SCRIPT_URL correcta
-Apps Script desplegado como web app
-permisos de ejecución correctos
-Code.gs guardado
-nueva versión desplegada
-respuesta JSON válida
+reducir o eliminar caché de lectura
+mejorar refresco desde Sheets
+no tocar frontend
+no tocar CSS
+no tocar módulos
 ```
 
 ---
 
-## 53. Si login falla
+## 27. Prueba mínima de sistema
 
-Revisar en hoja Usuarios:
-
-```text
-IDAcceso correcto
-Contrasena correcta
-Rol escrito exactamente
-Activo correcto
-sin espacios extra
-```
-
-Roles válidos:
+Antes de uso real:
 
 ```text
-Direccion
-Correspondencia
-Prefectura
-Docente
+1. Login Dirección.
+2. Intentar entrar a Dirección: permitido.
+3. Intentar entrar a otro módulo: bloqueado.
+4. Registrar incidencia a docente.
+5. Ver detalle de incidencia.
+6. Consultar Historial General.
+7. Ver Resumen del docente en verde.
+8. Revisar 6 estadísticas rápidas.
+9. Login Docente.
+10. Ver Mi perfil en oro.
+11. Ver que IDAcceso no se muestre.
+12. Probar reporte del día.
+13. Probar reporte semanal.
+14. Probar consulta de fechas.
+15. Probar notificación recibida.
+16. Abrir detalle de notificación.
+17. Confirmar que marque Leída en Sheets.
 ```
 
 ---
 
-## 54. Si un usuario no puede entrar a su módulo
+## 28. Recuperación rápida
 
-Revisar:
+Si algo falla visualmente, revisar:
 
 ```text
+index.html = debe venir de INDEXGITHUBV3.txt
+css/style.css = debe venir de styleV2.txt
+js/incidencias.js = debe venir de incidenciasV2.txt
+```
+
+Si falla comunicación con backend:
+
+```text
+js/api.js
+APPS_SCRIPT_URL
+despliegue /exec
+permisos de Apps Script
+```
+
+Si falla sesión:
+
+```text
+sessionStorage userIDAcceso
 sessionStorage userRol
 sessionStorage currentActiveModule
-Rol en hoja Usuarios
-openModule recibe Direccion sin acento
+Usuarios.IDAcceso
+Usuarios.Contrasena
+Usuarios.Activo
+Usuarios.Rol
 ```
 
----
-
-## 55. Si no aparecen docentes en formularios
-
-Revisar backend:
+Si falla lectura de incidencias:
 
 ```text
-obtenerUsuariosParaFormulario
-que devuelva IDAcceso
-que devuelva Nombre
-que devuelva Apellidos
-que devuelva Rol
-que devuelva Turno
+Incidencias.IDUsuario debe ser igual a Usuarios.IDAcceso
+no usar ID columna A
+revisar encabezados
+revisar Estado eliminado/cancelado
 ```
 
-Frontend espera:
+Si falla lista de docentes:
 
 ```text
-usuario.IDAcceso
-usuario.Nombre
-usuario.Apellidos
-usuario.Rol
-usuario.Turno
+Usuarios.IDAcceso lleno
+Usuarios.Contrasena llena si requiere login
+Usuarios.Activo no debe ser No
+esperar posible retardo de Sheets
+revisar obtenerUsuariosParaFormulario
 ```
 
 ---
 
-## 56. Si no se marca Leída una notificación
-
-Revisar en backend:
+## 29. Regla de oro para cambios futuros
 
 ```text
-obtenerDetalleNotificacion
-debe actualizar Estado
-debe guardar FechaLectura
-debe guardar LeidoPor
+No tocar todo al mismo tiempo.
+Cambiar un archivo.
+Probar.
+Si falla, regresar solo ese archivo.
+No mezclar versiones.
+No corregir backend y frontend al mismo tiempo salvo necesidad comprobada.
 ```
 
-El frontend solo abre el detalle.
-
-La acción real de marcar leído debe hacerla `Code.gs`.
-
----
-
-## 57. Si las fechas se ven mal
-
-Revisar:
+Orden recomendado de intervención:
 
 ```text
-formatearFecha
-formatearFechaParaInput
-fechas devueltas por Apps Script
-zona horaria del proyecto Apps Script
-zona horaria del Google Sheet
+1. HTML / index
+2. CSS
+3. JS de módulo afectado
+4. API
+5. Code.gs
+6. README
 ```
 
 ---
 
-## 58. Regla de oro para cambios futuros
-
-Cuando se modifique algo:
-
-1. No tocar todo al mismo tiempo.
-2. Cambiar un archivo.
-3. Probar login.
-4. Probar módulo.
-5. Probar acción modificada.
-6. Si falla, revisar consola y Apps Script logs.
-7. No mezclar versiones anteriores.
-
----
-
-## 59. Estado final del proyecto
+## 30. Estado actual final
 
 Estado técnico actual:
 
 ```text
-Backend Code.gs corregido
-Frontend GitHub separado corregido
-Roles normalizados
-IDAcceso definido como identidad principal
-Módulos bloqueados por rol
-Notificaciones con lectura automática vía backend
-Reportes separados
-Incidencias separadas
-UI separada
-CSS completo
-README documentado
+Frontend GitHub funcional
+Backend Apps Script funcional
+Login funcional
+Bloqueo de roles funcional
+Incidencias funcionales con IDAcceso
+Resumen docente verde funcional
+Mi perfil oro funcional
+IDAcceso oculto en incidencias/perfil
+Resumen rápido corregido
+Lista de docentes completa después de refresco
+Menú inicial con tarjeta de acceso y cerrar sesión
+Notificaciones diseñadas para marcar Leída al abrir detalle desde backend
+```
+
+Pendientes para próxima sesión:
+
+```text
+1. Probar visualmente INDEXGITHUBV3 en menú inicial.
+2. Probar notificaciones reales.
+3. Confirmar que al abrir detalle cambia Estado a Leída.
+4. Si hay retardo molesto, crear gsV2.txt para caché/refresco.
+5. Revisar si notificaciones muestran IDUsuario y ocultarlo si aparece.
 ```
 
 ---
 
-## 60. Resumen corto para mantenimiento
+## 31. Mapa final ultra corto
 
 ```text
-La app visible vive en GitHub.
-La API vive en Apps Script.
-Los datos viven en Google Sheets.
-La identidad real es IDAcceso.
-El ID de columna A es auditoría.
-Los roles son Direccion, Correspondencia, Prefectura y Docente.
-No usar userTest.
-No usar Dirección con acento como clave interna.
-No mezclar index de GitHub con index de Apps Script.
-```
-
----
-
-## 61. Checklist final de archivos
-
-### GitHub
-
-```text
-[ ] index.html actualizado con indexgithubhtml.txt
-[ ] css/style.css actualizado con stylegithubcss.txt
-[ ] js/api.js actualizado con apigithubjs.txt
-[ ] js/app.js actualizado con appgithubjs.txt
-[ ] js/ui.js actualizado con uigithubjs.txt
-[ ] js/incidencias.js actualizado con incidenciasgithubjs.txt
-[ ] js/reportes.js actualizado con reportesgithubjs.txt
-[ ] js/notificaciones.js actualizado con notificacionesgithubjs.txt
-[ ] logoPng.png presente
-[ ] README.md actualizado
-```
-
-### Apps Script
-
-```text
-[ ] Code.gs actualizado con SEC2_Code.gs_COMPLETO_CORREGIDO.txt
-[ ] index.html opcional actualizado con indexscrip.txt
-[ ] Web app desplegada
-[ ] URL pegada en js/api.js
-```
-
-### Google Sheets
-
-```text
-[ ] Hoja Usuarios existe
-[ ] Hoja Incidencias existe
-[ ] Hoja Papelera existe
-[ ] Hoja Configuracion existe
-[ ] Hoja Notificaciones existe
-[ ] Usuarios tienen IDAcceso
-[ ] Usuarios tienen Rol exacto
-[ ] Usuarios tienen Contrasena
-[ ] Usuarios están Activos
-```
-
----
-
-## 62. Nota final
-
-Este README describe la versión GitHub + Apps Script del sistema.
-
-Si en el futuro se decide hacer una versión completamente dentro de Apps Script, esa sería una arquitectura diferente y requeriría un `index.html` autocontenido con CSS y JS embebidos.
-
-La versión principal actual es:
-
-```text
-GitHub frontend
-+
-Apps Script backend
-+
-Google Sheets database
-```
-
----
-
-# APÉNDICE A — Mapa exacto de archivos entregados, ubicación real y uso
-
-Este apéndice sirve como referencia directa para no confundir los archivos TXT de respaldo con los archivos reales de producción.
-
-Los archivos TXT entregados quedan como **respaldo intacto**. Para usar el sistema, se copia el contenido de cada TXT y se pega en el archivo real indicado.
-
----
-
-## A.1 Regla general
-
-```text
-Los archivos .txt entregados NO van con ese nombre dentro del proyecto real.
-
-Los .txt son respaldo y referencia.
-
-El contenido de cada .txt se copia y se pega en su destino real:
-- GitHub
-- Google Apps Script
-```
-
-Ejemplo:
-
-```text
-apigithubjs.txt
-```
-
-no se sube como `apigithubjs.txt`.
-
-Su contenido se pega en:
-
-```text
-GitHub → js/api.js
-```
-
----
-
-## A.2 Archivos definitivos para GitHub
-
-Estos archivos forman la app visual real.
-
-| TXT entregado como respaldo | Archivo real donde debe pegarse | Ubicación real |
-|---|---|---|
-| `indexgithubhtml.txt` | `index.html` | raíz del repositorio GitHub |
-| `stylegithubcss.txt` | `style.css` | `css/style.css` |
-| `apigithubjs.txt` | `api.js` | `js/api.js` |
-| `appgithubjs.txt` | `app.js` | `js/app.js` |
-| `uigithubjs.txt` | `ui.js` | `js/ui.js` |
-| `incidenciasgithubjs.txt` | `incidencias.js` | `js/incidencias.js` |
-| `reportesgithubjs.txt` | `reportes.js` | `js/reportes.js` |
-| `notificacionesgithubjs.txt` | `notificaciones.js` | `js/notificaciones.js` |
-| `readmigithubmd.txt` | `README.md` | raíz del repositorio GitHub |
-
----
-
-## A.3 Estructura final esperada en GitHub
-
-Después de copiar el contenido de cada TXT a su archivo real, el repositorio debe quedar así:
-
-```text
-sec2-app/
-├── index.html
-├── README.md
-├── logoPng.png
-├── css/
-│   └── style.css
-└── js/
-    ├── api.js
-    ├── app.js
-    ├── ui.js
-    ├── incidencias.js
-    ├── reportes.js
-    └── notificaciones.js
-```
-
----
-
-## A.4 Archivos definitivos para Google Apps Script
-
-Estos archivos forman el backend/API.
-
-| TXT entregado como respaldo | Archivo real donde debe pegarse | Ubicación real |
-|---|---|---|
-| `SEC2_Code.gs_COMPLETO_CORREGIDO.txt` | `Code.gs` | Google Apps Script |
-| `indexscrip.txt` | `index.html` | Google Apps Script, opcional |
-
----
-
-## A.5 Estructura final esperada en Google Apps Script
-
-```text
-Proyecto Apps Script/
-├── Code.gs
-└── index.html
-```
-
-### Importante
-
-El archivo principal en Apps Script es:
-
-```text
-Code.gs
-```
-
-El archivo:
-
-```text
-index.html
-```
-
-en Apps Script es opcional y solo sirve como pantalla mínima de referencia.
-
-La app visual real vive en GitHub, no en Apps Script.
-
----
-
-## A.6 Tabla completa de respaldo y destino
-
-| Orden | TXT de respaldo entregado | Destino real | Plataforma | Obligatorio |
-|---:|---|---|---|---|
-| 1 | `SEC2_Code.gs_COMPLETO_CORREGIDO.txt` | `Code.gs` | Apps Script | Sí |
-| 2 | `indexscrip.txt` | `index.html` | Apps Script | Opcional |
-| 3 | `indexgithubhtml.txt` | `index.html` | GitHub | Sí |
-| 4 | `stylegithubcss.txt` | `css/style.css` | GitHub | Sí |
-| 5 | `apigithubjs.txt` | `js/api.js` | GitHub | Sí |
-| 6 | `appgithubjs.txt` | `js/app.js` | GitHub | Sí |
-| 7 | `uigithubjs.txt` | `js/ui.js` | GitHub | Sí |
-| 8 | `incidenciasgithubjs.txt` | `js/incidencias.js` | GitHub | Sí |
-| 9 | `reportesgithubjs.txt` | `js/reportes.js` | GitHub | Sí |
-| 10 | `notificacionesgithubjs.txt` | `js/notificaciones.js` | GitHub | Sí |
-| 11 | `readmigithubmd.txt` | `README.md` | GitHub | Recomendado |
-
----
-
-## A.7 Archivos anteriores que NO deben usarse para producción GitHub
-
-Estos archivos fueron útiles durante la revisión, pero no son la versión final para la arquitectura GitHub con archivos separados:
-
-```text
-SEC2_api.js_COMPLETO_CORREGIDO.txt
-SEC2_app.js_COMPLETO_CORREGIDO.txt
-SEC2_index.html_COMPLETO_CORREGIDO.txt
-```
-
-### Motivo
-
-Esos archivos pertenecen al primer bloque de corrección y no son la versión final separada del repositorio GitHub.
-
-Para producción GitHub deben usarse:
-
-```text
-apigithubjs.txt
-appgithubjs.txt
-indexgithubhtml.txt
-```
-
----
-
-## A.8 Regla para no mezclar versiones
-
-Usar esta combinación:
-
-```text
-Apps Script:
-SEC2_Code.gs_COMPLETO_CORREGIDO.txt → Code.gs
-
 GitHub:
-indexgithubhtml.txt        → index.html
-stylegithubcss.txt         → css/style.css
+INDEXGITHUBV3.txt          → index.html
+styleV2.txt                → css/style.css
 apigithubjs.txt            → js/api.js
 appgithubjs.txt            → js/app.js
 uigithubjs.txt             → js/ui.js
-incidenciasgithubjs.txt    → js/incidencias.js
+incidenciasV2.txt          → js/incidencias.js
 reportesgithubjs.txt       → js/reportes.js
 notificacionesgithubjs.txt → js/notificaciones.js
-readmigithubmd.txt         → README.md
+BASEMAESTRASEC2.TXT        → README.md
+
+Apps Script:
+Codegsrealdefinitivo_v3_lista_completa_sin_compatibilidad_antigua.txt → Code.gs
+indexscrip.txt                                                        → index.html
+
+Sheets:
+Usuarios
+Incidencias
+Papelera
+Configuracion
+Notificaciones
 ```
-
-No mezclar con:
-
-```text
-SEC2_api.js_COMPLETO_CORREGIDO.txt
-SEC2_app.js_COMPLETO_CORREGIDO.txt
-SEC2_index.html_COMPLETO_CORREGIDO.txt
-```
-
----
-
-## A.9 Qué archivo se edita si hay cambios futuros
-
-| Necesidad futura | Archivo a editar |
-|---|---|
-| Cambiar URL de Apps Script | `js/api.js` |
-| Cambiar login, sesión o módulos | `js/app.js` |
-| Cambiar navegación, formato, bloqueo visual o helpers | `js/ui.js` |
-| Cambiar registro, historial, perfil o detalle de incidencias | `js/incidencias.js` |
-| Cambiar reportes, consulta de fechas o estadística mensual | `js/reportes.js` |
-| Cambiar notificaciones recibidas/enviadas | `js/notificaciones.js` |
-| Cambiar diseño visual | `css/style.css` |
-| Cambiar estructura de pantallas | `index.html` de GitHub |
-| Cambiar permisos reales, lectura/escritura o datos | `Code.gs` |
-| Cambiar documentación | `README.md` |
-
----
-
-## A.10 Checklist de copiado final
-
-Antes de probar la app real, confirmar:
-
-```text
-[ ] Copié SEC2_Code.gs_COMPLETO_CORREGIDO.txt en Apps Script → Code.gs
-[ ] Copié indexscrip.txt en Apps Script → index.html, si decidí dejar pantalla mínima
-[ ] Copié indexgithubhtml.txt en GitHub → index.html
-[ ] Copié stylegithubcss.txt en GitHub → css/style.css
-[ ] Copié apigithubjs.txt en GitHub → js/api.js
-[ ] Copié appgithubjs.txt en GitHub → js/app.js
-[ ] Copié uigithubjs.txt en GitHub → js/ui.js
-[ ] Copié incidenciasgithubjs.txt en GitHub → js/incidencias.js
-[ ] Copié reportesgithubjs.txt en GitHub → js/reportes.js
-[ ] Copié notificacionesgithubjs.txt en GitHub → js/notificaciones.js
-[ ] Copié readmigithubmd.txt en GitHub → README.md
-[ ] Verifiqué que logoPng.png exista en la raíz del repositorio
-[ ] Verifiqué que APPS_SCRIPT_URL en js/api.js sea la URL vigente del despliegue Apps Script
-[ ] Guardé Apps Script
-[ ] Desplegué una nueva versión de Apps Script
-[ ] Publiqué cambios en GitHub
-[ ] Abrí GitHub Pages y probé login
-```
-
----
-
-## A.11 Resumen mínimo del mapa final
-
-```text
-GOOGLE APPS SCRIPT
-└── Code.gs                    ← contenido de SEC2_Code.gs_COMPLETO_CORREGIDO.txt
-└── index.html opcional         ← contenido de indexscrip.txt
-
-GITHUB
-├── index.html                  ← contenido de indexgithubhtml.txt
-├── README.md                   ← contenido de readmigithubmd.txt
-├── logoPng.png
-├── css/
-│   └── style.css               ← contenido de stylegithubcss.txt
-└── js/
-    ├── api.js                  ← contenido de apigithubjs.txt
-    ├── app.js                  ← contenido de appgithubjs.txt
-    ├── ui.js                   ← contenido de uigithubjs.txt
-    ├── incidencias.js          ← contenido de incidenciasgithubjs.txt
-    ├── reportes.js             ← contenido de reportesgithubjs.txt
-    └── notificaciones.js       ← contenido de notificacionesgithubjs.txt
-```
-
----
-
-## A.12 Nota de respaldo
-
-Los archivos TXT entregados quedan como respaldo histórico y referencia.
-
-No es necesario cambiarles el nombre.
-
-No es necesario subirlos al repositorio.
-
-Lo recomendable es conservarlos en una carpeta local de respaldo, por ejemplo:
-
-```text
-SEC2_RESPALDOS_TXT/
-├── SEC2_Code.gs_COMPLETO_CORREGIDO.txt
-├── indexscrip.txt
-├── indexgithubhtml.txt
-├── stylegithubcss.txt
-├── apigithubjs.txt
-├── appgithubjs.txt
-├── uigithubjs.txt
-├── incidenciasgithubjs.txt
-├── reportesgithubjs.txt
-├── notificacionesgithubjs.txt
-└── readmigithubmd.txt
-```
-
-La versión de producción se arma copiando el contenido de esos TXT a los archivos reales descritos en este apéndice.

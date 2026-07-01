@@ -55,8 +55,7 @@ function ejecutarEnvioNotificacion() {
   status.className = "status-box show";
   status.textContent = "Enviando notificación...";
 
-  API.guardarNotificacion(
-    datos,
+  API.guardarNotificacion(datos,
     notificacion => {
       status.className = "status-box show ok";
       status.textContent = `Notificación enviada correctamente: ${notificacion.IDNotificacion}`;
@@ -74,8 +73,7 @@ function abrirLeerNotificaciones() {
   document.getElementById("notifyReadList").innerHTML = crearTarjetaSimple("Cargando notificaciones...", "Consultando mensajes recibidos.");
   showScreen("notifyReadScreen");
 
-  API.obtenerNotificacionesUsuario(
-    renderLeerNotificaciones,
+  API.obtenerNotificacionesUsuario(renderLeerNotificaciones,
     error => {
       document.getElementById("notifyReadList").innerHTML = crearTarjetaSimple("Error", obtenerMensajeError(error));
     }
@@ -84,7 +82,6 @@ function abrirLeerNotificaciones() {
 
 function renderLeerNotificaciones(respuesta) {
   document.getElementById("notifyReadSubtitle").textContent = `${respuesta.usuario.Nombre} ${respuesta.usuario.Apellidos}`;
-
   const container = document.getElementById("notifyReadList");
   container.innerHTML = "";
 
@@ -103,16 +100,15 @@ function crearCardNotificacionRecibida(notificacion) {
   const meta = estadoNotificacionMeta(notificacion.Estado);
   const card = document.createElement("article");
   card.className = `notification-card ${meta.clase}`;
-
   card.innerHTML = `
-        <div class="notification-status-icon solid-${meta.color}" data-icon="${meta.icono}"></div>
-        <div>
-          <p class="notification-date">${escapeHTML(notificacion.FechaEnvio || "Sin fecha")}</p>
-          <p class="notification-message">${escapeHTML(recortarTexto(notificacion.Mensaje || "", 72))}</p>
-          <p class="notification-meta"><strong>Estado:</strong> ${escapeHTML(meta.texto)}</p>
-        </div>
-        <button class="detail-button" onclick="abrirDetalleNotificacionRecibida('${escapeHTML(notificacion.IDNotificacion)}')">Ver detalle</button>
-      `;
+    <div class="notification-status-icon solid-${meta.color}" data-icon="${meta.icono}"></div>
+    <div>
+      <p class="notification-date">${escapeHTML(notificacion.FechaEnvio || "Sin fecha")}</p>
+      <p class="notification-message">${escapeHTML(recortarTexto(notificacion.Mensaje || "", 72))}</p>
+      <p class="notification-meta"><strong>Estado:</strong> ${escapeHTML(meta.texto)}</p>
+    </div>
+    <button class="detail-button" onclick="abrirDetalleNotificacionRecibida('${escapeHTML(notificacion.IDNotificacion)}')">Ver detalle</button>
+  `;
   return card;
 }
 
@@ -126,11 +122,8 @@ function abrirDetalleNotificacionRecibida(idNotificacion) {
   document.getElementById("notifyDetailContent").innerHTML = crearTarjetaSimple("Cargando detalle...", "Consultando mensaje.");
   showScreen("notifyDetailScreen");
 
-  API.obtenerDetalleNotificacion(
-    idNotificacion,
-    respuesta => {
-      renderDetalleNotificacion(respuesta.notificacion, "recibida");
-    },
+  API.obtenerDetalleNotificacion(idNotificacion, 
+    respuesta => renderDetalleNotificacion(respuesta.notificacion, "recibida"),
     error => {
       document.getElementById("notifyDetailContent").innerHTML = crearTarjetaSimple("Error", obtenerMensajeError(error));
     }
@@ -141,8 +134,7 @@ function abrirNotificacionesEnviadas() {
   document.getElementById("notifySentList").innerHTML = crearTarjetaSimple("Cargando notificaciones...", "Consultando mensajes enviados.");
   showScreen("notifySentScreen");
 
-  API.obtenerNotificacionesEnviadas(
-    renderNotificacionesEnviadas,
+  API.obtenerNotificacionesEnviadas(renderNotificacionesEnviadas,
     error => {
       document.getElementById("notifySentList").innerHTML = crearTarjetaSimple("Error", obtenerMensajeError(error));
     }
@@ -172,14 +164,14 @@ function crearCardNotificacionEnviada(notificacion) {
   const card = document.createElement("article");
   card.className = `notification-card ${meta.clase}`;
   card.innerHTML = `
-        <div class="notification-status-icon solid-${meta.color}" data-icon="${meta.icono}"></div>
-        <div>
-          <p class="notification-date">${escapeHTML(notificacion.FechaEnvio || "Sin fecha")}</p>
-          <p class="notification-message">${escapeHTML(nombre || "Sin destinatario")}</p>
-          <p class="notification-meta"><strong>Estado:</strong> ${escapeHTML(meta.texto)}</p>
-        </div>
-        <button class="detail-button" onclick="abrirDetalleNotificacionEnviada('${escapeHTML(notificacion.IDNotificacion)}')">Ver detalle</button>
-      `;
+    <div class="notification-status-icon solid-${meta.color}" data-icon="${meta.icono}"></div>
+    <div>
+      <p class="notification-date">${escapeHTML(notificacion.FechaEnvio || "Sin fecha")}</p>
+      <p class="notification-message">${escapeHTML(nombre || "Sin destinatario")}</p>
+      <p class="notification-meta"><strong>Estado:</strong> ${escapeHTML(meta.texto)}</p>
+    </div>
+    <button class="detail-button" onclick="abrirDetalleNotificacionEnviada('${escapeHTML(notificacion.IDNotificacion)}')">Ver detalle</button>
+  `;
   return card;
 }
 
@@ -193,11 +185,8 @@ function abrirDetalleNotificacionEnviada(idNotificacion) {
   document.getElementById("notifyDetailContent").innerHTML = crearTarjetaSimple("Cargando detalle...", "Consultando mensaje enviado.");
   showScreen("notifyDetailScreen");
 
-  API.obtenerDetalleNotificacionEnviada(
-    idNotificacion,
-    respuesta => {
-      renderDetalleNotificacion(respuesta.notificacion, "enviada");
-    },
+  API.obtenerDetalleNotificacionEnviada(idNotificacion, 
+    respuesta => renderDetalleNotificacion(respuesta.notificacion, "enviada"),
     error => {
       document.getElementById("notifyDetailContent").innerHTML = crearTarjetaSimple("Error", obtenerMensajeError(error));
     }
@@ -209,41 +198,41 @@ function renderDetalleNotificacion(notificacion, modo) {
   const nombre = `${notificacion.Nombre || ""} ${notificacion.Apellidos || ""}`.trim();
 
   let html = `
-        <article class="notification-card-full ${meta.clase}">
-          <div style="display:grid;grid-template-columns:58px 1fr;gap:12px;align-items:center;">
-            <div class="notification-status-icon solid-${meta.color}" data-icon="${meta.icono}"></div>
-            <div>
-              <h2 class="data-card-title color-${meta.color}">${escapeHTML(meta.texto)}</h2>
-              <p class="data-card-text"><strong>ID:</strong> ${escapeHTML(notificacion.IDNotificacion || "Sin ID")}</p>
-            </div>
-          </div>
-        </article>
+    <article class="notification-card-full ${meta.clase}">
+      <div style="display:grid;grid-template-columns:58px 1fr;gap:12px;align-items:center;">
+        <div class="notification-status-icon solid-${meta.color}" data-icon="${meta.icono}"></div>
+        <div>
+          <h2 class="data-card-title color-${meta.color}">${escapeHTML(meta.texto)}</h2>
+          <p class="data-card-text"><strong>ID:</strong> ${escapeHTML(notificacion.IDNotificacion || "Sin ID")}</p>
+        </div>
+      </div>
+    </article>
 
-        <article class="data-card">
-          <h2 class="section-title">${modo === "enviada" ? "Destinatario" : "Mensaje recibido"}</h2>
-          <p class="data-card-text"><strong>${escapeHTML(nombre || "Sin nombre")}</strong></p>
-          <p class="data-card-text"><strong>ID usuario:</strong> ${escapeHTML(notificacion.IDUsuario || "Sin dato")}</p>
-          <p class="data-card-text"><strong>Turno:</strong> ${TURNOS_TEXTO[notificacion.Turno] || notificacion.Turno || "Sin dato"}</p>
-        </article>
+    <article class="data-card">
+      <h2 class="section-title">${modo === "enviada" ? "Destinatario" : "Mensaje recibido"}</h2>
+      <p class="data-card-text"><strong>${escapeHTML(nombre || "Sin nombre")}</strong></p>
+      <p class="data-card-text"><strong>ID usuario:</strong> ${escapeHTML(notificacion.IDUsuario || "Sin dato")}</p>
+      <p class="data-card-text"><strong>Turno:</strong> ${TURNOS_TEXTO[notificacion.Turno] || notificacion.Turno || "Sin dato"}</p>
+    </article>
 
-        <article class="data-card">
-          <h2 class="section-title">Mensaje</h2>
-          <p class="data-card-text">${escapeHTML(notificacion.Mensaje || "Sin mensaje.")}</p>
-        </article>
+    <article class="data-card">
+      <h2 class="section-title">Mensaje</h2>
+      <p class="data-card-text">${escapeHTML(notificacion.Mensaje || "Sin mensaje.")}</p>
+    </article>
 
-        <article class="data-card">
-          <h2 class="section-title">Envío</h2>
-          <p class="data-card-text"><strong>Enviado por:</strong> ${escapeHTML(notificacion.EnviadoPor || "Sin dato")}</p>
-          <p class="data-card-text"><strong>Fecha de envío:</strong> ${escapeHTML(notificacion.FechaEnvio || "Sin fecha")}</p>
-        </article>
+    <article class="data-card">
+      <h2 class="section-title">Envío</h2>
+      <p class="data-card-text"><strong>Enviado por:</strong> ${escapeHTML(notificacion.EnviadoPor || "Sin dato")}</p>
+      <p class="data-card-text"><strong>Fecha de envío:</strong> ${escapeHTML(notificacion.FechaEnvio || "Sin fecha")}</p>
+    </article>
 
-        <article class="data-card">
-          <h2 class="section-title">Lectura</h2>
-          <p class="data-card-text"><strong>Estado:</strong> ${escapeHTML(meta.texto)}</p>
-          <p class="data-card-text"><strong>Fecha de lectura:</strong> ${escapeHTML(notificacion.FechaLectura || "Sin lectura registrada")}</p>
-          <p class="data-card-text"><strong>Leído por:</strong> ${escapeHTML(notificacion.LeidoPor || "Sin lectura registrada")}</p>
-        </article>
-      `;
+    <article class="data-card">
+      <h2 class="section-title">Lectura</h2>
+      <p class="data-card-text"><strong>Estado:</strong> ${escapeHTML(meta.texto)}</p>
+      <p class="data-card-text"><strong>Fecha de lectura:</strong> ${escapeHTML(notificacion.FechaLectura || "Sin lectura registrada")}</p>
+      <p class="data-card-text"><strong>Leído por:</strong> ${escapeHTML(notificacion.LeidoPor || "Sin lectura registrada")}</p>
+    </article>
+  `;
 
   document.getElementById("notifyDetailContent").innerHTML = html;
   inicializarIconos();

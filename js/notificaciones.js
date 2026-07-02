@@ -1,3 +1,5 @@
+let notifyUsuariosDisponibles = [];
+
 function abrirNotificaciones() {
   const rol = canonicalizarRolNotificaciones(sessionStorage.getItem("userRol"));
   currentModule = currentModule || sessionStorage.getItem("currentActiveModule") || rol;
@@ -27,7 +29,8 @@ function abrirEnviarNotificacion() {
     return;
   }
 
-  select.innerHTML = `<option value="">Cargando personas...</option>`;
+  notifyUsuariosDisponibles = [];
+  select.innerHTML = `<option value="">Cargando docentes...</option>`;
   mensaje.value = "";
   status.className = "status-box";
   status.textContent = "";
@@ -36,9 +39,18 @@ function abrirEnviarNotificacion() {
 
   API.obtenerUsuariosParaFormulario(
     function(usuarios) {
-      select.innerHTML = `<option value="">Seleccionar persona</option>`;
+      notifyUsuariosDisponibles = (usuarios || []).filter(function(usuario) {
+        return Boolean(usuario && usuario.IDAcceso);
+      });
 
-      (usuarios || []).forEach(function(usuario) {
+      select.innerHTML = `<option value="">Seleccionar docente</option>`;
+
+      const optionTodos = document.createElement("option");
+      optionTodos.value = "__TODOS__";
+      optionTodos.textContent = "TODOS";
+      select.appendChild(optionTodos);
+
+      notifyUsuariosDisponibles.forEach(function(usuario) {
         const idAcceso = usuario.IDAcceso || "";
 
         if (!idAcceso) return;
@@ -50,7 +62,7 @@ function abrirEnviarNotificacion() {
       });
     },
     function(error) {
-      select.innerHTML = `<option value="">Error al cargar personas</option>`;
+      select.innerHTML = `<option value="">Error al cargar docentes</option>`;
       status.className = "status-box show error";
       status.textContent = obtenerMensajeError(error);
     }
@@ -74,26 +86,39 @@ function ejecutarEnvioNotificacion() {
     return;
   }
 
-  const datos = {
-    IDUsuario: select.value,
-    Mensaje: mensaje.value
-  };
+  const idSeleccionado = select.value;
+  const textoMensaje = String(mensaje.value || "").trim();
 
-  if (!datos.IDUsuario) {
+  if (!idSeleccionado) {
     status.className = "status-box show error";
-    status.textContent = "Selecciona una persona.";
+    status.textContent = "Selecciona un docente.";
     return;
   }
 
-  if (!String(datos.Mensaje || "").trim()) {
+  if (!textoMensaje) {
     status.className = "status-box show error";
     status.textContent = "Escribe un mensaje.";
     return;
   }
 
-  if (!confirm("¿Confirmas enviar esta notificación?")) {
+  if (idSeleccionado === "__TODOS__") {
+    enviarNotificacionATodos(textoMensaje, select, mensaje, status);
     return;
   }
+
+  const docente = obtenerDocenteNotificacionPorID(idSeleccionado);
+  const nombreDocente = docente
+    ? `${docente.Apellidos || ""} ${docente.Nombre || ""}`.trim()
+    : obtenerTextoOpcionSeleccionada(select);
+
+  if (!confirm(`¿Confirmas enviar esta notificación a ${nombreDocente || "este docente"}?`)) {
+    return;
+  }
+
+  const datos = {
+    IDUsuario: idSeleccionado,
+    Mensaje: textoMensaje
+  };
 
   status.className = "status-box show";
   status.textContent = "Enviando notificación...";
@@ -111,6 +136,84 @@ function ejecutarEnvioNotificacion() {
       status.textContent = obtenerMensajeError(error);
     }
   );
+}
+
+function enviarNotificacionATodos(textoMensaje, select, mensaje, status) {
+  const docentes = (notifyUsuariosDisponibles || []).filter(function(usuario) {
+    return Boolean(usuario && usuario.IDAcceso);
+  });
+
+  if (!docentes.length) {
+    status.className = "status-box show error";
+    status.textContent = "No hay docentes disponibles para enviar la notificación.";
+    return;
+  }
+
+  if (!confirm(`¿Confirmas enviar esta notificación a TODOS (${docentes.length})?`)) {
+    return;
+  }
+
+  status.className = "status-box show";
+  status.textContent = `Enviando notificaciones: 0 de ${docentes.length}...`;
+
+  let completadas = 0;
+  let exitosas = 0;
+  let fallidas = 0;
+  const errores = [];
+
+  docentes.forEach(function(docente) {
+    API.guardarNotificacion(
+      {
+        IDUsuario: docente.IDAcceso,
+        Mensaje: textoMensaje
+      },
+      function() {
+        exitosas++;
+        completadas++;
+        actualizarEstadoEnvioTodos(completadas, docentes.length, exitosas, fallidas, errores, select, mensaje, status);
+      },
+      function(error) {
+        fallidas++;
+        completadas++;
+        const nombre = `${docente.Apellidos || ""} ${docente.Nombre || ""}`.trim() || docente.IDAcceso;
+        errores.push(`${nombre}: ${obtenerMensajeError(error)}`);
+        actualizarEstadoEnvioTodos(completadas, docentes.length, exitosas, fallidas, errores, select, mensaje, status);
+      }
+    );
+  });
+}
+
+function actualizarEstadoEnvioTodos(completadas, total, exitosas, fallidas, errores, select, mensaje, status) {
+  if (completadas < total) {
+    status.className = "status-box show";
+    status.textContent = `Enviando notificaciones: ${completadas} de ${total}...`;
+    return;
+  }
+
+  if (fallidas > 0) {
+    status.className = "status-box show error";
+    status.textContent = `Envío terminado con errores. Correctas: ${exitosas}. Fallidas: ${fallidas}. ${errores.slice(0, 3).join(" | ")}`;
+    return;
+  }
+
+  status.className = "status-box show ok";
+  status.textContent = `Notificación enviada correctamente a TODOS (${exitosas}).`;
+  select.value = "";
+  mensaje.value = "";
+}
+
+function obtenerDocenteNotificacionPorID(idAcceso) {
+  return (notifyUsuariosDisponibles || []).find(function(usuario) {
+    return String(usuario.IDAcceso || "") === String(idAcceso || "");
+  }) || null;
+}
+
+function obtenerTextoOpcionSeleccionada(select) {
+  if (!select || select.selectedIndex < 0 || !select.options || !select.options[select.selectedIndex]) {
+    return "";
+  }
+
+  return String(select.options[select.selectedIndex].textContent || "").trim();
 }
 
 function abrirLeerNotificaciones() {
@@ -277,7 +380,6 @@ function crearCardNotificacionEnviada(notificacion) {
       <div>
         <p class="notification-date">${escapeHTML(notificacion.FechaEnvio || "Sin fecha")}</p>
         <p class="notification-message">${escapeHTML(nombre || "Sin destinatario")}</p>
-        <p class="notification-meta"><strong>IDAcceso:</strong> ${escapeHTML(notificacion.IDUsuario || "Sin dato")}</p>
         <p class="notification-meta"><strong>Estado:</strong> ${escapeHTML(meta.texto)}</p>
       </div>
       <button class="detail-button" onclick="abrirDetalleNotificacionEnviada('${escapeHTML(notificacion.IDNotificacion || "")}')">Ver detalle</button>
@@ -349,7 +451,7 @@ function renderDetalleNotificacion(notificacion, modo) {
   const n = notificacion || {};
   const meta = estadoNotificacionMeta(n.Estado);
   const nombre = `${n.Nombre || ""} ${n.Apellidos || ""}`.trim();
-  const tituloPersona = modo === "enviada" ? "Destinatario" : "Persona";
+  const tituloPersona = modo === "enviada" ? "Destinatario" : "Docente";
 
   const html = `
     <article class="notification-card-full ${meta.clase}">
@@ -365,7 +467,6 @@ function renderDetalleNotificacion(notificacion, modo) {
     <article class="data-card">
       <h2 class="section-title">${escapeHTML(tituloPersona)}</h2>
       <p class="data-card-text"><strong>${escapeHTML(nombre || "Sin nombre")}</strong></p>
-      <p class="data-card-text"><strong>IDAcceso:</strong> ${escapeHTML(n.IDUsuario || "Sin dato")}</p>
       <p class="data-card-text"><strong>Turno:</strong> ${escapeHTML(TURNOS_TEXTO[n.Turno] || n.Turno || "Sin dato")}</p>
     </article>
 

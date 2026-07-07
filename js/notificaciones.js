@@ -547,6 +547,33 @@ function formatearFechaHoraNotificacion(valorFecha, textoVacio) {
 
   const meses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
 
+  const isoConT = textoOriginal.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{1,2}):(\d{2})(?::\d{2}(?:\.\d+)?)?(Z|[+-]\d{2}:?\d{2})?$/);
+
+  if (isoConT) {
+    /*
+      Apps Script puede mandar la misma hora como:
+      - 2026-07-07 02:24  -> hora local ya lista
+      - 2026-07-07T08:24 -> misma hora pero en UTC sin Z explícita
+      Para evitar que cambie al volver de detalle a lista, todo valor con T se trata
+      como instante UTC si no trae zona.
+    */
+    const textoISO = isoConT[6] ? textoOriginal : `${textoOriginal}Z`;
+    const fecha = new Date(textoISO);
+
+    if (!isNaN(fecha.getTime())) {
+      const dia = String(fecha.getDate()).padStart(2, "0");
+      const mes = fecha.getMonth();
+      const anio = fecha.getFullYear();
+      const hora = String(fecha.getHours()).padStart(2, "0");
+      const minuto = String(fecha.getMinutes()).padStart(2, "0");
+
+      return {
+        fecha: `${dia} ${meses[mes] || ""} ${anio}`,
+        hora: `${hora}:${minuto}`
+      };
+    }
+  }
+
   const localBackend = textoOriginal.match(/^(\d{4})-(\d{2})-(\d{2})\s+(\d{1,2}):(\d{2})(?::\d{2})?/);
 
   if (localBackend) {

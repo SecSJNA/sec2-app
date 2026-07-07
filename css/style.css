@@ -1545,3 +1545,84 @@ label {
     font-size: 12.5px;
   }
 }
+
+/* =========================================================
+   V3 — Android / PWA scroll y teclado
+   Corrección quirúrgica para que el scroll lo maneje la página
+   completa en Android instalado como app o abierto en Chrome.
+   No modifica colores, cards, botones ni tamaños visuales.
+   ========================================================= */
+
+html {
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+body {
+  min-height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  touch-action: pan-y;
+}
+
+.app,
+.phone-shell {
+  min-height: 100vh;
+  min-height: 100dvh;
+  height: auto;
+  overflow-x: hidden;
+  overflow-y: visible;
+}
+
+.screen.active {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.screen-scroll {
+  height: auto;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  overflow-y: visible;
+  touch-action: pan-y;
+}
+
+#main.screen-scroll,
+#moduleMenu.screen-scroll,
+#dataScreen.screen-scroll,
+#rangeScreen.screen-scroll,
+#typeScreen.screen-scroll,
+#formScreen.screen-scroll,
+#historySelectScreen.screen-scroll,
+#personSummaryScreen.screen-scroll,
+#detailScreen.screen-scroll,
+#editUseScreen.screen-scroll,
+#notifyMenuScreen.screen-scroll,
+#notifySendScreen.screen-scroll,
+#notifyReadScreen.screen-scroll,
+#notifySentScreen.screen-scroll,
+#notifyDetailScreen.screen-scroll,
+#statMonthScreen.screen-scroll {
+  overflow-y: visible;
+  touch-action: pan-y;
+}
+
+.page-top,
+.module-menu-wrap,
+.content,
+.main-fixed-layout {
+  height: auto;
+  min-height: auto;
+  overflow: visible;
+  touch-action: pan-y;
+}
+
+input,
+select,
+textarea,
+button {
+  touch-action: manipulation;
+}
+

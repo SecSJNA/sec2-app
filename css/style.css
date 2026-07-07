@@ -1626,3 +1626,105 @@ button {
   touch-action: manipulation;
 }
 
+/* =========================================================
+   V4 — Android/PWA scroll forzado por contenedor fijo
+   Se usa cuando Android no respeta el scroll normal del body.
+   La pantalla activa se vuelve el contenedor desplazable real.
+   ========================================================= */
+
+html,
+body {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  overflow: hidden !important;
+}
+
+body {
+  position: fixed !important;
+  inset: 0 !important;
+  touch-action: none !important;
+}
+
+.app,
+.phone-shell {
+  width: 100% !important;
+  height: 100dvh !important;
+  min-height: 100dvh !important;
+  max-height: 100dvh !important;
+  overflow: hidden !important;
+}
+
+.screen {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100dvh !important;
+  min-height: 100dvh !important;
+  max-height: 100dvh !important;
+  overflow: hidden !important;
+}
+
+.screen.active {
+  display: flex !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+.screen.active.screen-scroll,
+#main.screen.active,
+#moduleMenu.screen.active,
+#dataScreen.screen.active,
+#rangeScreen.screen.active,
+#typeScreen.screen.active,
+#formScreen.screen.active,
+#historySelectScreen.screen.active,
+#personSummaryScreen.screen.active,
+#detailScreen.screen.active,
+#editUseScreen.screen.active,
+#notifyMenuScreen.screen.active,
+#notifySendScreen.screen.active,
+#notifyReadScreen.screen.active,
+#notifySentScreen.screen.active,
+#notifyDetailScreen.screen.active,
+#statMonthScreen.screen.active {
+  overflow-x: hidden !important;
+  overflow-y: scroll !important;
+  -webkit-overflow-scrolling: touch !important;
+  touch-action: pan-y !important;
+  overscroll-behavior-y: contain !important;
+}
+
+#loginScreen.screen.active {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  touch-action: pan-y !important;
+}
+
+.screen.active > .page-top,
+.screen.active > .module-menu-wrap,
+.screen.active > .content,
+.screen.active .main-fixed-layout {
+  height: auto !important;
+  min-height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  touch-action: pan-y !important;
+}
+
+#main.screen.active > .content {
+  padding-bottom: calc(28px + env(safe-area-inset-bottom)) !important;
+}
+
+.module-menu-wrap,
+.page-top {
+  padding-bottom: calc(28px + env(safe-area-inset-bottom)) !important;
+}
+
+button,
+input,
+select,
+textarea {
+  touch-action: manipulation !important;
+}

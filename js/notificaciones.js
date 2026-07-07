@@ -275,7 +275,7 @@ function crearCardNotificacionRecibida(notificacion) {
     <div style="display:grid;grid-template-columns:50px 1fr auto;gap:10px;align-items:center;">
       <div class="notification-status-icon solid-${meta.color}" data-icon="${meta.icono}"></div>
       <div>
-        <p class="notification-date">${escapeHTML(notificacion.FechaEnvio || "Sin fecha")}</p>
+        ${crearFechaHoraTarjetaNotificacionHTML("Enviado", notificacion.FechaEnvio)}
         <p class="notification-message">Enviado por Dirección</p>
         <p class="notification-meta"><strong>Estado:</strong> ${escapeHTML(meta.texto)}</p>
       </div>
@@ -378,7 +378,7 @@ function crearCardNotificacionEnviada(notificacion) {
     <div style="display:grid;grid-template-columns:50px 1fr auto;gap:10px;align-items:center;">
       <div class="notification-status-icon solid-${meta.color}" data-icon="${meta.icono}"></div>
       <div>
-        <p class="notification-date">${escapeHTML(notificacion.FechaEnvio || "Sin fecha")}</p>
+        ${crearFechaHoraTarjetaNotificacionHTML("Enviado", notificacion.FechaEnvio)}
         <p class="notification-message">${escapeHTML(nombre || "Sin destinatario")}</p>
         <p class="notification-meta"><strong>Estado:</strong> ${escapeHTML(meta.texto)}</p>
       </div>
@@ -478,13 +478,13 @@ function renderDetalleNotificacion(notificacion, modo) {
     <article class="data-card">
       <h2 class="section-title">Envío</h2>
       <p class="data-card-text"><strong>Enviado por ID:</strong> ${escapeHTML(n.EnviadoPor || "Sin dato")}</p>
-      <p class="data-card-text"><strong>Fecha de envío:</strong> ${escapeHTML(n.FechaEnvio || "Sin fecha")}</p>
+      ${crearFechaHoraDetalleNotificacionHTML("envío", n.FechaEnvio)}
     </article>
 
     <article class="data-card">
       <h2 class="section-title">Lectura</h2>
       <p class="data-card-text"><strong>Estado:</strong> ${escapeHTML(meta.texto)}</p>
-      <p class="data-card-text"><strong>Fecha de lectura:</strong> ${escapeHTML(n.FechaLectura || "Sin lectura registrada")}</p>
+      ${crearFechaHoraDetalleNotificacionHTML("lectura", n.FechaLectura, "Sin lectura registrada")}
       <p class="data-card-text"><strong>Leído por ID:</strong> ${escapeHTML(n.LeidoPor || "Sin lectura registrada")}</p>
     </article>
   `;
@@ -496,6 +496,120 @@ function renderDetalleNotificacion(notificacion, modo) {
   }
 
   inicializarIconos();
+}
+
+
+function crearFechaHoraTarjetaNotificacionHTML(etiqueta, valorFecha) {
+  const partes = formatearFechaHoraNotificacion(valorFecha);
+
+  return `
+        <p class="notification-date">${escapeHTML(etiqueta)}: ${escapeHTML(partes.fecha)}</p>
+        <p class="notification-meta"><strong>Hora:</strong> ${escapeHTML(partes.hora)}</p>`;
+}
+
+function crearFechaHoraDetalleNotificacionHTML(tipo, valorFecha, textoVacio) {
+  const partes = formatearFechaHoraNotificacion(valorFecha, textoVacio || "Sin fecha");
+
+  return `
+      <p class="data-card-text"><strong>Fecha de ${escapeHTML(tipo)}:</strong> ${escapeHTML(partes.fecha)}</p>
+      <p class="data-card-text"><strong>Hora de ${escapeHTML(tipo)}:</strong> ${escapeHTML(partes.hora)}</p>`;
+}
+
+function formatearFechaHoraNotificacion(valorFecha, textoVacio) {
+  const sinDato = textoVacio || "Sin fecha";
+
+  if (!valorFecha) {
+    return {
+      fecha: sinDato,
+      hora: "Sin hora"
+    };
+  }
+
+  const textoOriginal = String(valorFecha).trim();
+
+  if (!textoOriginal) {
+    return {
+      fecha: sinDato,
+      hora: "Sin hora"
+    };
+  }
+
+  /*
+    Formatos esperados desde Apps Script / Sheets:
+    - 2026-07-07 02:24
+    - 2026-07-07T08:24
+    - 2026-07-07T08:24:00.000Z
+    - 07/07/2026 02:24
+    Regla:
+    - Si viene con T o zona horaria, se interpreta como hora absoluta y se convierte a hora local del dispositivo.
+    - Si viene con espacio, se respeta como fecha/hora local ya formateada por backend.
+  */
+
+  const meses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+
+  const localBackend = textoOriginal.match(/^(\d{4})-(\d{2})-(\d{2})\s+(\d{1,2}):(\d{2})(?::\d{2})?/);
+
+  if (localBackend) {
+    const anio = localBackend[1];
+    const mes = Number(localBackend[2]);
+    const dia = localBackend[3];
+    const hora = String(localBackend[4]).padStart(2, "0");
+    const minuto = localBackend[5];
+
+    return {
+      fecha: `${dia} ${meses[mes - 1] || localBackend[2]} ${anio}`,
+      hora: `${hora}:${minuto}`
+    };
+  }
+
+  const soloFechaBackend = textoOriginal.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+
+  if (soloFechaBackend) {
+    const anio = soloFechaBackend[1];
+    const mes = Number(soloFechaBackend[2]);
+    const dia = soloFechaBackend[3];
+
+    return {
+      fecha: `${dia} ${meses[mes - 1] || soloFechaBackend[2]} ${anio}`,
+      hora: "Sin hora"
+    };
+  }
+
+  const fechaSlash = textoOriginal.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2}))?/);
+
+  if (fechaSlash) {
+    const dia = String(fechaSlash[1]).padStart(2, "0");
+    const mes = Number(fechaSlash[2]);
+    const anio = fechaSlash[3];
+    const hora = fechaSlash[4] && fechaSlash[5]
+      ? `${String(fechaSlash[4]).padStart(2, "0")}:${fechaSlash[5]}`
+      : "Sin hora";
+
+    return {
+      fecha: `${dia} ${meses[mes - 1] || fechaSlash[2]} ${anio}`,
+      hora: hora
+    };
+  }
+
+  const fecha = new Date(textoOriginal);
+
+  if (!isNaN(fecha.getTime())) {
+    const dia = String(fecha.getDate()).padStart(2, "0");
+    const mes = fecha.getMonth();
+    const anio = fecha.getFullYear();
+    const hora = String(fecha.getHours()).padStart(2, "0");
+    const minuto = String(fecha.getMinutes()).padStart(2, "0");
+
+    return {
+      fecha: `${dia} ${meses[mes] || ""} ${anio}`,
+      hora: `${hora}:${minuto}`
+    };
+  }
+
+  return {
+    fecha: textoOriginal,
+    hora: "Sin hora"
+  };
 }
 
 function recortarTextoSeguro(texto, limite) {

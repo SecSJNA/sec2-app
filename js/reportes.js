@@ -268,7 +268,6 @@ function renderEstadisticaMensual(respuesta) {
     <article class="data-card">
       <h2 class="data-card-title">Resumen mensual</h2>
       <p class="data-card-text"><strong>Persona:</strong> ${escapeHTML(persona.Nombre || "")} ${escapeHTML(persona.Apellidos || "")}</p>
-      <p class="data-card-text"><strong>IDAcceso:</strong> ${escapeHTML(persona.IDAcceso || selectedPersonID || "Sin dato")}</p>
       <p class="data-card-text"><strong>Periodo:</strong> ${escapeHTML(r.mes || "")}/${escapeHTML(r.anio || "")}</p>
       <p class="data-card-text"><strong>Total de incidencias:</strong> ${escapeHTML(r.total || 0)}</p>
       <p class="data-card-text"><strong>Tipo más frecuente:</strong> ${escapeHTML(r.tipoMasFrecuente || "Sin dato")}</p>

@@ -832,6 +832,39 @@
   <script src="js/reportes.js"></script>
   <script src="js/notificaciones.js"></script>
   <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const loginID = document.getElementById("loginIDAcceso");
+      const loginPass = document.getElementById("loginContrasena");
+
+      function ejecutarLoginDesdeTeclado(event) {
+        if (event.key !== "Enter") {
+          return;
+        }
+
+        event.preventDefault();
+
+        if (document.activeElement && typeof document.activeElement.blur === "function") {
+          document.activeElement.blur();
+        }
+
+        setTimeout(function() {
+          if (typeof ejecutarLogin === "function") {
+            ejecutarLogin();
+          }
+        }, 120);
+      }
+
+      if (loginID) {
+        loginID.addEventListener("keydown", ejecutarLoginDesdeTeclado);
+      }
+
+      if (loginPass) {
+        loginPass.addEventListener("keydown", ejecutarLoginDesdeTeclado);
+      }
+    });
+  </script>
+
+  <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", function() {
         navigator.serviceWorker.register("sw.js").catch(function(error) {

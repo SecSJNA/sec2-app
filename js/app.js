@@ -205,21 +205,83 @@ function cerrarSesion() {
 }
 
 function showScreen(id, pushHistory = true) {
+  if (!id) return;
+
   if (pushHistory && currentScreen && currentScreen !== id) {
     navigationStack.push(currentScreen);
   }
 
-  document.querySelectorAll(".screen").forEach(screen => screen.classList.remove("active"));
+  document.querySelectorAll(".screen").forEach(function(screen) {
+    screen.classList.remove("active");
+    limpiarScrollPantallaApp(screen);
+  });
 
-  setTimeout(() => {
+  setTimeout(function() {
     const el = document.getElementById(id);
+
     if (el) {
       el.classList.add("active");
       currentScreen = id;
-      window.scrollTo(0, 0);
+      prepararScrollPantallaActivaApp(el);
       inicializarIconos();
     }
   }, 35);
+}
+
+function limpiarScrollPantallaApp(screen) {
+  if (!screen) return;
+
+  screen.style.overflowX = "";
+  screen.style.overflowY = "";
+  screen.style.webkitOverflowScrolling = "";
+  screen.style.touchAction = "";
+  screen.style.height = "";
+  screen.style.maxHeight = "";
+}
+
+function prepararScrollPantallaActivaApp(el) {
+  if (!el) return;
+
+  document.documentElement.style.overflowX = "hidden";
+  document.documentElement.style.overflowY = "auto";
+  document.documentElement.style.height = "auto";
+
+  document.body.style.overflowX = "hidden";
+  document.body.style.overflowY = "auto";
+  document.body.style.position = "static";
+  document.body.style.height = "auto";
+  document.body.style.minHeight = "100dvh";
+  document.body.style.touchAction = "pan-y";
+
+  if (el.classList.contains("screen-scroll") || el.id !== "splash") {
+    el.style.overflowX = "hidden";
+    el.style.overflowY = "auto";
+    el.style.webkitOverflowScrolling = "touch";
+    el.style.touchAction = "pan-y";
+    el.style.height = "100dvh";
+    el.style.maxHeight = "100dvh";
+    el.style.minHeight = "100dvh";
+  }
+
+  const contenedores = el.querySelectorAll(".page-top, .module-menu-wrap, .content, .main-fixed-layout");
+
+  contenedores.forEach(function(contenedor) {
+    contenedor.style.overflow = "visible";
+    contenedor.style.height = "auto";
+    contenedor.style.maxHeight = "none";
+    contenedor.style.touchAction = "pan-y";
+  });
+
+  requestAnimationFrame(function() {
+    try {
+      el.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      window.scrollTo(0, 0);
+    } catch (error) {
+      console.warn("No se pudo reiniciar scroll:", error);
+    }
+  });
 }
 
 function goBack() {

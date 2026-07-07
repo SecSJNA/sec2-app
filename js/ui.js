@@ -7,6 +7,7 @@ function showScreen(id, pushHistory = true) {
 
   document.querySelectorAll(".screen").forEach(function(screen) {
     screen.classList.remove("active");
+    limpiarScrollPantalla(screen);
   });
 
   setTimeout(function() {
@@ -15,12 +16,67 @@ function showScreen(id, pushHistory = true) {
     if (el) {
       el.classList.add("active");
       currentScreen = id;
-      window.scrollTo(0, 0);
+      prepararScrollPantallaActiva(el);
       inicializarIconos();
     } else {
       console.warn("Pantalla no encontrada:", id);
     }
   }, 35);
+}
+
+function limpiarScrollPantalla(screen) {
+  if (!screen) return;
+
+  screen.style.overflowY = "";
+  screen.style.webkitOverflowScrolling = "";
+  screen.style.touchAction = "";
+  screen.style.height = "";
+  screen.style.maxHeight = "";
+}
+
+function prepararScrollPantallaActiva(el) {
+  if (!el) return;
+
+  const esPantallaConScroll = el.classList.contains("screen-scroll") || el.id !== "splash";
+
+  document.documentElement.style.overflowX = "hidden";
+  document.documentElement.style.overflowY = "auto";
+  document.body.style.overflowX = "hidden";
+  document.body.style.overflowY = "auto";
+  document.body.style.position = "static";
+  document.body.style.height = "auto";
+  document.body.style.minHeight = "100dvh";
+  document.body.style.touchAction = "pan-y";
+
+  if (esPantallaConScroll) {
+    el.style.overflowX = "hidden";
+    el.style.overflowY = "auto";
+    el.style.webkitOverflowScrolling = "touch";
+    el.style.touchAction = "pan-y";
+    el.style.height = "auto";
+    el.style.maxHeight = "none";
+    el.style.minHeight = "100dvh";
+  }
+
+  const contenedores = el.querySelectorAll(".page-top, .module-menu-wrap, .content, .main-fixed-layout");
+
+  contenedores.forEach(function(contenedor) {
+    contenedor.style.overflow = "visible";
+    contenedor.style.height = "auto";
+    contenedor.style.maxHeight = "none";
+    contenedor.style.touchAction = "pan-y";
+  });
+
+  requestAnimationFrame(function() {
+    try {
+      el.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      window.scrollTo(0, 0);
+    } catch (error) {
+      console.warn("No se pudo reiniciar scroll:", error);
+    }
+  });
 }
 
 function goBack() {

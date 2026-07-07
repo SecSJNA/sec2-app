@@ -5,11 +5,18 @@
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
-  <meta name="theme-color" content="#ffffff">
+  <meta name="theme-color" content="#0f172a">
 
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Portal Docentes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="Portal Docentes">
+  <meta name="msapplication-TileColor" content="#0f172a">
+  <meta name="msapplication-tap-highlight" content="no">
+
+  <link rel="manifest" href="manifest.json">
 
   <title>Portal Docentes</title>
 
@@ -824,5 +831,14 @@
   <script src="js/incidencias.js"></script>
   <script src="js/reportes.js"></script>
   <script src="js/notificaciones.js"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function() {
+        navigator.serviceWorker.register("sw.js").catch(function(error) {
+          console.log("No se pudo registrar el service worker:", error);
+        });
+      });
+    }
+  </script>
 </body>
 </html>

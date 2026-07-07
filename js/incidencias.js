@@ -345,7 +345,19 @@ function renderHistorialConDetalles(incidencias) {
   inicializarIconos();
 }
 
-function abrirDetalleIncidencia(idIncidencia) {
+
+function abrirDetalleIncidenciaDesdeCreacion(idIncidencia) {
+  /*
+    Camino especial después de crear una incidencia:
+    - muestra el detalle como confirmación visual
+    - evita que la flecha regrese al formulario lleno
+    - deja como regreso inmediato la pantalla de tipos de incidencia
+  */
+  navigationStack = ["typeScreen"];
+  abrirDetalleIncidencia(idIncidencia, true);
+}
+
+function abrirDetalleIncidencia(idIncidencia, desdeCreacion = false) {
   selectedIncidentID = String(idIncidencia || "").trim();
 
   if (!selectedIncidentID) {
@@ -354,7 +366,12 @@ function abrirDetalleIncidencia(idIncidencia) {
   }
 
   document.getElementById("detailContent").innerHTML = crearTarjetaSimple("Cargando detalle...", "Consultando base de datos.");
-  showScreen("detailScreen");
+
+  if (desdeCreacion) {
+    showScreen("detailScreen", false);
+  } else {
+    showScreen("detailScreen");
+  }
 
   API.obtenerDetalleIncidencia(
     selectedIncidentID,
@@ -639,12 +656,8 @@ function eliminarIncidenciaActual() {
     selectedIncidentID,
     function() {
       alert("Incidencia eliminada correctamente.");
-
-      if (selectedPersonID) {
-        cargarResumenPersona(selectedPersonID);
-      } else {
-        goMain();
-      }
+      selectedIncidentID = "";
+      openTipoIncidencia();
     },
     function(error) {
       alert(obtenerMensajeError(error));
@@ -842,7 +855,7 @@ function guardarFormulario() {
       selectedIncidentID = incidencia.IDIncidencia;
       selectedPersonID = incidencia.IDUsuario;
       setTimeout(function() {
-        abrirDetalleIncidencia(incidencia.IDIncidencia);
+        abrirDetalleIncidenciaDesdeCreacion(incidencia.IDIncidencia);
       }, 900);
     },
     function(error) {

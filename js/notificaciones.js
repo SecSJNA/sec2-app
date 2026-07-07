@@ -276,7 +276,7 @@ function crearCardNotificacionRecibida(notificacion) {
       <div class="notification-status-icon solid-${meta.color}" data-icon="${meta.icono}"></div>
       <div>
         <p class="notification-date">${escapeHTML(notificacion.FechaEnvio || "Sin fecha")}</p>
-        <p class="notification-message">${escapeHTML(recortarTextoSeguro(notificacion.Mensaje || "", 90))}</p>
+        <p class="notification-message">Enviado por Dirección</p>
         <p class="notification-meta"><strong>Estado:</strong> ${escapeHTML(meta.texto)}</p>
       </div>
       <button class="detail-button" onclick="abrirDetalleNotificacionRecibida('${escapeHTML(notificacion.IDNotificacion || "")}')">Ver detalle</button>
@@ -302,7 +302,7 @@ function abrirDetalleNotificacionRecibida(idNotificacion) {
     contenedor.innerHTML = crearTarjetaSimple("Cargando detalle...", "Consultando mensaje y actualizando lectura.");
   }
 
-  showScreen("notifyDetailScreen");
+  showScreen("notifyDetailScreen", false);
 
   API.obtenerDetalleNotificacion(
     selectedNotificationID,
